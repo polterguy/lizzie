@@ -4,7 +4,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{5290ED46-2D97-4B6F-B7F4-5B4BF78AAF67}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE = LICENSE
-		README = README
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.threading", "poetic.threading\poetic.threading.csproj", "{F0C2DF39-43A3-457B-8B28-7FF5D4BD8AEF}"
