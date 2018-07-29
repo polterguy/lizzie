@@ -41,7 +41,8 @@ your `Synchronizer` instance to your threads.
 Since the `Synchronizer` expects the type to implement some sort of _"read only"_
 interface, in addition to a _"write and read"_ interface, this gives you a guarantee
 of that you can never invoke a _"write method"_ on your shared resource, inside
-a _"read only"_ delegate. Below is an example of usage.
+a _"read only"_ delegate. Below is an example of usage. First some type that needs
+synchronised access.
 
 ```csharp
 // Read from shared instance interface.
