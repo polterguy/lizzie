@@ -64,7 +64,8 @@ threads.Add(delegate {
 });
 
 /*
- * Fire and forget execution of all of the above threads.
+ * Notice! Join will wait for all threads to finish before it gives back control
+ * to the main thread!
  */
 threads.Join();
 ```
