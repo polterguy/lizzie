@@ -16,6 +16,8 @@ execution. Below is some sample code illustrating usage.
 ```csharp
 /*
  * Creating our Threads instance, and adding two delegates to it.
+ *
+ * Each of these delegates will be executed on a separate thread.
  */
 var threads = new Threads();
 threads.Add(delegate {
