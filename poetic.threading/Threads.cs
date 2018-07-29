@@ -22,6 +22,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace poetic.threading
@@ -90,38 +91,70 @@ namespace poetic.threading
         /// all your threads to finish their tasks, making sure we never wait more
         /// than milliseconds amount of time, before returning.
         /// </summary>
-        public void Join(long milliseconds)
+        public void Join(int milliseconds)
         {
+            // Sanity checking argument.
+            if (milliseconds <= 0)
+                throw new ArgumentException("Time must be a positive integer value", nameof(milliseconds));
+
+            /*
+             * Used to keep track of whether or not total amount of milliseconds have
+             * passed or not.
+             * 
+             * NOTICE! Since starting a bunch of threads carries some overhead, we
+             * do this before we create our threads, such that the total amount of
+             * time we actually measure, becomes the total amount of time we spend
+             * in this method, and not the total amount of "Join time".
+             */
+            var sw = Stopwatch.StartNew();
+
             // Starting each thread.
             var threads = _functors.Select(ix => new Thread(new ThreadStart(ix))).ToList();
             threads.ForEach(ix => ix.Start());
 
             /*
-             * Used to keep track of whether or not total amount of milliseconds have
-             * passed or not.
-             */
-            var endTime = DateTime.Now.AddMilliseconds(milliseconds);
-
-            /*
-             * Iterating through each of our thread delegates, making sure we never
+             * Iterating through each of our threads, making sure we never
              * wait more than milliseconds amount of time, before we give up, and
              * return control to caller.
              */
             foreach (var idx in threads) {
 
-                // Checking if we have passed our total milliseconds.
-                var now = DateTime.Now;
-                if (now >= endTime) {
-                    /*
-                     * TimeSpan for all threads have passed,
-                     * hence we can no longer wait for any more threads to finish.
-                     */
-                    break;
-                }
+                /*
+                 * Stopping stopwatch and decrementing time spent so far.
+                 */
+                sw.Stop();
+                milliseconds -= (int)sw.ElapsedMilliseconds;
+
+                /*
+                 * Checking if total amount of time has elapsed.
+                 */
+                if (milliseconds <= 0)
+                    break; // Time has left the rest of our threads hanging ...
+
+                /*
+                 * Restarting our Stopwatch to accurately time the Join time of
+                 * our next thread's Join invocation.
+                 */
+                sw = Stopwatch.StartNew();
 
                 // Making sure we never wait beyond our maximum amount of time.
-                idx.Join((endTime - now));
+                idx.Join(milliseconds);
             }
+        }
+
+        /// <summary>
+        /// Executes each of your delegates on a separate thread, and waits for
+        /// all your threads to finish their tasks, making sure we never wait more
+        /// than time amount of time, before returning.
+        /// </summary>
+        public void Join(TimeSpan time)
+        {
+            // Sanity checking argument.
+            if (time.TotalMilliseconds > (double)int.MaxValue)
+                throw new ArgumentException("Maximum amount of time exceeded. " + int.MaxValue + " milliseconds is max value.", nameof(time));
+
+            // Invoking common implementation method.
+            Join((int)time.TotalMilliseconds);
         }
     }
 }

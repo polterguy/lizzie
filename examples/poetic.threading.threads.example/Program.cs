@@ -100,7 +100,7 @@ namespace poetic.threading.threads.example
              * "main thread" - Which is what we are actually doing here.
              */
             thread1_result = "Thread 1 is not done (which is an error)";
-            thread2_result = "Thread 2 is not done (which is as expected)";
+            thread2_result = "Thread 2 is not done (CORRECT!)";
             var thread3_result = "Thread 3 is not done (which is an error)";
             threads = new Threads();
             threads.Add(delegate {
@@ -110,7 +110,7 @@ namespace poetic.threading.threads.example
                  * isolation to passover the total wait time.
                  */
                 Thread.Sleep(500);
-                thread1_result = "Thread 1 done (which is as expected)";
+                thread1_result = "Thread 1 done (CORRECT!)";
             });
             threads.Add(delegate {
 
@@ -134,7 +134,7 @@ namespace poetic.threading.threads.example
                  * isolation to passover the total wait time.
                  */
                 Thread.Sleep(500);
-                thread3_result = "Thread 3 done (which is as expected)";
+                thread3_result = "Thread 3 done (CORRECT!)";
             });
 
             /*
