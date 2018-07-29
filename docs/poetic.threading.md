@@ -1,8 +1,9 @@
 
-# poetic.threading - Making sense out of multi threading in C#
+# poetic.threading
 
 These are the classes and utilities that helps you with your multi threaded
-programming.
+programming. The idea is to create tiny and simple utility classes that simplifies
+your code when dealing with anything related to threads in C#.
 
 ## poetic.threading.Synchronizer
 
