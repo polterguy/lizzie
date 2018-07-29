@@ -94,8 +94,8 @@ namespace poetic.threading
     }
 
     /// <summary>
-    /// Simplified syntax where you cannot modify the shared instance and implement
-    /// your own Read and Write interfaces on the type.
+    /// Simplified syntax where you cannot modify the shared type and implement
+    /// your own read and write interfaces.
     /// 
     /// Notice, when using this class you are on your own in regards to making sure
     /// you never actually modify the shared instance inside a "read only" delegate.
