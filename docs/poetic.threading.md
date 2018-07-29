@@ -302,3 +302,75 @@ synchronizerSimple.Write(delegate (SimpleShared shared) {
     shared.Write("bar");
 });
 ```
+
+## Combining the Threads and Synchronizer class
+
+Obviously you get the most bang for your bucks if you use both the `Synchronizer`
+and the `Threads` classes in combination. This allows you to easily synchronise
+access to a mutable object across multiple threads, with a beautiful syntax,
+resulting in highly dense code. Below is an example.
+
+```csharp
+// Some type that needs synchronised access across multiple threads.
+class Shared
+{
+    string _data = "initial";
+
+    // Read only operation.
+    public string Read()
+    {
+        return _data;
+    }
+
+    // Write operation
+    public void Write(string value)
+    {
+        _data += value;
+    }
+}
+
+/* ... somewhere in another place of the universe ... */
+
+void foo()
+{
+    var threads = new Threads<Synchronizer<Shared>>(
+
+        // Our first thread delegate.
+        delegate (Synchronizer<Shared> synchronizer) {
+
+            // Accessing Shared instance synchronised.
+            synchronizer.Read(delegate (Shared shared) {
+                // Do read stuff with shared ...
+            });
+        },
+
+        // Our second thread delegate.
+        delegate (Synchronizer<Shared> synchronizer) {
+
+            // Accessing Shared instance synchronised.
+            synchronizer.Write(delegate (Shared shared) {
+                // Do write stuff with shared ...
+            });
+        }
+    ); // End of threads instantiation.
+
+    /*
+     * Instantiating our Shared object, which we will pass in (synchronised)
+     * to our threads, to ensure access to the shared instance as always
+     * synchronised
+     */
+    var shared_object = new Shared();
+
+    /*
+     * Notice!
+     * We wrap our shared_object inside a Synchronizer instance.
+     * This ensures access to our shared_instance is always synchronised.
+     */
+    threads.Start(new Synchronizer<Shared>(shared_object));
+}
+```
+
+The above will pass in your `shared_object` to your threads wrapped inside an
+instance of a `Synchronizer`, which guarantees that the shared_instance cannot be
+accessed inside your threads, before some sort of synchronisation lock has been
+acquired first.
