@@ -76,7 +76,8 @@ class Shared : ISharedWrite
 }
 ```
 
-Below is an example of consuming the above type.
+Below is an example of consuming the above type, making sure we always have
+synchronised access to the instance.
 
 ```csharp
 /*
@@ -124,6 +125,12 @@ var thread2 = new Thread(new ThreadStart(delegate {
         shared.Write(" bar");
     });
 }));
+
+/*
+ * Starting both of our threads.
+ */
+thread1.Start();
+thread2.Start();
 ```
 
 
