@@ -36,7 +36,8 @@ instance of the Synchronizer, at which point accessing the shared resource
 becomes impossible, without first entering either an `EnterReadLock` or an
 `EnterWriteLock` on a `ReaderWriterLockSlim` which is a field in the `Synchronizer`
 class. Then instead of passing around your actual shared resource, you pass around
-your `Synchronizer` instance to your threads. Below is some example usage.
+your `Synchronizer` instance to your threads. Below is an example of a type that
+might need synchronised access.
 
 ```csharp
 /*
@@ -78,62 +79,56 @@ class Shared : ISharedWrite
         _data += value;
     }
 }
+```
+
+Below is an example of consuming the above type.
+
+```csharp
+/*
+ * Creating our Synchronizer, that ensures synchronised access to a
+ * single "Shared" instance.
+ */
+var synchronizer = new Synchronizer<Shared, ISharedRead, ISharedWrite>(new Shared());
 
 /*
- * A simple console example application, demonstrating usage.
+ * Creating a couple of threads, all accessing the same shared instance,
+ * making sure we synchronize access to our shared resource, using our
+ * above Synchronizer instance.
  */
-class MainClass
-{
-    public static void Main(string[] args)
-    {
-        /*
-         * Creating our Synchronizer, that ensures synchronised access to a
-         * single "Shared" instance.
-         */
-        var synchronizer = new Synchronizer<Shared, ISharedRead, ISharedWrite>(new Shared());
+var thread1 = new Thread(new ThreadStart(delegate {
 
-        /*
-         * Creating a couple of threads, all accessing the same shared instance,
-         * making sure we synchronize access to our shared resource, using our
-         * above Synchronizer instance.
-         */
-        string foo_from_thread_1 = "";
-        var thread1 = new Thread(new ThreadStart(delegate {
+    /*
+     * This is where the magic of our Synchronizer instance occurs, since
+     * this will enter a "read lock" on our ReaderWriterLockSlim instance,
+     * which is a field in our Synchronizer class.
+     * 
+     * Hence, after we enter our "Read" delegate below, no "Write" invocations
+     * will be allowed to start, in any other threads, before our "Read"
+     * delegate has finished executing.
+     */
+    synchronizer.Read(delegate (ISharedRead shared) {
+        foo_from_thread_1 = shared.Read();
+    });
+}));
 
-            /*
-             * This is where the magic of our Synchronizer instance occurs, since
-             * this will enter a "read lock" on our ReaderWriterLockSlim instance,
-             * which is a field in our Synchronizer class.
-             * 
-             * Hence, after we enter our "Read" delegate below, no "Write" invocations
-             * will be allowed to start, in any other threads, before our "Read"
-             * delegate has finished executing.
-             */
-            synchronizer.Read(delegate (ISharedRead shared) {
-                foo_from_thread_1 = shared.Read();
-            });
-        }));
+/*
+ * Creating another thread, consuming our shared resource, but this
+ * time in write mode.
+ */
+var thread2 = new Thread(new ThreadStart(delegate {
 
-        /*
-         * Creating another thread, consuming our shared resource, but this
-         * time in write mode.
-         */
-        var thread2 = new Thread(new ThreadStart(delegate {
-
-            /*
-             * Entering a Write lock, such that we can modify our shared instance.
-             * This delegate will never be executed if there are other delegates,
-             * in other threads, either trying to read from the shared resource,
-             * or write to it.
-             *
-             * Hence, we have "synchronised access" to our above Shared instance.
-             */
-            synchronizer.Write(delegate (ISharedWrite shared) {
-                shared.Write(" bar");
-            });
-        }));
-    }
-}
+    /*
+     * Entering a Write lock, such that we can modify our shared instance.
+     * This delegate will never be executed if there are other delegates,
+     * in other threads, either trying to read from the shared resource,
+     * or write to it.
+     *
+     * Hence, we have "synchronised access" to our above Shared instance.
+     */
+    synchronizer.Write(delegate (ISharedWrite shared) {
+        shared.Write(" bar");
+    });
+}));
 ```
 
 
@@ -148,7 +143,8 @@ of your Read and Write delegates, as the implementing type. Notice, using the
 your own interfaces on your own types, since among other things, there is nothing
 preventing you or anybody else from actually invoking _"write methods"_ on your
 shared instance - However, for those cases where you need this, you can use the
-simplified syntax, shown below.
+simplified syntax, illustrated below. First some example type, without any
+read or write interfaces you can hook onto.
 
 ```csharp
 class SimpleShared
@@ -171,6 +167,11 @@ class SimpleShared
         _data += value;
     }
 }
+```
+
+Then an example of synchronising access to the above type.
+
+```csharp
 var synchronizerSimple = new Synchronizer<Shared>(new SimpleShared());
 
 // Somewhere inside another thread ...
