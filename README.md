@@ -30,3 +30,8 @@ access to shared resources, etc.
 
 * [Documentation for poetic.threading](docs/poetic.threading.md)
 
+## License
+
+Poetic is licensed under the terms of the MIT license. See the enclosed LICENSE
+file for details.
+
