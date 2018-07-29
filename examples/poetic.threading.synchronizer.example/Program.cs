@@ -110,7 +110,7 @@ namespace poetic.threading.synchronizer.example
              * making sure we synchronize access to our shared resource, using our
              * above Synchronizer instance.
              */
-            string foo_from_thread_1 = "";
+            string data1 = "";
             var thread1 = new Thread(new ThreadStart(delegate {
 
                 /*
@@ -123,7 +123,7 @@ namespace poetic.threading.synchronizer.example
                  * delegate has finished executing.
                  */
                 synchronizer.Read(delegate (ISharedRead shared) {
-                    foo_from_thread_1 = shared.Read();
+                    data1 = shared.Read();
                 });
             }));
 
@@ -145,7 +145,7 @@ namespace poetic.threading.synchronizer.example
              * Creating another thread, consuming our shared resource, but this
              * time in write mode.
              */
-            string foo_from_thread_3 = "";
+            string data3 = "";
             var thread3 = new Thread(new ThreadStart(delegate {
 
                 /*
@@ -153,7 +153,7 @@ namespace poetic.threading.synchronizer.example
                  * shared instance.
                  */
                 synchronizer.Read(delegate (ISharedRead shared) {
-                    foo_from_thread_3 = shared.Read();
+                    data3 = shared.Read();
                 });
             }));
 
@@ -177,8 +177,8 @@ namespace poetic.threading.synchronizer.example
              * Notice, this might spit out different values each time you execute
              * your program depending upon which thread is able to enter a "lock" first.
              */
-            Console.WriteLine(string.Format("Thread 1 value '{0}'", foo_from_thread_1));
-            Console.WriteLine(string.Format("Thread 3 value '{0}'", foo_from_thread_3));
+            Console.WriteLine(string.Format("Thread 1 value '{0}'", data1));
+            Console.WriteLine(string.Format("Thread 3 value '{0}'", data3));
 
             /*
              * Example of simplified syntax, that doesn't require modifying the

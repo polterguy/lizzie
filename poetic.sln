@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{80
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.threading.synchronizer.example", "examples\poetic.threading.synchronizer.example\poetic.threading.synchronizer.example.csproj", "{F502A2C2-FDC6-40B6-B384-42B81F4175AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.threading.threads.example", "examples\poetic.threading.threads.example\poetic.threading.threads.example.csproj", "{0FEDB813-F91E-49E9-8868-7E8E15E3408E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,8 +29,13 @@ Global
 		{F502A2C2-FDC6-40B6-B384-42B81F4175AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F502A2C2-FDC6-40B6-B384-42B81F4175AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F502A2C2-FDC6-40B6-B384-42B81F4175AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FEDB813-F91E-49E9-8868-7E8E15E3408E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FEDB813-F91E-49E9-8868-7E8E15E3408E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FEDB813-F91E-49E9-8868-7E8E15E3408E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FEDB813-F91E-49E9-8868-7E8E15E3408E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F502A2C2-FDC6-40B6-B384-42B81F4175AA} = {80FD45AC-AF8D-4947-B0AA-71561754249F}
+		{0FEDB813-F91E-49E9-8868-7E8E15E3408E} = {80FD45AC-AF8D-4947-B0AA-71561754249F}
 	EndGlobalSection
 EndGlobal

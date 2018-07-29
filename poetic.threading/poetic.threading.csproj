@@ -2,6 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackOnBuild>true</PackOnBuild>
+    <PackageVersion>0.1</PackageVersion>
+    <Authors>Thomas Hansen</Authors>
+    <PackageLicenseUrl>https://github.com/polterguy/poetic/blob/master/LICENSE</PackageLicenseUrl>
+    <Owners>Thomas Hansen</Owners>
+    <PackageProjectUrl>https://github.com/polterguy/poetic</PackageProjectUrl>
+    <Summary>Helper classes and utilities for dealing with thread problems</Summary>
+    <PackageTags>threading</PackageTags>
+    <Title>nuget.threading</Title>
+    <Description>Common helper classes to simplify your multi threaded code.</Description>
+    <PackageId>poetic.threading</PackageId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
+  </ItemGroup>
 </Project>
