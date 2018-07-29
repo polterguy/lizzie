@@ -31,6 +31,13 @@ threads.Add(delegate {
 threads.Start();
 ```
 
+Notice, since the actual threads are not created before you invoke `Start` or
+`Join`, you can reuse the same instance of your `Threads` class multiple times.
+Which makes it easy to encapsulate a bunch of jobs you need to do periodically
+for some reasons, by storing an instance to your `Threads` class somewhere
+in your own code, and simply invoke `Start` or `Join` every time you need to
+execute this job for some reasons.
+
 ### Joining multiple threads
 
 Sometimes you have a bunch of threads doing something, and you want to wait for
