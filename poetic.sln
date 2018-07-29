@@ -15,6 +15,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.threading.synchroniz
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.threading.threads.example", "examples\poetic.threading.threads.example\poetic.threading.threads.example.csproj", "{0FEDB813-F91E-49E9-8868-7E8E15E3408E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{5EFBEB45-DE81-43CD-BCE1-EE49E2C3A9EB}"
+	ProjectSection(SolutionItems) = preProject
+		docs\poetic.threading.md = docs\poetic.threading.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,5 +42,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F502A2C2-FDC6-40B6-B384-42B81F4175AA} = {80FD45AC-AF8D-4947-B0AA-71561754249F}
 		{0FEDB813-F91E-49E9-8868-7E8E15E3408E} = {80FD45AC-AF8D-4947-B0AA-71561754249F}
+		{5EFBEB45-DE81-43CD-BCE1-EE49E2C3A9EB} = {5290ED46-2D97-4B6F-B7F4-5B4BF78AAF67}
 	EndGlobalSection
 EndGlobal
