@@ -80,7 +80,16 @@ You can also supply a `TimeSpan` argument as an override, instead of an integer
 value of milliseconds. Contrary to the way `Join` works on a single thread, the
 milliseconds/time argument passed into `Threads.Join` will be calculated as a
 total amount of time, implying you don't need to calculate these numbers yourself,
-for each thread Join operation.
+for each thread's Join invocation.
+
+### Executing delegates on calling thread
+
+If you for some reasons don't want to create a new thread for each of your delegates,
+you can choose to sequentially execute each delegate by invoking `Execute` instead
+of the above `Start` and `Join` methods. This might be beneficial sometimes during
+debugging, in addition to allowing you to create a bunch of execution objects,
+for later to decide whether or not you want to execute them on a different thread
+or not.
 
 ## poetic.threading.Synchronizer
 
@@ -132,7 +141,7 @@ class Shared : ISharedWrite
 ```
 
 Below is an example of consuming the above type, making sure we always have
-synchronised access to the instance.
+synchronised access to the shared instance.
 
 ```csharp
 /*

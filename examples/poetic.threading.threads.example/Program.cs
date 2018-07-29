@@ -25,6 +25,34 @@ using poetic.threading;
 
 namespace poetic.threading.threads.example
 {
+    /// <summary>
+    /// An dummy example of a class where instances of the class needs to be shared
+    /// between multiple threads, and hence access to the instance needs to be
+    /// synchronized.
+    /// </summary>
+    class Shared
+    {
+        string _data = "initial";
+
+        /// <summary>
+        /// Returns the state of the instance.
+        /// </summary>
+        /// <returns>The read.</returns>
+        public string Read()
+        {
+            return _data;
+        }
+
+        /// <summary>
+        /// Modifies the state of the instance.
+        /// </summary>
+        /// <param name="value">Value.</param>
+        public void Write(string value)
+        {
+            _data += value;
+        }
+    }
+
     class MainClass
     {
         /// <summary>
@@ -38,10 +66,10 @@ namespace poetic.threading.threads.example
              * Creating our Threads instance, and adding two delegates to it.
              */
             var threads = new Threads();
-            threads.Add(delegate {
+            threads = threads.Add(delegate {
                 Thread.Sleep(100);
             });
-            threads.Add(delegate {
+            threads = threads.Add(delegate {
                 Thread.Sleep(100);
             });
 
@@ -56,10 +84,10 @@ namespace poetic.threading.threads.example
              */
             string thread1_result = "", thread2_result = "";
             threads = new Threads();
-            threads.Add(delegate {
+            threads = threads.Add(delegate {
                 thread1_result = "Thread 1 done";
             });
-            threads.Add(delegate {
+            threads = threads.Add(delegate {
                 thread2_result = "Thread 2 done";
             });
 
@@ -101,7 +129,7 @@ namespace poetic.threading.threads.example
             thread2_result = "Thread 2 is not done (CORRECT!)";
             var thread3_result = "Thread 3 is not done (which is an error)";
             threads = new Threads();
-            threads.Add(delegate {
+            threads = threads.Add(delegate {
 
                 /*
                  * Sleeping thread for 500 milliseconds, which is not enough in
@@ -110,7 +138,7 @@ namespace poetic.threading.threads.example
                 Thread.Sleep(500);
                 thread1_result = "Thread 1 done (CORRECT!)";
             });
-            threads.Add(delegate {
+            threads = threads.Add(delegate {
 
                 /*
                  * Making sure we sleep the current thread, such that it won't
@@ -125,7 +153,7 @@ namespace poetic.threading.threads.example
                  */
                 thread2_result = "Thread 2 done (ERROR!)";
             });
-            threads.Add(delegate {
+            threads = threads.Add(delegate {
 
                 /*
                  * Sleeping thread for 500 milliseconds, which is not enough in
@@ -146,6 +174,60 @@ namespace poetic.threading.threads.example
              */
             Console.WriteLine(thread1_result);
             Console.WriteLine(thread2_result);
+            Console.WriteLine(thread3_result);
+            Console.WriteLine();
+
+            /*
+             * Example of synchronised sharing some object (securely) between
+             * multiple threads.
+             * 
+             * Notice, this time we instantiate our Threads instance such that we
+             * can pass in a Shared instance to our threads, synchronising access
+             * to our instance at the same time.
+             */
+            var threads2 = new Threads<Synchronizer<Shared>>();
+
+            /*
+             * Adding three thread delegates to our Threads instance.
+             */
+            threads2 = threads2.Add(delegate (Synchronizer<Shared> synchronizer) {
+
+                // Accessing Shared instance synchronised.
+                synchronizer.Read (delegate (Shared shared_instance) {
+                    thread1_result = shared_instance.Read();
+                });
+            });
+            threads2 = threads2.Add(delegate (Synchronizer<Shared> synchronizer) {
+
+                // Making sure we don't fetch value before thread 2 is done.
+                Thread.Sleep(1000);
+
+                // Accessing Shared instance synchronised.
+                synchronizer.Write(delegate (Shared shared_instance) {
+                    shared_instance.Write(" thread 2 was here!");
+                });
+            });
+            threads2 = threads2.Add(delegate (Synchronizer<Shared> synchronizer) {
+
+                // Making sure we don't fetch value before thread 2 is done.
+                Thread.Sleep(2000);
+
+                // Accessing Shared instance synchronised.
+                synchronizer.Read(delegate (Shared shared_instance) {
+                    thread3_result = shared_instance.Read();
+                });
+            });
+
+            /*
+             * Executing all of our threads, such that we'll wait the main thread
+             * until all threads are finished.
+             */
+            threads2.Join(new Synchronizer<Shared> (new Shared()));
+
+            /*
+             * Writing results to Console.
+             */
+            Console.WriteLine(thread1_result);
             Console.WriteLine(thread3_result);
         }
     }
