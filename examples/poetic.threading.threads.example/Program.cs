@@ -36,8 +36,6 @@ namespace poetic.threading.threads.example
         {
             /*
              * Creating our Threads instance, and adding two delegates to it.
-             * 
-             * This is the simple version.
              */
             var threads = new Threads();
             threads.Add(delegate {

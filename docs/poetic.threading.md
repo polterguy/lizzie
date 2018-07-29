@@ -5,6 +5,71 @@ These are the classes and utilities that helps you with your multi threaded
 programming. The idea is to create tiny and simple utility classes that simplifies
 your code when dealing with anything related to threads in C#.
 
+## poetic.threading.Threads
+
+This class encapsulates the process of creating and starting multiple threads in
+C#, and provides a significantly simplified syntax for doing things such as `Join`
+invocations, etc. It allows you to encapsulate a bunch of delegates, and start
+all of your threads together, optionally waiting for each thread to finish its
+execution. Below is some sample code illustrating usage.
+
+```csharp
+/*
+ * Creating our Threads instance, and adding two delegates to it.
+ */
+var threads = new Threads();
+threads.Add(delegate {
+    // Do stuff in different thread here ...
+});
+threads.Add(delegate {
+    // Do stuff in different thread here ...
+});
+
+/*
+ * Fire and forget execution of all of the above threads.
+ */
+threads.Start();
+```
+
+### Joining multiple threads
+
+Sometimes you have a bunch of threads doing something, and you want to wait for
+all of your threads to finish execution, before proceeding with your main thread.
+An example can be illustrated by imagining downloading a bunch of different documents
+from the network, where you would want to for efficiency reasons create your network
+retrieval logic on a separate thread - Yet still not allow the main thread to continue
+its work, before all documents have been retrieved. For these cases you can use
+the `Join` method, instead of the `Start` method on your `Threads` instance.
+Below is an example.
+
+```csharp
+/*
+ * Creating our Threads instance, and adding two delegates to it.
+ */
+var threads = new Threads();
+threads.Add(delegate {
+    // Do stuff in different thread here ...
+});
+threads.Add(delegate {
+    // Do stuff in different thread here ...
+});
+
+/*
+ * Fire and forget execution of all of the above threads.
+ */
+threads.Join();
+```
+
+Notice, the only difference between the above code and the first `Start` example,
+is that the latter is using `Join` instead of `Start`. At which point execution
+will not pass your Join invocation, before all threads have finished executing.
+
+Join can optionally be given a milliseconds argument, at which point if one of
+your threads spends more time doing its thing, control will be returned back to
+the main thread before the threads not able to finish their work within the
+specified amount of time have finished. You can also pass in a `TimeSpan` argument
+instead of a milliseconds argument.
+
 ## poetic.threading.Synchronizer
 
 This class encapsulates a shared instance of a type such that gaining access to
