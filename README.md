@@ -144,26 +144,22 @@ of your Read and Write delegates, as the implementing type. Notice, using the
 `Synchroniser` this way, for obvious reasons are not as _"safe"_ as implementing
 your own interfaces on your own types, since among other things, there is nothing
 preventing you or anybody else from actually invoking _"write methods"_ on your
-shared instance - However, for those cases where you need this, you can use the
-simplified syntax, illustrated below. First some example type, without any
-read or write interfaces you can hook onto.
+shared instance, inside a `Read` delegate - However, for those cases where you
+cannot modify the shared type, you can use the simplified syntax, illustrated
+below. First an example type, without any read or write interfaces you can hook onto.
 
 ```csharp
 class SimpleShared
 {
     string _data = "foo";
 
-    /*
-     * A read operation example.
-     */
+    // A read operation example.
     public string Read()
     {
         return _data;
     }
 
-    /*
-     * A read operation example.
-     */
+    // A write operation example.
     public void Write(string value)
     {
         _data += value;
@@ -181,6 +177,10 @@ synchronizerSimple.Read(delegate (SimpleShared shared) {
 
     // NOTICE!! Make sure you only invoke "Read" methods here!
     var foo = shared.Read();
+
+    // The following code would be a severe logical error in your application,
+    // waiting to explode in your face!
+    // shared.Write("bar");
 });
 
 // Somewhere inside another thread ...
