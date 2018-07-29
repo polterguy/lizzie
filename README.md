@@ -33,11 +33,15 @@ This class encapsulates a shared instance of a type such that gaining access to
 the shared instance becomes impossible without synchronising access to the shared
 resource. The idea is to create your shared resource and then pass it into an
 instance of the Synchronizer, at which point accessing the shared resource
-becomes impossible, without first entering either an `EnterReadLock` or an
-`EnterWriteLock` on a `ReaderWriterLockSlim` which is a field in the `Synchronizer`
+becomes impossible, without first entering either a _"ReadLock"_ or a
+_"WriteLock"_ on a `ReaderWriterLockSlim`, which is a field in the `Synchronizer`
 class. Then instead of passing around your actual shared resource, you pass around
-your `Synchronizer` instance to your threads. Below is an example of a type that
-might need synchronised access.
+your `Synchronizer` instance to your threads.
+
+Since the `Synchronizer` expects the type to implement some sort of _"read only"_
+interface, in addition to a _"write and read"_ interface, this gives you a guarantee
+of that you can never invoke a _"write method"_ on your shared resource, inside
+a _"read only"_ delegate. Below is an example of usage.
 
 ```csharp
 /*
