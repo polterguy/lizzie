@@ -356,8 +356,8 @@ void foo()
 
     /*
      * Instantiating our Shared object, which we will pass in (synchronised)
-     * to our threads, to ensure access to the shared instance as always
-     * synchronised
+     * to our threads, to ensure access to the shared instance is always
+     * synchronised.
      */
     var shared_object = new Shared();
 
@@ -373,4 +373,5 @@ void foo()
 The above will pass in your `shared_object` to your threads wrapped inside an
 instance of a `Synchronizer`, which guarantees that the shared_instance cannot be
 accessed inside your threads, before some sort of synchronisation lock has been
-acquired first.
+acquired first. The task of implementing some sort of `IWrite` and `IRead` interface
+on your `Shared` class is to be considered homework!
