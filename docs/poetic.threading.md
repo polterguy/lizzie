@@ -20,10 +20,12 @@ execution. Below is some sample code illustrating usage.
  * Each of these delegates will be executed on a separate thread.
  */
 var threads = new Threads();
-threads.Add(delegate {
+
+// Notice, the Threads class is IMMUTABLE!
+threads = threads.Add(delegate {
     // Do stuff in different thread here ...
 });
-threads.Add(delegate {
+threads = threads.Add(delegate {
     // Do stuff in different thread here ...
 });
 
@@ -40,26 +42,37 @@ for some reasons, by storing an instance to your `Threads` class somewhere
 in your own code, and simply invoke `Start` or `Join` every time you need to
 execute this job for some reasons.
 
+Also realise that this class is immutable, so all operations that somehow modified
+its state some way, will not modify its state, but rather instantiate a new instance,
+with the modified state, and returning this new instance to caller. This can
+be seen in the above code by how we need to assign the return value from `Add`
+to the instance as we add new delegates. This is a conscious design choice, which
+we have chosen, in order to first make the class itself thread safe, such that
+multiple threads can share the same instance. All immutable types are thread safe
+by definition. In addition this also makes sure the library is _"F# friendly"_.
+
 ### Joining multiple threads
 
 Sometimes you have a bunch of threads doing something, and you want to wait for
 all of your threads to finish execution, before proceeding with your main thread.
 An example can be illustrated by imagining downloading a bunch of different documents
 from the network, where you would want to for efficiency reasons create your network
-retrieval logic on a separate thread - Yet still not allow the main thread to continue
-its work, before all documents have been retrieved. For these cases you can use
-the `Join` method, instead of the `Start` method on your `Threads` instance.
-Below is an example.
+retrieval logic on a separate thread for each network operation - Yet still not
+allow the main thread to continue its work, before all documents have been retrieved.
+For these cases you can use the `Join` method, instead of the `Start` method on
+your `Threads` instance. Below is an example.
 
 ```csharp
 /*
  * Creating our Threads instance, and adding two delegates to it.
  */
 var threads = new Threads();
-threads.Add(delegate {
+
+// Yet again! IMMUTABLE class!
+threads = threads.Add(delegate {
     // Do stuff in different thread here ...
 });
-threads.Add(delegate {
+threads = threads.Add(delegate {
     // Do stuff in different thread here ...
 });
 
@@ -68,18 +81,20 @@ threads.Add(delegate {
  * to the main thread!
  */
 threads.Join();
+
+// At this point, all above threads are finished doing their stuff!
 ```
 
-The only difference between the above code and the first `Start` example,
+The only difference between the above `Join` example and the first `Start` example,
 is that the latter is using `Join` instead of `Start`. At which point execution
-will not pass your Join invocation, before all threads have finished executing.
+will not pass your `Join` invocation, before all threads have finished executing.
 
 Join can optionally be given a milliseconds argument, which becomes the total
 amount of time `Join` will spend, before returning control back to the caller.
 You can also supply a `TimeSpan` argument as an override, instead of an integer
 value of milliseconds. Contrary to the way `Join` works on a single thread, the
 milliseconds/time argument passed into `Threads.Join` will be calculated as a
-total amount of time, implying you don't need to calculate these numbers yourself,
+total amount of time, which means you don't need to calculate these numbers yourself,
 for each thread's Join invocation.
 
 ### Executing delegates on calling thread
@@ -90,6 +105,39 @@ of the above `Start` and `Join` methods. This might be beneficial sometimes duri
 debugging, in addition to allowing you to create a bunch of execution objects,
 for later to decide whether or not you want to execute them on a different thread
 or not.
+
+### Sharing data between multiple threads
+
+There is an implementation of the `Threads` class that require you to create it
+as a generic instance, passing in an instance of your type, to both `Start`, `Join`
+and `Execute`. If you use this type, the instance you execute your delegates with
+will all have your shared instance  available to them in your own delegates.
+Below is an example.
+
+```csharp
+/*
+ * In this example we are sharing a string between two threads.
+ *
+ * NOTICE!
+ * There is no synchronisation being done to avoid race conditions while 
+ * accessing our shared instance in this example. To synchronise access, you
+ * can encapsulate your shared instance inside of a Synchronizer instance.
+ * However, since the string type is immutable, this is not necessary for
+ * a simple string object shared among multiple threads.
+ */
+var threads3 = new Threads<string>(
+    delegate (string shared) {
+        // Do stuff with shared!
+    },
+    delegate (string shared) {
+        // Do stuff with shared!
+    });
+threads3.Join("Howdy");
+```
+
+In the above example, all your thread delegates will be given the value of
+_"Howdy"_.
+
 
 ## poetic.threading.Synchronizer
 

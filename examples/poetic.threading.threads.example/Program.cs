@@ -21,7 +21,6 @@
  */
 using System;
 using System.Threading;
-using poetic.threading;
 
 namespace poetic.threading.threads.example
 {
@@ -229,6 +228,28 @@ namespace poetic.threading.threads.example
              */
             Console.WriteLine(thread1_result);
             Console.WriteLine(thread3_result);
+            Console.WriteLine();
+
+            /*
+             * Simple shared object, with no synchronisation.
+             */
+            string threads3_1 = "not executed";
+            string threads3_2 = "not executed";
+            var threads3 = new Threads<string>(
+                delegate (string shared) {
+                    threads3_1 = shared + " world!";
+                },
+                delegate (string shared) {
+                    threads3_2 = shared + " dude!";
+                });
+            threads3.Join("Howdy");
+
+            /*
+             * Writing out results on console.
+             */
+            Console.WriteLine(threads3_1);
+            Console.WriteLine(threads3_2);
+            Console.Read();
         }
     }
 }

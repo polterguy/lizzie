@@ -52,7 +52,7 @@ namespace poetic.threading
         public delegate void ThreadDelegate(TShared shared);
 
         // List of delegates, where each delegate will become one thread.
-        readonly protected internal List<ThreadDelegate> _functors;
+        readonly private List<ThreadDelegate> _functors;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.threading.Threads"/> class.
@@ -78,6 +78,13 @@ namespace poetic.threading
         public Threads(IEnumerable<ThreadDelegate> functors)
         {
             _functors = new List<ThreadDelegate>(functors);
+        }
+
+        /*
+         * Protected property to retrieve functors in inherited types.
+         */
+        protected IEnumerable<ThreadDelegate> Functors {
+            get { return _functors; }
         }
 
         /// <summary>
@@ -242,7 +249,7 @@ namespace poetic.threading
         /// <param name="functor">Functor thread delegate.</param>
         new public Threads Add(ThreadDelegate functor)
         {
-            var nList = new List<ThreadDelegate>(_functors);
+            var nList = new List<ThreadDelegate>(Functors);
             nList.Add(functor);
             return new Threads(nList);
         }
