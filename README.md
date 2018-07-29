@@ -44,40 +44,30 @@ of that you can never invoke a _"write method"_ on your shared resource, inside
 a _"read only"_ delegate. Below is an example of usage.
 
 ```csharp
-/*
- * Read from shared instance interface. Implement this interface on your shared type.
- */
+// Read from shared instance interface. Implement this interface on your shared type.
 interface ISharedRead
 {
     string Read();
 }
 
-/*
- * Write to shared instance interface. Implement this interface on your shared type.
- */
+// Write to shared instance interface. Implement this interface on your shared type.
 interface ISharedWrite : ISharedRead
 {
     void Write(string value);
 }
 
-/*
- * The actual implementation of that type you need synchronised access to.
- */
+// The actual implementation of that type you need synchronised access to.
 class Shared : ISharedWrite
 {
     string _data = "foo";
 
-    /*
-     * A read operation example. Implements ISharedRead from above.
-     */
+    // A read operation example. Implements ISharedRead from above.
     public string Read()
     {
         return _data;
     }
 
-    /*
-     * A read operation example. Implements ISharedWrite from above.
-     */
+    // A read operation example. Implements ISharedWrite from above.
     public void Write(string value)
     {
         _data += value;
