@@ -70,15 +70,17 @@ threads.Add(delegate {
 threads.Join();
 ```
 
-Notice, the only difference between the above code and the first `Start` example,
+The only difference between the above code and the first `Start` example,
 is that the latter is using `Join` instead of `Start`. At which point execution
 will not pass your Join invocation, before all threads have finished executing.
 
-Join can optionally be given a milliseconds argument, at which point if one of
-your threads spends more time doing its thing, control will be returned back to
-the main thread before the threads not able to finish their work within the
-specified amount of time have finished. You can also pass in a `TimeSpan` argument
-instead of a milliseconds argument.
+Join can optionally be given a milliseconds argument, which becomes the total
+amount of time `Join` will spend, before returning control back to the caller.
+You can also supply a `TimeSpan` argument as an override, instead of an integer
+value of milliseconds. Contrary to the way `Join` works on a single thread, the
+milliseconds/time argument passed into `Threads.Join` will be calculated as a
+total amount of time, implying you don't need to calculate these numbers yourself,
+for each thread Join operation.
 
 ## poetic.threading.Synchronizer
 
