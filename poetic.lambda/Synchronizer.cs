@@ -21,7 +21,7 @@
  */
 using System.Threading;
 
-namespace poetic.threading
+namespace poetic.lambda
 {
     /// <summary>
     /// Allows you to encapsulate an instance of a type that needs to be shared
