@@ -375,3 +375,5 @@ instance of a `Synchronizer`, which guarantees that the shared_instance cannot b
 accessed inside your threads, before some sort of synchronisation lock has been
 acquired first. The task of implementing some sort of `IWrite` and `IRead` interface
 on your `Shared` class is to be considered homework!
+
+
