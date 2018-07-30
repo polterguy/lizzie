@@ -8,8 +8,9 @@ more dynamic, and poetic in the way you express your intentions.
 
 ## poetic.lambda
 
-This library contains things related to execution of delegates, either
-sequentially, or on separate threads.
+This library allows you to create chains and dictionaries of lambda objects,
+for then to later decide if you want to execute your lambda objects sequentially,
+chained or in parallel.
 
 * [Documentation for poetic.lambda](docs/poetic.lambda.md)
 
