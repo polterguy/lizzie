@@ -2,12 +2,9 @@
 # Simplified Syntactic C# Sugar
 
 You don't need music in your life, sugar in your tea, or poetry in your code.
-However, all of these things have in common that they slightly improve the
-quality of your life. Poetry is a collection of tiny libraries, that somehow
-makes your code more poetic in natur, and allows you to simplify your syntax.
-In a way it is simply a bunch of design patterns, often needed to deal with
-common problems. Poetry makes your C# code more poetic, more easily understood,
-more easily changed and modified, and smaller.
+However, all of these things slightly improve the quality of your life. Poetry
+is a collection of small libraries, that somehow makes your code more poetic,
+more dynamic, and poetic in the way you express your intentions.
 
 ## poetic.lambda
 
