@@ -33,9 +33,7 @@ namespace poetic.lambda
         /// </summary>
         public void Sequence()
         {
-            Sequence(delegate(Action action) {
-                action();
-            });
+            Sequence((action) => action());
         }
 
         /// <summary>
@@ -44,9 +42,7 @@ namespace poetic.lambda
         /// </summary>
         public void Forget()
         {
-            Forget(delegate(Action action) {
-                action();
-            });
+            Forget((action) => action());
         }
 
         /// <summary>
@@ -56,9 +52,7 @@ namespace poetic.lambda
         /// </summary>
         public void Join()
         {
-            Join(delegate (Action action) {
-                action();
-            });
+            Join((action) => action());
         }
 
         /// <summary>
@@ -69,9 +63,7 @@ namespace poetic.lambda
         /// </summary>
         public void Join(int milliseconds)
         {
-            Join(delegate (Action action) {
-                action();
-            }, milliseconds);
+            Join((action) => action(), milliseconds);
         }
     }
 
@@ -85,9 +77,7 @@ namespace poetic.lambda
         /// </summary>
         public void Sequence(T1 t1)
         {
-            Sequence(delegate (Action<T1> action) {
-                action(t1);
-            });
+            Sequence((action) => action(t1));
         }
 
         /// <summary>
@@ -96,9 +86,7 @@ namespace poetic.lambda
         /// </summary>
         public void Forget(T1 t1)
         {
-            Forget(delegate (Action<T1> action) {
-                action(t1);
-            });
+            Forget((action) => action(t1));
         }
 
         /// <summary>
@@ -108,9 +96,7 @@ namespace poetic.lambda
         /// </summary>
         public void Join(T1 t1)
         {
-            Join(delegate (Action<T1> action) {
-                action(t1);
-            });
+            Join((action) => action(t1));
         }
 
         /// <summary>
@@ -121,9 +107,7 @@ namespace poetic.lambda
         /// </summary>
         public void Join(T1 t1, int milliseconds)
         {
-            Join(delegate (Action<T1> action) {
-                action(t1);
-            }, milliseconds);
+            Join((action) => action(t1), milliseconds);
         }
     }
 }

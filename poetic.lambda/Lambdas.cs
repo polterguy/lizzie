@@ -29,83 +29,31 @@ using System.Collections.Generic;
 namespace poetic.lambda
 {
     /// <summary>
-    /// Base class for all Lambdas generic classes.
+    /// Base class for all delegate list types.
     /// </summary>
-    public class Lambdas<TLambda> : IEnumerable<TLambda>
+    public class Lambdas<TLambda> : List<TLambda>
     {
-        // List of delegates.
-        readonly List<TLambda> _lambdas;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.delegates.Chain`2"/> class.
         /// </summary>
         public Lambdas()
-        {
-            _lambdas = new List<TLambda>();
-        }
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.delegates.Chain`2"/> class.
         /// </summary>
         /// <param name="functors">Initial functors.</param>
-        public Lambdas(params TLambda[] functors)
-        {
-            _lambdas = new List<TLambda>(functors);
-        }
+        public Lambdas(params TLambda[] lambdas)
+            : base (lambdas)
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.delegates.Chain`2"/> class.
         /// </summary>
         /// <param name="functors">Initial functors.</param>
-        public Lambdas(IEnumerable<TLambda> functors)
-        {
-            _lambdas = new List<TLambda>(functors);
-        }
-
-        /// <summary>
-        /// Adds the specified functor to the list of delegates.
-        /// </summary>
-        /// <param name="functor">Functor to add to chain.</param>
-        public void Add(TLambda functor)
-        {
-            _lambdas.Add(functor);
-        }
-
-        /// <summary>
-        /// Adds the specified functors to the functors.
-        /// </summary>
-        /// <param name="functors">Functors to add.</param>
-        public void AddRange(params TLambda[] functors)
-        {
-            _lambdas.AddRange(functors);
-        }
-
-        /// <summary>
-        /// Adds the specified functors to the functors.
-        /// </summary>
-        /// <param name="functors">Functors to add.</param>
-        public void AddRange(IEnumerable<TLambda> functors)
-        {
-            _lambdas.AddRange(functors);
-        }
-
-        /// <summary>
-        /// Gets the enumerator.
-        /// </summary>
-        /// <returns>The enumerator.</returns>
-        public IEnumerator<TLambda> GetEnumerator()
-        {
-            return _lambdas.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Gets the enumerator.
-        /// </summary>
-        /// <returns>The enumerator.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _lambdas.GetEnumerator();
-        }
+        public Lambdas(IEnumerable<TLambda> lambdas)
+            : base (lambdas)
+        { }
 
         /*
          * Protected implementation to make inheriting easier.
