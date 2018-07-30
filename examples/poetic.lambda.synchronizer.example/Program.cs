@@ -21,9 +21,8 @@
  */
 using System;
 using System.Threading;
-using poetic.threading;
 
-namespace poetic.threading.synchronizer.example
+namespace poetic.lambda.synchronizer.example
 {
     /// <summary>
     /// Read interface implemented by our Shared class.

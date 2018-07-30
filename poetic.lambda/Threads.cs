@@ -25,7 +25,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-namespace poetic.threading
+namespace poetic.lambda
 {
     /// <summary>
     /// Class allowing you to more easily manage multiple threads, where each
@@ -44,84 +44,55 @@ namespace poetic.threading
     /// safe, and instances of the class can be safely shared between multiple
     /// threads, without risking race conditions.
     /// </summary>
-    public class Threads<TShared>
+    public class Threads<TLambda>
     {
-        /// <summary>
-        /// A thread delegate.
-        /// </summary>
-        public delegate void ThreadDelegate(TShared shared);
-
-        // List of delegates, where each delegate will become one thread.
-        readonly private List<ThreadDelegate> _functors;
+        // List of lambdas.
+        readonly private Lambdas<TLambda> _lambdas;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.threading.Threads"/> class.
         /// </summary>
         public Threads()
         {
-            _functors = new List<ThreadDelegate>();
+            _lambdas = new Lambdas<TLambda>();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.threading.Threads"/> class.
         /// </summary>
-        /// <param name="functors">List of delegates, each becoming one thread.</param>
-        public Threads(params ThreadDelegate [] functors)
+        /// <param name="lambdas">List of delegates, each becoming one thread.</param>
+        public Threads(params TLambda [] lambdas)
         {
-            _functors = new List<ThreadDelegate>(functors);
+            _lambdas = new Lambdas<TLambda>(lambdas);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.threading.Threads"/> class.
         /// </summary>
-        /// <param name="functors">List of delegates, each becoming one thread.</param>
-        public Threads(IEnumerable<ThreadDelegate> functors)
+        /// <param name="lambdas">List of delegates, each becoming one thread.</param>
+        public Threads(IEnumerable<TLambda> lambdas)
         {
-            _functors = new List<ThreadDelegate>(functors);
-        }
-
-        /*
-         * Protected property to retrieve functors in inherited types.
-         */
-        protected IEnumerable<ThreadDelegate> Functors {
-            get { return _functors; }
-        }
-
-        /// <summary>
-        /// Returns a new instance of class, with all delegates from the this
-        /// instance, in addition to the specified functor added.
-        /// 
-        /// Notice! Class is immutable, so original instance will NOT be modified,
-        /// but rather a new instance containing all the original delegates, in
-        /// addition to the new delegate will be returned.
-        /// </summary>
-        /// <param name="functor">Functor thread delegate.</param>
-        public Threads<TShared> Add(ThreadDelegate functor)
-        {
-            var nList = new List<ThreadDelegate>(_functors);
-            nList.Add(functor);
-            return new Threads<TShared>(nList);
+            _lambdas = new Lambdas<TLambda>(lambdas);
         }
 
         /// <summary>
         /// Executes each of your delegates on a separate thread.
         /// </summary>
-        public void Start(TShared shared = default(TShared))
+        public void Start()
         {
-            _functors.ForEach(ix => new Thread(new ThreadStart(delegate {
-                ix(shared);
-            })).Start());
+            var threads = _lambdas.Select(ix => new Thread(new ThreadStart(delegate {
+            }))).ToList();
+            threads.ForEach(ix => ix.Start());
         }
 
         /// <summary>
         /// Executes each of your delegates on a separate thread, and waits for
         /// all your threads to finish their tasks.
         /// </summary>
-        public void Join(TShared shared = default(TShared))
+        public void Join()
         {
             // Starting each thread, and waiting for all threads to finish before returning.
-            var threads = _functors.Select(ix => new Thread(new ThreadStart(delegate {
-                ix(shared);
+            var threads = _lambdas.Select(ix => new Thread(new ThreadStart(delegate {
             }))).ToList();
             threads.ForEach(ix => ix.Start());
             threads.ForEach(ix => ix.Join());
@@ -132,7 +103,7 @@ namespace poetic.threading
         /// all your threads to finish their tasks, making sure we never wait more
         /// than milliseconds amount of time, before returning.
         /// </summary>
-        public void Join(int milliseconds, TShared shared = default(TShared))
+        public void Join(int milliseconds)
         {
             // Sanity checking argument.
             if (milliseconds <= 0)
@@ -150,8 +121,7 @@ namespace poetic.threading
             var sw = Stopwatch.StartNew();
 
             // Starting each thread.
-            var threads = _functors.Select(ix => new Thread(new ThreadStart(delegate {
-                ix(shared);
+            var threads = _lambdas.Select(ix => new Thread(new ThreadStart(delegate {
             }))).ToList();
             threads.ForEach(ix => ix.Start());
 
@@ -191,67 +161,14 @@ namespace poetic.threading
         /// all your threads to finish their tasks, making sure we never wait more
         /// than time amount of time, before returning.
         /// </summary>
-        public void Join(TShared shared, TimeSpan time)
+        public void Join(TimeSpan time)
         {
             // Sanity checking argument.
             if (time.TotalMilliseconds > (double)int.MaxValue)
                 throw new ArgumentException("Maximum amount of time exceeded. " + int.MaxValue + " milliseconds is max value.", nameof(time));
 
             // Invoking common implementation method.
-            Join((int)time.TotalMilliseconds, shared);
-        }
-
-        /// <summary>
-        /// Sequentially execute each delegate on the calling thread.
-        /// </summary>
-        public void Execute(TShared shared)
-        {
-            _functors.ForEach(ix => ix(shared));
-        }
-    }
-
-    /// <summary>
-    /// Class allowing you to more easily manage multiple threads.
-    /// </summary>
-    public class Threads : Threads<object>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:poetic.threading.Threads"/> class.
-        /// </summary>
-        public Threads()
-            : base()
-        { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:poetic.threading.Threads"/> class.
-        /// </summary>
-        /// <param name="functors">List of delegates, each becoming one thread.</param>
-        public Threads(params ThreadDelegate[] functors)
-            : base(functors)
-        { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:poetic.threading.Threads"/> class.
-        /// </summary>
-        /// <param name="functors">List of delegates, each becoming one thread.</param>
-        public Threads(IEnumerable<ThreadDelegate> functors)
-            : base(functors)
-        { }
-
-        /// <summary>
-        /// Returns a new instance of class, with all delegates from the this
-        /// instance, in addition to the specified functor added.
-        /// 
-        /// Notice! Class is immutable, so original instance will NOT be modified,
-        /// but rather a new instance containing all the original delegates, in
-        /// addition to the new delegate will be returned.
-        /// </summary>
-        /// <param name="functor">Functor thread delegate.</param>
-        new public Threads Add(ThreadDelegate functor)
-        {
-            var nList = new List<ThreadDelegate>(Functors);
-            nList.Add(functor);
-            return new Threads(nList);
+            Join((int)time.TotalMilliseconds);
         }
     }
 }
