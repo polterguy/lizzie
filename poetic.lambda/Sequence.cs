@@ -20,29 +20,30 @@
  * SOFTWARE.
  */
 using System;
+using System.Collections.Generic;
 
 namespace poetic.lambda
 {
     /// <summary>
-    /// Class encapsulating a list of Actions taking no arguments.
+    /// Class encapsulating a list of Action delegates taking no arguments.
     /// </summary>
-    public class Actions : Lambdas<Action>
+    public class Sequence : SequenceBase<Action>
     {
         /// <summary>
         /// Executes all lambdas in a sequence on the calling thread.
         /// </summary>
-        public void Sequence()
+        public void Sequential()
         {
-            Sequence((action) => action());
+            Sequential((action) => action());
         }
 
         /// <summary>
         /// Creates one thread for each of your actions, and execute the action
         /// on this thread in "fire and forget" mode.
         /// </summary>
-        public void Forget()
+        public void Parallel()
         {
-            Forget((action) => action());
+            Parallel((action) => action());
         }
 
         /// <summary>
@@ -50,9 +51,9 @@ namespace poetic.lambda
         /// on this thread not returning control to caller before all threads are
         /// finished with their work.
         /// </summary>
-        public void Join()
+        public void JoinParallel()
         {
-            Join((action) => action());
+            JoinParallel((action) => action());
         }
 
         /// <summary>
@@ -61,32 +62,47 @@ namespace poetic.lambda
         /// finished with their work, unless milliseconds amount of time has passed,
         /// at which point it stops waiting for the thread to finish its work.
         /// </summary>
-        public void Join(int milliseconds)
+        public void JoinParallel(int milliseconds)
         {
-            Join((action) => action(), milliseconds);
+            JoinParallel(milliseconds, (action) => action());
         }
     }
 
     /// <summary>
-    /// Class encapsulating a list of Actions taking one arguments.
+    /// Class encapsulating a list of Action delegates taking one arguments.
     /// </summary>
-    public class Actions<T1> : Lambdas<Action<T1>>
+    public class Sequence<T1> : SequenceBase<Action<T1>>
     {
         /// <summary>
         /// Executes all lambdas in a sequence on the calling thread.
         /// </summary>
-        public void Sequence(T1 t1)
+        public void Sequential(T1 t1)
         {
-            Sequence((action) => action(t1));
+            Sequential((action) => action(t1));
+        }
+
+        /// <summary>
+        /// Braids each Action such that the args are sequentially applied in
+        /// order of appearance. Will stop once there are no more args or no
+        /// more Actions, whatever occurs first.
+        /// </summary>
+        /// <param name="args">Arguments.</param>
+        public void Braid(IEnumerable<T1> args)
+        {
+            var argsIterator = args.GetEnumerator();
+            var actionsIterators = GetEnumerator();
+            while (actionsIterators.MoveNext() && argsIterator.MoveNext()) {
+                actionsIterators.Current(argsIterator.Current);
+            }
         }
 
         /// <summary>
         /// Creates one thread for each of your actions, and execute the action
         /// on this thread in "fire and forget" mode.
         /// </summary>
-        public void Forget(T1 t1)
+        public void Parallel(T1 t1)
         {
-            Forget((action) => action(t1));
+            Parallel((action) => action(t1));
         }
 
         /// <summary>
@@ -94,9 +110,9 @@ namespace poetic.lambda
         /// on this thread not returning control to caller before all threads are
         /// finished with their work.
         /// </summary>
-        public void Join(T1 t1)
+        public void JoinParallel(T1 t1)
         {
-            Join((action) => action(t1));
+            JoinParallel((action) => action(t1));
         }
 
         /// <summary>
@@ -105,9 +121,9 @@ namespace poetic.lambda
         /// finished with their work, unless milliseconds amount of time has passed,
         /// at which point it stops waiting for the thread to finish its work.
         /// </summary>
-        public void Join(T1 t1, int milliseconds)
+        public void JoinParallel(int milliseconds, T1 t1)
         {
-            Join((action) => action(t1), milliseconds);
+            JoinParallel(milliseconds, (action) => action(t1));
         }
     }
 }

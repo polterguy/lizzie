@@ -21,46 +21,23 @@
  */
 using System;
 
-namespace poetic.lambda.threads.example
+namespace poetic.lambda
 {
-    class MainClass
+    /// <summary>
+    /// Class encapsulating a list of Func delegates where the output from one
+    /// is being passed in as input to the next.
+    /// </summary>
+    public class Chain<TInOut> : Lambdas<Func<TInOut, TInOut>>
     {
         /// <summary>
-        /// An example of how to use the Threads class to spawn of multiple threads,
-        /// with some slightly simplified syntax.
+        /// Evaluates the chain, and returns the result to caller.
         /// </summary>
-        public static void Main()
+        public TInOut Evaluate(TInOut t1)
         {
-            /*
-             * Creating our list of actions.
-             */
-            var actions = new Sequence();
-
-            /*
-             * Adding an Action to our list, making sure we're able to determine
-             * if it was executed.
-             */
-            var shared1 = "not changed!";
-            actions.Add(() => { shared1 = "1 was changed!"; });
-
-            // Adding another Action to our list.
-            var shared2 = "not changed!";
-            actions.Add(() => { shared2 = "2 was changed!"; });
-
-            /*
-             * Creating a thread for each action, and waiting for all threads
-             * to finish their work.
-             */
-            actions.JoinParallel();
-
-            /*
-             * Writing out results on Console.
-             */
-            Console.WriteLine(shared1);
-            Console.WriteLine(shared2);
-
-            // Waiting for user input.
-            Console.Read();
+            foreach (var ix in this) {
+                t1 = ix(t1);
+            }
+            return t1;
         }
     }
 }

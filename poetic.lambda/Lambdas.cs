@@ -19,11 +19,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-using System;
-using System.Linq;
-using System.Threading;
-using System.Diagnostics;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace poetic.lambda
@@ -31,7 +26,7 @@ namespace poetic.lambda
     /// <summary>
     /// Base class for all delegate list types.
     /// </summary>
-    public class Lambdas<TLambda> : List<TLambda>
+    public abstract class Lambdas<TLambda> : List<TLambda>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.delegates.Chain`2"/> class.
@@ -42,7 +37,7 @@ namespace poetic.lambda
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.delegates.Chain`2"/> class.
         /// </summary>
-        /// <param name="functors">Initial functors.</param>
+        /// <param name="lambdas">Initial functors.</param>
         public Lambdas(params TLambda[] lambdas)
             : base (lambdas)
         { }
@@ -50,98 +45,9 @@ namespace poetic.lambda
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.delegates.Chain`2"/> class.
         /// </summary>
-        /// <param name="functors">Initial functors.</param>
+        /// <param name="lambdas">Initial functors.</param>
         public Lambdas(IEnumerable<TLambda> lambdas)
             : base (lambdas)
         { }
-
-        /*
-         * Protected implementation to make inheriting easier.
-         */
-        protected void Sequence(Action<TLambda> action)
-        {
-            foreach (var ix in this) {
-                action(ix);
-            }
-        }
-
-        /*
-         * Protected implementation to make inheriting easier.
-         */
-        protected void Forget(Action<TLambda> action)
-        {
-            var lambdas = this.Select(ix => new Thread(new ThreadStart(delegate {
-                action(ix);
-            }))).ToList();
-            lambdas.ForEach(ix => ix.Start());
-        }
-
-        /*
-         * Protected implementation to make inheriting easier.
-         */
-        protected void Join(Action<TLambda> action)
-        {
-            var lambdas = this.Select(ix => new Thread(new ThreadStart(delegate {
-                action(ix);
-            }))).ToList();
-            lambdas.ForEach(ix => ix.Start());
-            lambdas.ForEach(ix => ix.Join());
-        }
-
-        /*
-         * Protected implementation to make inheriting easier.
-         */
-        protected void Join(Action<TLambda> action, int milliseconds)
-        {
-            // Sanity checking argument.
-            if (milliseconds <= 0)
-                throw new ArgumentException("Time must be a positive integer value", nameof(milliseconds));
-
-            /*
-             * Used to keep track of whether or not total amount of milliseconds have
-             * passed or not.
-             * 
-             * NOTICE! Since starting a bunch of threads carries some overhead, we
-             * do this before we create our threads, such that the total amount of
-             * time we actually measure, becomes the total amount of time we spend
-             * in this method, and not the total amount of "Join time".
-             */
-            var sw = Stopwatch.StartNew();
-
-            // Starting each thread.
-            var threads = this.Select(ix => new Thread(new ThreadStart(delegate {
-                action(ix);
-            }))).ToList();
-            threads.ForEach(ix => ix.Start());
-
-            /*
-             * Iterating through each of our threads, making sure we never
-             * wait more than milliseconds amount of time, before we give up, and
-             * return control to caller.
-             */
-            foreach (var idx in threads) {
-
-                /*
-                 * Stopping stopwatch and decrementing time spent so far.
-                 */
-                sw.Stop();
-                milliseconds -= (int)sw.ElapsedMilliseconds;
-
-                /*
-                 * Checking if total amount of time has elapsed.
-                 */
-                if (milliseconds <= 0)
-                    break; // Time has left the rest of our threads hanging ...
-
-                /*
-                 * Restarting our Stopwatch to accurately time the Join time of
-                 * our next thread's Join invocation.
-                 */
-                sw = Stopwatch.StartNew();
-
-                // Making sure we never wait beyond our maximum amount of time.
-                idx.Join(milliseconds);
-            }
-        }
     }
 }

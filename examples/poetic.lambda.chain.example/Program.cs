@@ -29,32 +29,26 @@ namespace poetic.lambda.chain.example
         /// An example Console application illustrating how to create a Chain
         /// of functors (delegates).
         /// </summary>
-        /// <param name="args">The command-line arguments.</param>
-        public static void Main(string[] args)
+        public static void Main()
         {
             /*
              * Creating a Chain of Actions taking no arguments.
              */
-            var actions1 = new Actions();
-            actions1.Add(() => Console.WriteLine("Delegate 1"));
-            actions1.Add(() => Console.WriteLine("Delegate 2"));
+            var chain = new Chain<string>();
+            chain.Add((input) => input.Replace("thomas", "Thomas"));
+            chain.Add((input) => input.Replace("hansen", "Hansen"));
+            chain.Add((input) => input.Replace("bus driver", "software developer"));
 
             /*
-             * Executing each Action in a sequence.
+             * Executing all actions in a sequence.
              */
-            actions1.Sequence();
+            var result = chain.Evaluate("thomas hansen is a bus driver");
 
-            /*
-             * Creating a Chain of Actions taking one argument.
-             */
-            var actions2 = new Actions<string>();
-            actions2.Add((input) => Console.WriteLine("Delegate 1 - " + input));
-            actions2.Add((input) => Console.WriteLine("Delegate 2 - " + input));
+            // Displaying results on Console.
+            Console.WriteLine(result);
 
-            /*
-             * Executing each Action in a sequence passing in "foo" as argument.
-             */
-            actions2.Sequence("foo");
+            // Waiting for user input.
+            Console.Read();
         }
     }
 }

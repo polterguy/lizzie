@@ -18,9 +18,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.lambda", "poetic.lam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.lambda.threads.example", "examples\poetic.lambda.threads.example\poetic.lambda.threads.example.csproj", "{0FEDB813-F91E-49E9-8868-7E8E15E3408E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetry.lambda.synchronizer.example", "examples\poetic.lambda.synchronizer.example\poetry.lambda.synchronizer.example.csproj", "{F502A2C2-FDC6-40B6-B384-42B81F4175AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.lambda.sequence.example", "examples\poetic.lambda.sequence.example\poetic.lambda.sequence.example.csproj", "{51CE7BEE-3F03-43E1-910B-AA0828D617A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.lambda.chain.example", "examples\poetic.lambda.chain.example\poetic.lambda.chain.example.csproj", "{51CE7BEE-3F03-43E1-910B-AA0828D617A0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.lambda.chain.example", "examples\poetic.lambda.chain.example\poetic.lambda.chain.example.csproj", "{4745C7D3-DFD9-4711-B38D-A03927C25FD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,19 +36,19 @@ Global
 		{0FEDB813-F91E-49E9-8868-7E8E15E3408E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FEDB813-F91E-49E9-8868-7E8E15E3408E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FEDB813-F91E-49E9-8868-7E8E15E3408E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F502A2C2-FDC6-40B6-B384-42B81F4175AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F502A2C2-FDC6-40B6-B384-42B81F4175AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F502A2C2-FDC6-40B6-B384-42B81F4175AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F502A2C2-FDC6-40B6-B384-42B81F4175AA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{51CE7BEE-3F03-43E1-910B-AA0828D617A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{51CE7BEE-3F03-43E1-910B-AA0828D617A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51CE7BEE-3F03-43E1-910B-AA0828D617A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51CE7BEE-3F03-43E1-910B-AA0828D617A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4745C7D3-DFD9-4711-B38D-A03927C25FD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4745C7D3-DFD9-4711-B38D-A03927C25FD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4745C7D3-DFD9-4711-B38D-A03927C25FD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4745C7D3-DFD9-4711-B38D-A03927C25FD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5EFBEB45-DE81-43CD-BCE1-EE49E2C3A9EB} = {5290ED46-2D97-4B6F-B7F4-5B4BF78AAF67}
 		{0FEDB813-F91E-49E9-8868-7E8E15E3408E} = {80FD45AC-AF8D-4947-B0AA-71561754249F}
-		{F502A2C2-FDC6-40B6-B384-42B81F4175AA} = {80FD45AC-AF8D-4947-B0AA-71561754249F}
 		{51CE7BEE-3F03-43E1-910B-AA0828D617A0} = {80FD45AC-AF8D-4947-B0AA-71561754249F}
+		{4745C7D3-DFD9-4711-B38D-A03927C25FD6} = {80FD45AC-AF8D-4947-B0AA-71561754249F}
 	EndGlobalSection
 EndGlobal

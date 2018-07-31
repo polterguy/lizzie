@@ -15,4 +15,7 @@
     <PackageId>poetic.lambda</PackageId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Threads.cs" />
+  </ItemGroup>
 </Project>

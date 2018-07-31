@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F502A2C2-FDC6-40B6-B384-42B81F4175AA}</ProjectGuid>
+    <ProjectGuid>{51CE7BEE-3F03-43E1-910B-AA0828D617A0}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>poetry.threading.synchronizer.example</RootNamespace>
-    <AssemblyName>poetic.threading.synchronizer.example</AssemblyName>
+    <RootNamespace>poetic.lambda.sequence.example</RootNamespace>
+    <AssemblyName>poetic.lambda.chain.example</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>

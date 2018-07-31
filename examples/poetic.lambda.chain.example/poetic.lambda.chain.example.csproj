@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{51CE7BEE-3F03-43E1-910B-AA0828D617A0}</ProjectGuid>
+    <ProjectGuid>{4745C7D3-DFD9-4711-B38D-A03927C25FD6}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>poetic.lambda.chain.example</RootNamespace>
-    <AssemblyName>poetic.lambda.chain.example</AssemblyName>
+    <AssemblyName>poetic.lsambda.chain.example</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>

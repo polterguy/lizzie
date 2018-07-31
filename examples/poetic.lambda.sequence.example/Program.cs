@@ -21,43 +21,39 @@
  */
 using System;
 
-namespace poetic.lambda.threads.example
+namespace poetic.lambda.sequence.example
 {
     class MainClass
     {
         /// <summary>
-        /// An example of how to use the Threads class to spawn of multiple threads,
-        /// with some slightly simplified syntax.
+        /// An example Console application illustrating how to create a Chain
+        /// of functors (delegates).
         /// </summary>
         public static void Main()
         {
             /*
-             * Creating our list of actions.
+             * Creating a Sequence of Actions taking no arguments.
              */
-            var actions = new Sequence();
+            var sequence1 = new Sequence();
+            sequence1.Add(() => Console.WriteLine("Delegate 1"));
+            sequence1.Add(() => Console.WriteLine("Delegate 2"));
 
             /*
-             * Adding an Action to our list, making sure we're able to determine
-             * if it was executed.
+             * Executing all actions in a sequence.
              */
-            var shared1 = "not changed!";
-            actions.Add(() => { shared1 = "1 was changed!"; });
-
-            // Adding another Action to our list.
-            var shared2 = "not changed!";
-            actions.Add(() => { shared2 = "2 was changed!"; });
+            sequence1.Sequential();
 
             /*
-             * Creating a thread for each action, and waiting for all threads
-             * to finish their work.
+             * Creating a Sequence of Actions taking one argument, and braiding.
              */
-            actions.JoinParallel();
+            var sequence2 = new Sequence<string>();
+            sequence2.Add((input) => Console.WriteLine("Delegate 1 - Arg; " + input));
+            sequence2.Add((input) => Console.WriteLine("Delegate 2 - Arg; " + input));
 
             /*
-             * Writing out results on Console.
+             * Executing all actions in a sequence.
              */
-            Console.WriteLine(shared1);
-            Console.WriteLine(shared2);
+            sequence2.Braid(new string[] { "1", "2" });
 
             // Waiting for user input.
             Console.Read();
