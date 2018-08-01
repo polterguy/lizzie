@@ -19,9 +19,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+using System;
 using System.Threading;
 
-namespace poetic.lambda
+namespace poetic.lambda.utilities
 {
     /// <summary>
     /// Allows you to encapsulate an instance of a type that needs to be shared
@@ -31,16 +32,6 @@ namespace poetic.lambda
     public class Synchronizer<TImpl, TIRead, TIWrite>
         where TImpl : TIWrite, TIRead
     {
-        /// <summary>
-        /// Read access delegate.
-        /// </summary>
-        public delegate void ReadDelegate(TIRead shared);
-
-        /// <summary>
-        /// Write access delegate.
-        /// </summary>
-        public delegate void WriteDelegate(TIWrite shared);
-
         // Our actual locker, that will synchronise access to our _shared instance.
         ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
@@ -61,15 +52,12 @@ namespace poetic.lambda
         /// "read only" mode.
         /// </summary>
         /// <param name="functor">Functor.</param>
-        public void Read(ReadDelegate functor)
+        public void Read(Action<TIRead> functor)
         {
             _lock.EnterReadLock();
-            try
-            {
+            try {
                 functor(_shared);
-            }
-            finally
-            {
+            } finally {
                 _lock.ExitReadLock();
             }
         }
@@ -79,15 +67,28 @@ namespace poetic.lambda
         /// in "read and write" mode.
         /// </summary>
         /// <param name="functor">Functor.</param>
-        public void Write(WriteDelegate functor)
+        public void Write(Action<TIWrite> functor)
         {
             _lock.EnterWriteLock();
-            try
-            {
+            try {
                 functor(_shared);
+            } finally {
+                _lock.ExitWriteLock();
             }
-            finally
-            {
+        }
+
+        /// <summary>
+        /// Enters a write lock giving the caller access to the shared resource
+        /// in "read and write" mode, for then to reassign the shared object to
+        /// the value returned from the Func.
+        /// </summary>
+        /// <param name="functor">Functor.</param>
+        public void Assign(Func<TIWrite, TImpl> functor)
+        {
+            _lock.EnterWriteLock();
+            try {
+                _shared = functor(_shared);
+            } finally {
                 _lock.ExitWriteLock();
             }
         }

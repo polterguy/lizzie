@@ -23,8 +23,9 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
+using poetic.lambda.utilities;
 
-namespace poetic.lambda
+namespace poetic.lambda.lambdas
 {
     /// <summary>
     /// Class encapsulating a list of Func delegates taking no arguments.

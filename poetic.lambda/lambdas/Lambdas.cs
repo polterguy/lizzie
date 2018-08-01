@@ -21,7 +21,7 @@
  */
 using System.Collections.Generic;
 
-namespace poetic.lambda
+namespace poetic.lambda.lambdas
 {
     /// <summary>
     /// Base class for all delegate list types.

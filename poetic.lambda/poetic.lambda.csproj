@@ -18,4 +18,8 @@
   <ItemGroup>
     <Compile Remove="Threads.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="lambdas\" />
+    <Folder Include="utilities\" />
+  </ItemGroup>
 </Project>

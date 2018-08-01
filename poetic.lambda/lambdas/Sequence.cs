@@ -22,7 +22,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace poetic.lambda
+namespace poetic.lambda.lambdas
 {
     /// <summary>
     /// Class encapsulating a list of Action delegates taking no arguments.

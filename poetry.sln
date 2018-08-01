@@ -7,8 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{5290ED46-2
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{80FD45AC-AF8D-4947-B0AA-71561754249F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{5EFBEB45-DE81-43CD-BCE1-EE49E2C3A9EB}"
 	ProjectSection(SolutionItems) = preProject
 		docs\poetic.lambda.md = docs\poetic.lambda.md
@@ -16,11 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{5EFBEB45-D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.lambda", "poetic.lambda\poetic.lambda.csproj", "{A47CA51F-D5BE-4947-B1EB-AB27BBD1FCD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.lambda.threads.example", "examples\poetic.lambda.threads.example\poetic.lambda.threads.example.csproj", "{0FEDB813-F91E-49E9-8868-7E8E15E3408E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7622897F-24AC-42CA-9CCC-C3A14DE27946}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.lambda.sequence.example", "examples\poetic.lambda.sequence.example\poetic.lambda.sequence.example.csproj", "{51CE7BEE-3F03-43E1-910B-AA0828D617A0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.lambda.chain.example", "examples\poetic.lambda.chain.example\poetic.lambda.chain.example.csproj", "{4745C7D3-DFD9-4711-B38D-A03927C25FD6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.tests", "tests\poetic.tests\poetic.tests.csproj", "{7D8DAD2F-AADF-4030-A88D-3551F77EFA33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,23 +28,13 @@ Global
 		{A47CA51F-D5BE-4947-B1EB-AB27BBD1FCD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A47CA51F-D5BE-4947-B1EB-AB27BBD1FCD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A47CA51F-D5BE-4947-B1EB-AB27BBD1FCD7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0FEDB813-F91E-49E9-8868-7E8E15E3408E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0FEDB813-F91E-49E9-8868-7E8E15E3408E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0FEDB813-F91E-49E9-8868-7E8E15E3408E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0FEDB813-F91E-49E9-8868-7E8E15E3408E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{51CE7BEE-3F03-43E1-910B-AA0828D617A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{51CE7BEE-3F03-43E1-910B-AA0828D617A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{51CE7BEE-3F03-43E1-910B-AA0828D617A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{51CE7BEE-3F03-43E1-910B-AA0828D617A0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4745C7D3-DFD9-4711-B38D-A03927C25FD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4745C7D3-DFD9-4711-B38D-A03927C25FD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4745C7D3-DFD9-4711-B38D-A03927C25FD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4745C7D3-DFD9-4711-B38D-A03927C25FD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D8DAD2F-AADF-4030-A88D-3551F77EFA33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D8DAD2F-AADF-4030-A88D-3551F77EFA33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D8DAD2F-AADF-4030-A88D-3551F77EFA33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D8DAD2F-AADF-4030-A88D-3551F77EFA33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5EFBEB45-DE81-43CD-BCE1-EE49E2C3A9EB} = {5290ED46-2D97-4B6F-B7F4-5B4BF78AAF67}
-		{0FEDB813-F91E-49E9-8868-7E8E15E3408E} = {80FD45AC-AF8D-4947-B0AA-71561754249F}
-		{51CE7BEE-3F03-43E1-910B-AA0828D617A0} = {80FD45AC-AF8D-4947-B0AA-71561754249F}
-		{4745C7D3-DFD9-4711-B38D-A03927C25FD6} = {80FD45AC-AF8D-4947-B0AA-71561754249F}
+		{7D8DAD2F-AADF-4030-A88D-3551F77EFA33} = {7622897F-24AC-42CA-9CCC-C3A14DE27946}
 	EndGlobalSection
 EndGlobal

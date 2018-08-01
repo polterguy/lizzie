@@ -24,7 +24,7 @@ using System.Linq;
 using System.Threading;
 using System.Diagnostics;
 
-namespace poetic.lambda
+namespace poetic.lambda.lambdas
 {
     /// <summary>
     /// Abstract Sequence base class containing helpers for creating your own sequences.
