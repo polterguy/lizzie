@@ -3,8 +3,8 @@
 
 You don't need music in your life, sugar in your tea, or poetry in your code.
 However, all of these things slightly improve the quality of your life. Poetry
-is a collection of small libraries, that somehow makes your code more poetic,
-more dynamic, and poetic. Poetry makes your CLR code dance.
+is a collection of small libraries, that somehow makes your code more poetic and
+more dynamic. Poetry makes your CLR code dance.
 
 The project's long term goals is to provide a DSL engine to create and consume
 your own Domain Specific Languages, without any compilation, and/or
