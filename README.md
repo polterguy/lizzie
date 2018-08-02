@@ -14,15 +14,17 @@ and Functions. This allows you to write stuff such as for instance.
 
 ```
 event(incoming_phone as phone)
-  if phone is from Countries.Australia
-    if DateTime.Now.Time is more_than '16:00' or DateTime.Now.Time is less_than '08:00'
-      transfer_to(phone) AnsweringMachine.Sales.English
+  if phone.Country equals Countries.Australia
+    if DateTime.Now.Time is less_than '08:00' or DateTime.Now.Time is more_than '17:00'
+      phone.transfer (AnsweringMachine.Sales.English)
     else
-      transfer_to(phone) Departments.Sales.English
+      phone.transfer(Departments.Sales.English)
 ```
 
 **FYI** - The above is just an example of an imaginary DSL which allows for
-routing phone calls ...
+routing phone calls. The idea with the above imaginary language, is that it
+subscribes to incoming phones, and if the phone originates from Australia, it
+transfer the phones to a specific extension, depending upon what time it is.
 
 ## poetic.lambda
 
