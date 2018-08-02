@@ -21,7 +21,8 @@ event(incoming_phone as phone)
       transfer_to(phone) Departments.Sales.English
 ```
 
-The above is just an example ...
+**FYI** - The above is just an example of an imaginary DSL which allows for
+routing phone calls ...
 
 ## poetic.lambda
 
