@@ -15,7 +15,7 @@ and Functions. This allows you to write stuff such as for instance.
 ```
 event(incoming_phone as phone)
   if phone.Country equals Countries.Australia
-    if DateTime.Now.Time is less_than '08:00' or DateTime.Now.Time is more_than '17:00'
+    if localTime.Now.Time is less_than '08:00' or localTime.Now.Time is more_than '17:00'
       phone.transfer (AnsweringMachine.Sales.English)
     else
       phone.transfer (Departments.Sales.English)
