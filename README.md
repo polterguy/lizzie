@@ -25,6 +25,12 @@ event(incoming_phone as phone)
 routing phone calls. The idea with the above imaginary language, is that it
 subscribes to incoming phones, and if the phone originates from Australia, it
 transfer the phones to a specific extension, depending upon what time it is.
+Since the above would be a script language, configuring rule engines and parts
+of your CLR/.Net applications 100% dynamic, storing snippets of functionality
+in your database, or in dynamically parsed files on disc, becomes much simpler,
+and hence makes C# and/or the CLR become a _"dynamic execution platform"_,
+arguably providing all the benefits from interpreted languages, without having
+to throw static typing and C# out the door.
 
 ## poetic.lambda
 
