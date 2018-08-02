@@ -81,6 +81,8 @@ namespace poetic.lambda.utilities
         /// Enters a write lock giving the caller access to the shared resource
         /// in "read and write" mode, for then to reassign the shared object to
         /// the value returned from the Func.
+        /// 
+        /// Useful for changing immutable instances.
         /// </summary>
         /// <param name="functor">Functor.</param>
         public void Assign(Func<TIWrite, TImpl> functor)
@@ -90,6 +92,22 @@ namespace poetic.lambda.utilities
                 _shared = functor(_shared);
             } finally {
                 _lock.ExitWriteLock();
+            }
+        }
+
+        /// <summary>
+        /// Enters a read lock and returns the shared instance to caller.
+        /// 
+        /// Useful for changing immutable instances.
+        /// </summary>
+        /// <param name="functor">Functor.</param>
+        public TImpl Get()
+        {
+            _lock.EnterReadLock();
+            try {
+                return _shared;
+            } finally {
+                _lock.ExitReadLock();
             }
         }
     }

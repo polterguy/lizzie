@@ -22,6 +22,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Diagnostics;
 using System.Collections.Generic;
 using poetic.lambda.utilities;
 
@@ -48,16 +49,83 @@ namespace poetic.lambda.lambdas
         /// finished with their work. Returns the result of each thread back to caller
         /// afterwards.
         /// </summary>
-        public IEnumerable<TResult> JoinParallel()
+        public IEnumerable<TResult> Join()
         {
             var result = new List<TResult>();
             Synchronizer<List<TResult>> synchronizer = new Synchronizer<List<TResult>>(result);
-            var lambdas = this.Select(ix => new Thread(new ThreadStart(delegate {
+            var threads = this.Select(ix => new Thread(new ThreadStart(delegate {
                 var ixRes = ix();
                 synchronizer.Write(list => list.Add(ixRes));
             }))).ToList();
-            lambdas.ForEach(ix => ix.Start());
-            lambdas.ForEach(ix => ix.Join());
+            threads.ForEach(ix => ix.Start());
+            threads.ForEach(ix => ix.Join());
+            foreach (var idxRes in result) {
+                yield return idxRes;
+            }
+        }
+
+        /// <summary>
+        /// Creates one thread for each of your Functions, and execute the function
+        /// on this thread not returning control to caller before all threads are
+        /// finished with their work. Returns the result of each thread back to caller
+        /// afterwards.
+        /// </summary>
+        public IEnumerable<TResult> Join(int milliseconds)
+        {
+            // Sanity checking argument.
+            if (milliseconds <= 0)
+                throw new ArgumentException("Time must be a positive integer value", nameof(milliseconds));
+
+            /*
+             * Used to keep track of whether or not total amount of milliseconds have
+             * passed or not.
+             * 
+             * NOTICE! Since starting a bunch of threads carries some overhead, we
+             * do this before we create our threads, such that the total amount of
+             * time we actually measure, becomes the total amount of time we spend
+             * in this method, and not the total amount of "Join time".
+             */
+            var sw = Stopwatch.StartNew();
+
+            // Starting threads, keeping track of returned values as we go.
+            var result = new List<TResult>();
+            Synchronizer<List<TResult>> synchronizer = new Synchronizer<List<TResult>>(result);
+            var threads = this.Select(ix => new Thread(new ThreadStart(delegate {
+                var ixRes = ix();
+                synchronizer.Write(list => list.Add(ixRes));
+            }))).ToList();
+            threads.ForEach(ix => ix.Start());
+
+            /*
+             * Iterating through each of our threads, making sure we never
+             * wait more than milliseconds amount of time, before we give up, and
+             * return control to caller.
+             */
+            foreach (var idx in threads) {
+
+                /*
+                 * Stopping stopwatch and decrementing time spent so far.
+                 */
+                sw.Stop();
+                milliseconds -= (int)sw.ElapsedMilliseconds;
+
+                /*
+                 * Checking if total amount of time has elapsed.
+                 */
+                if (milliseconds <= 0)
+                    break; // Time has left the rest of our threads hanging ...
+
+                /*
+                 * Restarting our Stopwatch to accurately time the Join time of
+                 * our next thread's Join invocation.
+                 */
+                sw = Stopwatch.StartNew();
+
+                // Making sure we never wait beyond our maximum amount of time.
+                idx.Join(milliseconds);
+            }
+
+            // Yielding results.
             foreach (var idxRes in result) {
                 yield return idxRes;
             }
@@ -80,7 +148,7 @@ namespace poetic.lambda.lambdas
         }
 
         /// <summary>
-        /// Braids each Action such that the args are sequentially applied in
+        /// Braids each Function such that the args are sequentially applied in
         /// order of appearance. Will stop once there are no more args or no
         /// more Actions, whatever occurs first.
         /// </summary>
@@ -91,6 +159,37 @@ namespace poetic.lambda.lambdas
             var actionsIterators = GetEnumerator();
             while (actionsIterators.MoveNext() && argsIterator.MoveNext()) {
                 yield return actionsIterators.Current(argsIterator.Current);
+            }
+        }
+
+        /// <summary>
+        /// Braids each Action such that the args are sequentially applied in
+        /// order of appearance. Will restart iteration of args or Actions,
+        /// such that either all args are applied to an Action or all Actions
+        /// are executed with an argument.
+        /// </summary>
+        /// <param name="args">Arguments.</param>
+        public IEnumerable<TResult> Wrap(IEnumerable<T1> args)
+        {
+            var argsIterator = args.GetEnumerator();
+            var actionsIterators = GetEnumerator();
+            var moreArgs = argsIterator.MoveNext();
+            var moreActions = actionsIterators.MoveNext();
+            if (!moreActions || !moreActions)
+                yield break; // No actions or no arguments.
+
+            while (moreArgs || moreActions) {
+                yield return actionsIterators.Current(argsIterator.Current);
+                if (!argsIterator.MoveNext ()) {
+                    moreArgs = false;
+                    argsIterator = args.GetEnumerator();
+                    argsIterator.MoveNext();
+                }
+                if (!actionsIterators.MoveNext ()) {
+                    moreActions = false;
+                    actionsIterators = GetEnumerator();
+                    actionsIterators.MoveNext();
+                }
             }
         }
     }

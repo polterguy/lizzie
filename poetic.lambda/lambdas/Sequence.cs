@@ -47,13 +47,32 @@ namespace poetic.lambda.lambdas
         }
 
         /// <summary>
+        /// Creates one new thread and execute all Actions on this single thread.
+        /// </summary>
+        public void Parallelize()
+        {
+            Parallelize(Sequential);
+        }
+
+        /// <summary>
+        /// Creates one new thread and execute all Actions on this single thread
+        /// waiting for amaximum millisecondsTimeout before returning control back
+        /// to caller.
+        /// </summary>
+        /// <param name="millisecondsTimeout">Milliseconds timeout.</param>
+        public void Parallelize(int millisecondsTimeout)
+        {
+            Parallelize(millisecondsTimeout, Sequential);
+        }
+
+        /// <summary>
         /// Creates one thread for each of your actions, and execute the action
         /// on this thread not returning control to caller before all threads are
         /// finished with their work.
         /// </summary>
-        public void JoinParallel()
+        public void Join()
         {
-            JoinParallel((action) => action());
+            Join((action) => action());
         }
 
         /// <summary>
@@ -62,9 +81,9 @@ namespace poetic.lambda.lambdas
         /// finished with their work, unless milliseconds amount of time has passed,
         /// at which point it stops waiting for the thread to finish its work.
         /// </summary>
-        public void JoinParallel(int milliseconds)
+        public void Join(int milliseconds)
         {
-            JoinParallel(milliseconds, (action) => action());
+            Join(milliseconds, (action) => action());
         }
     }
 
@@ -97,6 +116,37 @@ namespace poetic.lambda.lambdas
         }
 
         /// <summary>
+        /// Braids each Action such that the args are sequentially applied in
+        /// order of appearance. Will restart iteration of args or Actions,
+        /// such that either all args are applied to an Action or all Actions
+        /// are executed with an argument.
+        /// </summary>
+        /// <param name="args">Arguments.</param>
+        public void Wrap(IEnumerable<T1> args)
+        {
+            var argsIterator = args.GetEnumerator();
+            var actionsIterators = GetEnumerator();
+            var moreArgs = argsIterator.MoveNext();
+            var moreActions = actionsIterators.MoveNext();
+            if (!moreActions || !moreActions)
+                return; // No actions or no arguments.
+
+            while (moreArgs || moreActions) {
+                actionsIterators.Current(argsIterator.Current);
+                if (!argsIterator.MoveNext ()) {
+                    moreArgs = false;
+                    argsIterator = args.GetEnumerator();
+                    argsIterator.MoveNext();
+                }
+                if (!actionsIterators.MoveNext ()) {
+                    moreActions = false;
+                    actionsIterators = GetEnumerator();
+                    actionsIterators.MoveNext();
+                }
+            }
+        }
+
+        /// <summary>
         /// Creates one thread for each of your actions, and execute the action
         /// on this thread in "fire and forget" mode.
         /// </summary>
@@ -106,13 +156,31 @@ namespace poetic.lambda.lambdas
         }
 
         /// <summary>
+        /// Creates one new thread and execute all Actions on this single thread.
+        /// </summary>
+        public void Parallelize(T1 t1)
+        {
+            Parallelize(() => Sequential(t1));
+        }
+
+        /// <summary>
+        /// Creates one new thread and execute all Actions on this single thread,
+        /// waiting for a maximum of millisecondsTimeout before returning control
+        /// to caller.
+        /// </summary>
+        public void Parallelize(int millisecondsTimeout, T1 t1)
+        {
+            Parallelize(millisecondsTimeout, () => Sequential(t1));
+        }
+
+        /// <summary>
         /// Creates one thread for each of your actions, and execute the action
         /// on this thread not returning control to caller before all threads are
         /// finished with their work.
         /// </summary>
-        public void JoinParallel(T1 t1)
+        public void Join(T1 t1)
         {
-            JoinParallel((action) => action(t1));
+            Join((action) => action(t1));
         }
 
         /// <summary>
@@ -121,9 +189,9 @@ namespace poetic.lambda.lambdas
         /// finished with their work, unless milliseconds amount of time has passed,
         /// at which point it stops waiting for the thread to finish its work.
         /// </summary>
-        public void JoinParallel(int milliseconds, T1 t1)
+        public void Join(int milliseconds, T1 t1)
         {
-            JoinParallel(milliseconds, (action) => action(t1));
+            Join(milliseconds, (action) => action(t1));
         }
     }
 }

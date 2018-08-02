@@ -59,11 +59,41 @@ namespace poetic.lambda.lambdas
         }
 
         /// <summary>
+        /// Executes the sequence on a different thread.
+        /// </summary>
+        /// <param name="action">Action.</param>
+        protected void Parallelize(Action action)
+        {
+            var thread = new Thread(new ThreadStart(delegate {
+                action();
+            }));
+            thread.Start();
+        }
+
+        /// <summary>
+        /// Executes the sequence on a different thread for then to join,
+        /// waiting maximum milliseconds amount of time before returning control
+        /// back to caller.
+        /// </summary>
+        /// <param name="millisecondsTimeout">Milliseconds timeout.</param>
+        /// <param name="action">Action.</param>
+        protected void Parallelize(int millisecondsTimeout, Action action)
+        {
+            var wait = new EventWaitHandle(false, EventResetMode.ManualReset);
+            var thread = new Thread(new ThreadStart(delegate {
+                action();
+                wait.Set();
+            }));
+            thread.Start();
+            wait.WaitOne(millisecondsTimeout);
+        }
+
+        /// <summary>
         /// Executes the sequence by creating one thread for each Action and waits
         /// for each thread to finish before returning control back to caller.
         /// </summary>
         /// <param name="action">Action.</param>
-        protected void JoinParallel(Action<TAction> action)
+        protected void Join(Action<TAction> action)
         {
             var lambdas = this.Select(ix => new Thread(new ThreadStart(delegate {
                 action(ix);
@@ -79,7 +109,7 @@ namespace poetic.lambda.lambdas
         /// </summary>
         /// <param name="action">Action.</param>
         /// <param name="milliseconds">Maximum amount of milliseconds to wait before returning control back to caller.</param>
-        protected void JoinParallel(int milliseconds, Action<TAction> action)
+        protected void Join(int milliseconds, Action<TAction> action)
         {
             // Sanity checking argument.
             if (milliseconds <= 0)
