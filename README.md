@@ -13,7 +13,7 @@ code is parsed, and translated into statically typed list of delegates, Actions
 and Functions. This allows you to write stuff such as for instance.
 
 ```
-if phone is from Countries.Australia transfer to Departments.Sales.English
+if phone is from Countries.Australia transfer_to(phone) Departments.Sales.English
 ```
 
 ## poetic.lambda
