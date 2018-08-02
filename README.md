@@ -8,7 +8,7 @@ dynamic in nature. Poetry makes your CLR code dance.
 
 The project's long term goals is to provide a DSL engine to create and consume
 your own Domain Specific Languages, without any compilation, and/or
-interpretation occurring, through a _"JIT parsing"_ model, where dynamic script
+interpretation occurring, through a _"JIT parsing model"_, where dynamic script
 code is parsed, and translated into statically typed list of delegates, Actions
 and Functions. This allows you to write stuff such as for instance.
 
