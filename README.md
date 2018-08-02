@@ -18,7 +18,7 @@ event(incoming_phone as phone)
     if DateTime.Now.Time is less_than '08:00' or DateTime.Now.Time is more_than '17:00'
       phone.transfer (AnsweringMachine.Sales.English)
     else
-      phone.transfer(Departments.Sales.English)
+      phone.transfer (Departments.Sales.English)
 ```
 
 **FYI** - The above is just an example of an imaginary DSL which allows for
