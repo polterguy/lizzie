@@ -30,7 +30,7 @@ of your CLR/.Net applications 100% dynamic, storing snippets of functionality
 in your database, or in dynamically parsed files on disc, becomes much simpler,
 and hence makes C# and/or the CLR become a _"dynamic execution platform"_,
 arguably providing all the benefits from interpreted languages, without having
-to throw static typing and C# out the door.
+to throw static typing or C# out the door.
 
 ## poetic.lambda
 
