@@ -13,12 +13,15 @@ code is parsed, and translated into statically typed list of delegates, Actions
 and Functions. This allows you to write stuff such as for instance.
 
 ```
-if phone is from Countries.Australia
-  if DateTime.Now.Time is more_than '16:00' or DateTime.Now.Time is less_than '08:00'
-    transfer_to(phone) AnsweringMachine.Sales.English
-  else
-    transfer_to(phone) Departments.Sales.English
+event(incoming_phone as phone)
+  if phone is from Countries.Australia
+    if DateTime.Now.Time is more_than '16:00' or DateTime.Now.Time is less_than '08:00'
+      transfer_to(phone) AnsweringMachine.Sales.English
+    else
+      transfer_to(phone) Departments.Sales.English
 ```
+
+The above is just an example ...
 
 ## poetic.lambda
 
