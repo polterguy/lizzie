@@ -35,6 +35,8 @@
     <Compile Include="ActionsTest.cs" />
     <Compile Include="FunctionsTest.cs" />
     <Compile Include="ChainTest.cs" />
+    <Compile Include="ParserTest.cs" />
+    <Compile Include="helpers\WordTokenizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -44,6 +46,9 @@
       <Project>{A47CA51F-D5BE-4947-B1EB-AB27BBD1FCD7}</Project>
       <Name>poetic.lambda</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="helpers\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

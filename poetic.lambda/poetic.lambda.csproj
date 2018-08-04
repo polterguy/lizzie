@@ -22,5 +22,6 @@
   <ItemGroup>
     <Folder Include="collections\" />
     <Folder Include="utilities\" />
+    <Folder Include="parser\" />
   </ItemGroup>
 </Project>
