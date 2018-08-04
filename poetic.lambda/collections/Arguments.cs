@@ -23,34 +23,51 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Diagnostics;
+using System.Collections.Generic;
 
-namespace poetic.lambda.lambdas
+namespace poetic.lambda.collections
 {
-    /// <summary>
-    /// Abstract Sequence base class containing helpers for creating your own sequences.
-    /// </summary>
-    public abstract class SequenceBase<TAction> : Lambdas<TAction>
+    public class Arguments<T> : List<T>
     {
-        /*
-         * Protected implementation to make inheriting easier.
-         */
         /// <summary>
-        /// Sequentially executes each Action in order.
+        /// Initializes a new instance of the <see cref="T:poetic.lambda.Arguments`1"/> class.
         /// </summary>
-        /// <param name="action">Action.</param>
-        protected void Sequential(Action<TAction> action)
+        public Arguments()
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:poetic.lambda.Arguments`1"/> class.
+        /// </summary>
+        /// <param name="lambdas">Initial functors.</param>
+        public Arguments(params T [] lambdas)
+            : base(lambdas)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:poetic.lambda.Arguments`1"/> class.
+        /// </summary>
+        /// <param name="lambdas">Initial functors.</param>
+        public Arguments(IEnumerable<T> lambdas)
+            : base(lambdas)
+        { }
+
+        /// <summary>
+        /// Applies all arguments to the specified Action sequentially.
+        /// </summary>
+        /// <param name="action">Action to apply arguments to.</param>
+        public void Apply(Action<T> action)
         {
-            foreach (var ix in this) {
-                action(ix);
+            foreach (var idx in this) {
+                action(idx);
             }
         }
 
         /// <summary>
-        /// Executes the sequence by creating one thread for each Action and
-        /// executing each Action on a separate thread.
+        /// Creates and starts a new thread with the given Action once for each
+        /// parameter in collection.
         /// </summary>
         /// <param name="action">Action.</param>
-        protected void Parallel(Action<TAction> action)
+        public void Parallel(Action<T> action)
         {
             var lambdas = this.Select(ix => new Thread(new ThreadStart(delegate {
                 action(ix);
@@ -59,41 +76,25 @@ namespace poetic.lambda.lambdas
         }
 
         /// <summary>
-        /// Executes the sequence on a different thread.
+        /// Creates one new thread which it sequentially executes the specified
+        /// Action one once for each argument.
         /// </summary>
         /// <param name="action">Action.</param>
-        protected void Parallelize(Action action)
+        public void Parallelize(Action<T> action)
         {
             var thread = new Thread(new ThreadStart(delegate {
-                action();
+                Apply(action);
             }));
             thread.Start();
         }
 
         /// <summary>
-        /// Executes the sequence on a different thread for then to join,
-        /// waiting maximum milliseconds amount of time before returning control
-        /// back to caller.
-        /// </summary>
-        /// <param name="millisecondsTimeout">Milliseconds timeout.</param>
-        /// <param name="action">Action.</param>
-        protected void Parallelize(int millisecondsTimeout, Action action)
-        {
-            var wait = new EventWaitHandle(false, EventResetMode.ManualReset);
-            var thread = new Thread(new ThreadStart(delegate {
-                action();
-                wait.Set();
-            }));
-            thread.Start();
-            wait.WaitOne(millisecondsTimeout);
-        }
-
-        /// <summary>
-        /// Executes the sequence by creating one thread for each Action and waits
-        /// for each thread to finish before returning control back to caller.
+        /// Creates and starts a new thread with the given Action once for each
+        /// parameter in collection and waits for all thrads to finish before
+        /// return control back to caller.
         /// </summary>
         /// <param name="action">Action.</param>
-        protected void Join(Action<TAction> action)
+        public void Join (Action<T> action)
         {
             var lambdas = this.Select(ix => new Thread(new ThreadStart(delegate {
                 action(ix);
@@ -103,13 +104,13 @@ namespace poetic.lambda.lambdas
         }
 
         /// <summary>
-        /// Executes the sequence by creating one thread for each Action and waits
-        /// for each thread to finish before returning control back to caller. Will
-        /// never wait more than the specified milliseconds before returning.
+        /// Creates and starts a new thread with the given Action once for each
+        /// parameter in collection and waits for all thrads to finish before
+        /// return control back to caller, but never waiting formore than
+        /// milliseconds before returning control back to caller.
         /// </summary>
         /// <param name="action">Action.</param>
-        /// <param name="milliseconds">Maximum amount of milliseconds to wait before returning control back to caller.</param>
-        protected void Join(int milliseconds, Action<TAction> action)
+        public void Join(int milliseconds, Action<T> action)
         {
             // Sanity checking argument.
             if (milliseconds <= 0)

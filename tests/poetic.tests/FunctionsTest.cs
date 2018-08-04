@@ -22,48 +22,38 @@
 using System.Linq;
 using NUnit.Framework;
 using System.Threading;
-using poetic.lambda.lambdas;
+using poetic.lambda.collections;
 
 namespace poetic.tests
 {
     [TestFixture]
     public class FunctionsTest
     {
-        /// <summary>
-        /// Ensures that Sequential evaluates correctly.
-        /// </summary>
         [Test]
         public void Sequential()
         {
-            // Creating a Functions object.
             var functions = new Functions<string>();
             functions.Add(() => "1");
             functions.Add(() => "2");
             functions.Add(() => "3");
 
-            // Executing and verifying result.
             var result = "";
-            foreach (var idx in functions.Sequential()) {
+            foreach (var idx in functions.Sequence()) {
                 result += idx;
             }
             Assert.AreEqual("123", result);
         }
 
-        /// <summary>
-        /// Ensures that Sequential evaluates correctly.
-        /// </summary>
         [Test]
-        public void Join()
+        public void Parallel()
         {
-            // Creating a Functions object.
             var functions = new Functions<string>();
             functions.Add(() => "1");
             functions.Add(() => "2");
             functions.Add(() => "3");
 
-            // Executing and verifying result.
             var result = "";
-            foreach (var idx in functions.Join()) {
+            foreach (var idx in functions.Parallel()) {
                 result += idx;
             }
             var assert = 
@@ -76,13 +66,9 @@ namespace poetic.tests
             Assert.AreEqual(true, assert);
         }
 
-        /// <summary>
-        /// Ensures that Sequential evaluates correctly.
-        /// </summary>
         [Test]
-        public void JoinTimeout()
+        public void SequenceTimeout()
         {
-            // Creating a Functions object.
             var functions = new Functions<string>();
             functions.Add(() => "1");
             functions.Add(delegate () {
@@ -91,174 +77,12 @@ namespace poetic.tests
             });
             functions.Add(() => "2");
 
-            // Executing and verifying result.
             var result = "";
-            foreach (var idx in functions.Join(500)) {
+            foreach (var idx in functions.Sequence(500)) {
                 result += idx;
             }
             var assert = result == "12" || result == "21";
             Assert.AreEqual(true, assert);
-        }
-
-        /// <summary>
-        /// Ensures that Braid evaluates correctly.
-        /// </summary>
-        [Test]
-        public void Braid_1()
-        {
-            // Creating a Functions object.
-            var functions = new Functions<int, string>();
-            functions.Add((input) => (input + 1).ToString());
-            functions.Add((input) => (input + 2).ToString());
-            functions.Add((input) => (input + 3).ToString());
-
-            // Executing and verifying result.
-            var result = "";
-            foreach (var idx in functions.Braid(new int[]{1,2,3})) {
-                result += idx;
-            }
-            Assert.AreEqual("246", result);
-        }
-
-        /// <summary>
-        /// Ensures that Braid evaluates correctly.
-        /// </summary>
-        [Test]
-        public void Braid_2()
-        {
-            // Creating a Functions object.
-            var functions = new Functions<int, string>();
-            functions.Add((input) => (input + 1).ToString());
-            functions.Add((input) => (input + 2).ToString());
-            functions.Add((input) => (input + 3).ToString());
-
-            // Executing and verifying result.
-            var result = "";
-            foreach (var idx in functions.Braid(new int[] { 1, 3 })) {
-                result += idx;
-            }
-            Assert.AreEqual("25", result);
-        }
-
-        /// <summary>
-        /// Ensures that Braid evaluates correctly.
-        /// </summary>
-        [Test]
-        public void Braid_3()
-        {
-            // Creating a Functions object.
-            var functions = new Functions<int, string>();
-            functions.Add((input) => (input + 1).ToString());
-            functions.Add((input) => (input + 2).ToString());
-            functions.Add((input) => (input + 3).ToString());
-            functions.Add((input) => (input + 4).ToString());
-
-            // Executing and verifying result.
-            var result = "";
-            foreach (var idx in functions.Braid(new int[] { 1, 2, 3 })) {
-                result += idx;
-            }
-            Assert.AreEqual("246", result);
-        }
-
-        /// <summary>
-        /// Verifies that a Functions with one argument is correctly
-        /// executed when using Wrap.
-        /// </summary>
-        [Test]
-        public void Wrap_1()
-        {
-            /*
-             * Used to hold our result.
-             */
-            var result = "initial_";
-
-            /*
-             * Creating a Sequence and adding two Actions to it.
-             */
-            var functions = new Functions<string, string>();
-            functions.Add((arg) => arg + "x");
-            functions.Add((arg) => arg + "xx");
-            functions.Add((arg) => arg + "xxx");
-
-            /*
-             * Wrapping our Sequence.
-             */
-            foreach (var idx in functions.Wrap(new string[] { "1", "2", "3" })) {
-                result += idx;
-            }
-
-            /*
-             * Making sure we got the result we expected.
-             */
-            Assert.AreEqual("initial_1x2xx3xxx", result);
-        }
-
-        /// <summary>
-        /// Verifies that a Functions with one argument is correctly
-        /// executed when using Wrap.
-        /// </summary>
-        [Test]
-        public void Wrap_2()
-        {
-            /*
-             * Used to hold our result.
-             */
-            var result = "initial_";
-
-            /*
-             * Creating a Sequence and adding two Actions to it.
-             */
-            var functions = new Functions<string, string>();
-            functions.Add((arg) => arg + "x");
-            functions.Add((arg) => arg + "xx");
-            functions.Add((arg) => arg + "xxx");
-
-            /*
-             * Wrapping our Sequence.
-             */
-            foreach (var idx in functions.Wrap(new string[] { "1", "2", "3", "4" })) {
-                result += idx;
-            }
-
-            /*
-             * Making sure we got the result we expected.
-             */
-            Assert.AreEqual("initial_1x2xx3xxx4x", result);
-        }
-
-        /// <summary>
-        /// Verifies that a Functions with one argument is correctly
-        /// executed when using Wrap.
-        /// </summary>
-        [Test]
-        public void Wrap_3()
-        {
-            /*
-             * Used to hold our result.
-             */
-            var result = "initial_";
-
-            /*
-             * Creating a Sequence and adding two Actions to it.
-             */
-            var functions = new Functions<string, string>();
-            functions.Add((arg) => arg + "x");
-            functions.Add((arg) => arg + "xx");
-            functions.Add((arg) => arg + "xxx");
-            functions.Add((arg) => arg + "xxxx");
-
-            /*
-             * Wrapping our Sequence.
-             */
-            foreach (var idx in functions.Wrap(new string[] { "1", "2", "3" })) {
-                result += idx;
-            }
-
-            /*
-             * Making sure we got the result we expected.
-             */
-            Assert.AreEqual("initial_1x2xx3xxx1xxxx", result);
         }
     }
 }

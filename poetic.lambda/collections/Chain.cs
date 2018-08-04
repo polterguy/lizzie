@@ -20,19 +20,42 @@
  * SOFTWARE.
  */
 using System;
+using System.Collections.Generic;
 
-namespace poetic.lambda.lambdas
+namespace poetic.lambda.collections
 {
     /// <summary>
     /// Class encapsulating a list of Func delegates where the output from one
     /// is being passed in as input to the next.
     /// </summary>
-    public class Chain<TInOut> : Lambdas<Func<TInOut, TInOut>>
+    public class Chain<T> : Sequence<Func<T, T>>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:poetic.lambda.lambdas.Chain`1"/> class.
+        /// </summary>
+        public Chain()
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:poetic.lambda.lambdas.Chain`1"/> class.
+        /// </summary>
+        /// <param name="lambdas">Initial functors.</param>
+        public Chain(params Func<T, T>[] lambdas)
+            : base(lambdas)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:poetic.lambda.lambdas.Chain`1"/> class.
+        /// </summary>
+        /// <param name="lambdas">Initial functors.</param>
+        public Chain(IEnumerable<Func<T, T>> lambdas)
+            : base(lambdas)
+        { }
+
         /// <summary>
         /// Evaluates the chain, and returns the result to caller.
         /// </summary>
-        public TInOut Evaluate(TInOut t1)
+        public T Evaluate(T t1)
         {
             foreach (var ix in this) {
                 t1 = ix(t1);

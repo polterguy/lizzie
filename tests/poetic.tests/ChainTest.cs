@@ -20,29 +20,23 @@
  * SOFTWARE.
  */
 using NUnit.Framework;
-using poetic.lambda.lambdas;
+using poetic.lambda.collections;
 
 namespace poetic.tests
 {
     [TestFixture]
     public class ChainTest
     {
-        /// <summary>
-        /// Verifies that a Chain evaluates correctly.
-        /// </summary>
         [Test]
         public void Evaluate()
         {
-            // Creating a chain with 3 functions.
             var chain = new Chain<string>();
             chain.Add((input) => input + "1");
             chain.Add((input) => input + "2");
             chain.Add((input) => input + "3");
 
-            // Evaluates chain.
             var result = chain.Evaluate("initial_");
 
-            // Making sure result is correct.
             Assert.AreEqual("initial_123", result);
         }
     }

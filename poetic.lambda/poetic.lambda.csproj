@@ -17,9 +17,10 @@
 
   <ItemGroup>
     <Compile Remove="Threads.cs" />
+    <Compile Remove="lambdas\SequenceBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="lambdas\" />
+    <Folder Include="collections\" />
     <Folder Include="utilities\" />
   </ItemGroup>
 </Project>
