@@ -35,7 +35,7 @@ namespace poetic.tests
             chain.Add((input) => input + "2");
             chain.Add((input) => input + "3");
 
-            var result = chain.Foo("initial_");
+            var result = chain.EvaluateChain("initial_");
 
             Assert.AreEqual("initial_123", result);
         }

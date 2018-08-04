@@ -30,7 +30,7 @@ namespace poetic.tests
     public class FunctionsTest
     {
         [Test]
-        public void EvaluateSequentiallyBlocked()
+        public void Evaluate()
         {
             var functions = new Functions<string>();
             functions.Add(() => "1");
@@ -38,14 +38,14 @@ namespace poetic.tests
             functions.Add(() => "3");
 
             var result = "";
-            foreach (var idx in functions.EvaluateSequentiallyBlocked()) {
+            foreach (var idx in functions.Evaluate()) {
                 result += idx;
             }
             Assert.AreEqual("123", result);
         }
 
         [Test]
-        public void EvaluateParallelBlocked()
+        public void EvaluateParallel()
         {
             var functions = new Functions<string>();
             functions.Add(() => "1");
@@ -53,7 +53,7 @@ namespace poetic.tests
             functions.Add(() => "3");
 
             var sync = new Synchronizer<string> ("");
-            foreach (var idx in functions.EvaluateParallelBlocked()) {
+            foreach (var idx in functions.EvaluateParallel()) {
                 sync.Assign((input) => input + idx);
             }
             bool assert = false;

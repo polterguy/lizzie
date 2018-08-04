@@ -30,7 +30,32 @@ namespace poetic.tests
     public class ActionsTest
     {
         [Test]
-        public void ExecuteParallelBlocked_1()
+        public void Execute()
+        {
+            var result = "";
+
+            var actions = new Actions();
+            actions.Add(() => result += "foo");
+            actions.Add(() => result += "bar");
+
+            actions.Execute();
+            Assert.AreEqual("foobar", result);
+        }
+
+        [Test]
+        public void ExecuteArgs()
+        {
+            var sequence = new Actions<Mutable<string>>();
+            sequence.Add((arg) => arg.Value += "foo");
+            sequence.Add((arg) => arg.Value += "bar");
+
+            var mutable = new Mutable<string>("initial_");
+            sequence.Execute(mutable);
+            Assert.AreEqual("initial_foobar", mutable.Value);
+        }
+
+        [Test]
+        public void ExecuteParallel_1()
         {
             var sync = new Synchronizer<string>("initial_");
 
@@ -38,7 +63,7 @@ namespace poetic.tests
             actions.Add(() => sync.Assign((res) => res + "foo"));
             actions.Add(() => sync.Assign((res) => res + "bar"));
 
-            actions.ExecuteParallelBlocked();
+            actions.ExecuteParallel();
 
             string result = null;
             sync.Read(delegate (string val) { result = val; });
@@ -46,7 +71,7 @@ namespace poetic.tests
         }
 
         [Test]
-        public void ExecuteParallelBlocked_2()
+        public void ExecuteParallel_2()
         {
             var result = "";
             var wait = new ManualResetEvent(false);
@@ -63,12 +88,12 @@ namespace poetic.tests
                 result += "bar";
             });
 
-            actions.ExecuteParallelBlocked();
+            actions.ExecuteParallel();
             Assert.AreEqual("foobar", result);
         }
 
         [Test]
-        public void ExecuteParallelBlocked_3()
+        public void ExecuteParallel_3()
         {
             var result = "";
             var wait = new ManualResetEvent(false);
@@ -85,48 +110,38 @@ namespace poetic.tests
                 wait.Set();
             });
 
-            actions.ExecuteParallelBlocked();
+            actions.ExecuteParallel();
             Assert.AreEqual("barfoo", result);
         }
 
         [Test]
-        public void ExecuteParallelBlockedTimeout_1()
+        public void ExecuteParallelUnblocked()
         {
             var result = "";
+            var waits = new ManualResetEvent[] {
+                new ManualResetEvent(false),
+                new ManualResetEvent(false),
+                new ManualResetEvent(false)
+            };
 
-            Actions actions = new Actions();
+            var actions = new Actions();
             actions.Add(delegate {
-
-                result += "foo";
+                result += "1";
+                waits[0].Set();
             });
             actions.Add(delegate {
-
-                Thread.Sleep(1000);
-                result += "bar";
-            });
-
-            actions.ExecuteParallelBlocked(50);
-            Assert.AreEqual("foo", result);
-        }
-
-        [Test]
-        public void ExecuteParallelBlockedTimeout_2()
-        {
-            var result = "";
-
-            Actions actions = new Actions();
-            actions.Add(delegate {
-
-                Thread.Sleep(1000);
-                result += "foo";
+                result += "2";
+                waits[1].Set();
             });
             actions.Add(delegate {
-
-                result += "bar";
+                result += "3";
+                waits[2].Set();
             });
 
-            actions.ExecuteParallelBlocked(50);
-            Assert.AreEqual("bar", result);
+            actions.ExecuteParallelUnblocked();
+            WaitHandle.WaitAll(waits);
+            var assert = result == "123" || result == "132" || result == "231" || result == "213" || result == "312" || result == "321";
+            Assert.AreEqual(true, assert);
         }
 
         [Test]
@@ -163,98 +178,6 @@ namespace poetic.tests
             string res = null;
             sync.Read(delegate (string val) { res = val; });
             Assert.AreEqual("initial_321", res);
-        }
-
-        [Test]
-        public void ParallelUnblocked()
-        {
-            var result = "";
-            var wait = new EventWaitHandle(false, EventResetMode.ManualReset);
-
-            var actions = new Actions();
-            actions.Add(delegate {
-                result += "1";
-            });
-            actions.Add(delegate {
-                result += "2";
-            });
-            actions.Add(delegate {
-                result += "3";
-                wait.Set();
-            });
-
-            actions.ExecuteParallelUnblocked();
-            wait.WaitOne();
-            Assert.AreEqual("123", result);
-        }
-
-        [Test]
-        public void ParallelTimeout_2()
-        {
-            var result = "";
-
-            var actions = new Actions();
-            actions.Add(delegate {
-                result += "1";
-            });
-            actions.Add(delegate {
-                result += "2";
-            });
-            actions.Add(delegate {
-                result += "3";
-                Thread.Sleep(2000);
-            });
-            actions.Add(delegate {
-                result += "4";
-            });
-
-            actions.ExecuteSequentiallyBlocked(500);
-            Assert.AreEqual("123", result);
-        }
-
-        [Test]
-        public void Sequentially()
-        {
-            var result = "";
-
-            var actions = new Actions();
-            actions.Add(() => result += "foo");
-            actions.Add(() => result += "bar");
-
-            actions.ExecuteSequentiallyBlocked();
-            Assert.AreEqual("foobar", result);
-        }
-
-        [Test]
-        public void SequentialArgs()
-        {
-            var sequence = new Actions<Mutable<string>>();
-            sequence.Add((arg) => arg.Value += "foo");
-            sequence.Add((arg) => arg.Value += "bar");
-
-            var mutable = new Mutable<string>("initial_");
-            sequence.ExecuteSequentiallyBlocked(mutable);
-            Assert.AreEqual("initial_foobar", mutable.Value);
-        }
-
-        [Test]
-        public void ParallelizeArgs()
-        {
-            var result = new Mutable<string>();
-
-            var wait = new EventWaitHandle(false, EventResetMode.ManualReset);
-
-            var sequence = new Actions<Mutable<string>>();
-            sequence.Add((input) => input.Value += "1");
-            sequence.Add((input) => input.Value += "2");
-            sequence.Add(delegate (Mutable<string> input) {
-                input.Value += "3";
-                wait.Set();
-            });
-
-            sequence.ExecuteParallelUnblocked(result);
-            wait.WaitOne();
-            Assert.AreEqual("123", result.Value);
         }
     }
 }

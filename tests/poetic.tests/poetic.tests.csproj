@@ -35,7 +35,6 @@
     <Compile Include="ActionsTest.cs" />
     <Compile Include="FunctionsTest.cs" />
     <Compile Include="ChainTest.cs" />
-    <Compile Include="ArgumentsTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

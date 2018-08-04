@@ -54,58 +54,36 @@ namespace poetic.lambda.collections
         { }
 
         /// <summary>
-        /// Sequentially executes each action not returning before execution is finished.
+        /// Sequentially executes each action.
         /// </summary>
-        public void ExecuteSequentiallyBlocked(T1 t1)
+        public void Execute(T1 t1)
         {
-            Executor.ExecuteSequentiallyBlocked(this.Select((ix) => new Action(() => ix(t1))));
+            Executor.Sequentially(this.Select((ix) => new Action(() => ix(t1))));
         }
 
         /// <summary>
-        /// Sequentially executes each action on a different thread, and blocking
-        /// the calling thread until done, or millisecondsTimeout have passed.
+        /// Sequentially executes each action without blocking the calling thread.
         /// </summary>
-        /// <param name="millisecondsTimeout">Maximum amount of time to block calling thread.</param>
-        public void ExecuteSequentiallyBlocked(T1 t1, int millisecondsTimeout)
+        public void ExecuteUnblocked(T1 t1)
         {
-            Executor.ExecuteSequentiallyBlocked(this.Select((ix) => new Action(() => ix(t1))), millisecondsTimeout);
-        }
-
-        /// <summary>
-        /// Sequentially executes each action on a different thread without blocking
-        /// the calling thread.
-        /// </summary>
-        public void ExecuteSequentiallyUnblocked(T1 t1)
-        {
-            Executor.ExecuteSequentiallyUnblocked(this.Select((ix) => new Action(() => ix(t1))));
-        }
-
-        /// <summary>
-        /// Executes each action in parallel without blocking the calling thread.
-        /// </summary>
-        public void ExecuteParallelBlocked(T1 t1)
-        {
-            Executor.ExecuteParallelBlocked(this.Select((ix) => new Action(() => ix(t1))));
-        }
-
-        /// <summary>
-        /// Executes each action in parallel blocking the calling thread for a
-        /// maximum amount of time, until execution of all actions are finished,
-        /// or milliseconds have passed, whatever occurs first.
-        /// </summary>
-        /// <param name="millisecondsTimeout">Maximum amount of time to block calling thread.</param>
-        public void ExecuteParallelBlocked(T1 t1, int millisecondsTimeout)
-        {
-            Executor.ExecuteParallelBlocked(this.Select((ix) => new Action(() => ix(t1))), millisecondsTimeout);
+            Executor.SequentiallyUnblocked(this.Select((ix) => new Action(() => ix(t1))));
         }
 
         /// <summary>
         /// Executes each action in parallel blocking the calling thread until
         /// all actions are finished executing.
         /// </summary>
+        public void ExecuteParallel(T1 t1)
+        {
+            Executor.Parallel(this.Select((ix) => new Action(() => ix(t1))));
+        }
+
+        /// <summary>
+        /// Executes each action in parallel without blocking the calling thread.
+        /// </summary>
         public void ExecuteParallelUnblocked(T1 t1)
         {
-            Executor.ExecuteParallelUnblocked(this.Select((ix) => new Action(() => ix(t1))));
+            Executor.ParallelUnblocked(this.Select((ix) => new Action(() => ix(t1))));
         }
     }
 }

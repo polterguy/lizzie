@@ -57,30 +57,18 @@ namespace poetic.lambda.collections
         /// Evaluate each function in a sequence on the calling thread.
         /// </summary>
         /// <returns>The result of each evaluation.</returns>
-        public IEnumerable<TResult> EvaluateSequentiallyBlocked()
+        public IEnumerable<TResult> Evaluate()
         {
-            return Evaluator<TResult>.EvaluateSequentiallyBlocked(this);
+            return Evaluator<TResult>.Sequentially(this);
         }
 
         /// <summary>
-        /// Evaluates each action in parallel blocking the calling thread for a
-        /// maximum amount of time, until execution of all actions are finished,
-        /// or milliseconds have passed, whatever occurs first.
-        /// </summary>
-        /// <returns>The result of each evaluation.</returns>
-        public IEnumerable<TResult> EvaluateParallelBlocked(int millisecondsTimeout)
-        {
-            return Evaluator<TResult>.EvaluateParallelBlocked(this, millisecondsTimeout);
-        }
-
-        /// <summary>
-        /// Evaluates each function in parallel on a separate thread and returns
-        /// the result of each function.
+        /// Evaluates each function in parallel and returns the result to caller.
         /// </summary>
         /// <returns>The result of each function invocation.</returns>
-        public IEnumerable<TResult> EvaluateParallelBlocked()
+        public IEnumerable<TResult> EvaluateParallel()
         {
-            return Evaluator<TResult>.EvaluateParallelBlocked(this);
+            return Evaluator<TResult>.Parallel(this);
         }
     }
 }

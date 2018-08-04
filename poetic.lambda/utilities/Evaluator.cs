@@ -33,11 +33,11 @@ namespace poetic.lambda.utilities
     public static class Evaluator<TResult>
     {
         /// <summary>
-        /// Evaluates each specified function in order and returns the result to caller.
+        /// Evaluates each function in order and returns the result to caller.
         /// </summary>
         /// <returns>The sequence.</returns>
         /// <param name="functions">Functions.</param>
-        public static IEnumerable<TResult> EvaluateSequentiallyBlocked(IEnumerable<Func<TResult>> functions)
+        public static IEnumerable<TResult> Sequentially(IEnumerable<Func<TResult>> functions)
         {
             // Sequentially execute each action on calling thread.
             foreach (var ix in functions) {
@@ -46,19 +46,14 @@ namespace poetic.lambda.utilities
         }
 
         /// <summary>
-        /// Executes each function in parallel blocking the calling thread until
-        /// all actions are finished executing, returning the results of the evaluation
-        /// of each function.
-        /// TODO: Make sure each thread returns its value immediately by using a list of ManualWaitHandles.
+        /// Evaluates each function in parallel blocking the calling thread until
+        /// all functions are evaluated, and returns the results of the evaluation
+        /// of each function to caller.
         /// </summary>
         /// <returns>The result of each function.</returns>
         /// <param name="functions">Functions to evaluate.</param>
-        public static IEnumerable<TResult> EvaluateParallelBlocked(IEnumerable<Func<TResult>> functions)
+        public static IEnumerable<TResult> Parallel(IEnumerable<Func<TResult>> functions)
         {
-            // Sanity checking argument.
-            if (!functions.Any())
-                yield break;
-
             // Synchronising access to return values.
             var result = new List<TResult>();
             var sync = new Synchronizer<List<TResult>>(result);
@@ -71,43 +66,6 @@ namespace poetic.lambda.utilities
             threads.ForEach(ix => ix.Start());
             threads.ForEach(ix => ix.Join());
             foreach (var ix in result) {
-                yield return ix;
-            }
-        }
-
-        /// <summary>
-        /// Executes each function in parallel blocking the calling thread until
-        /// all actions are finished executing, returning the results of the evaluation
-        /// of each function.
-        /// TODO: Make sure each thread returns its value immediately by using a list of ManualWaitHandles.
-        /// </summary>
-        /// <returns>The result of each function.</returns>
-        /// <param name="functions">Functions to evaluate.</param>
-        public static IEnumerable<TResult> EvaluateParallelBlocked(IEnumerable<Func<TResult>> functions, int millisecondsTimeout)
-        {
-            // Sanity checking argument.
-            if (!functions.Any())
-                yield break;
-
-            // Sanity checking argument.
-            if (millisecondsTimeout <= 0)
-                throw new ArgumentException("Must be a positive integer value", nameof(millisecondsTimeout));
-
-            // Synchronising access to return values.
-            var list = new List<TResult>();
-            var sync = new Synchronizer<List<TResult>>(list);
-
-            // Making sure we're able to wait.
-            ManualResetEvent wait = new ManualResetEvent(false);
-
-            // Creates and starts a new thread for each action.
-            var threads = functions.Select(ix => new Thread(new ThreadStart((delegate {
-                var res = ix();
-                sync.Write((shared) => shared.Add(res));
-            })))).ToList();
-            threads.ForEach(ix => ix.Start());
-            wait.WaitOne(millisecondsTimeout);
-            foreach (var ix in list) {
                 yield return ix;
             }
         }

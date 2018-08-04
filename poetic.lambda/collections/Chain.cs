@@ -55,7 +55,7 @@ namespace poetic.lambda.collections
         /// <summary>
         /// Evaluates the chain, and returns the result to caller.
         /// </summary>
-        public T Foo(T t1)
+        public T EvaluateChain(T t1)
         {
             foreach (var ix in this) {
                 t1 = ix(t1);

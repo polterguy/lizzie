@@ -54,50 +54,28 @@ namespace poetic.lambda.collections
         { }
 
         /// <summary>
-        /// Sequentially executes each action not returning before execution is finished.
+        /// Sequentially executes each action.
         /// </summary>
-        public void ExecuteSequentiallyBlocked()
+        public void Execute()
         {
-            Executor.ExecuteSequentiallyBlocked(this);
+            Executor.Sequentially(this);
         }
 
         /// <summary>
-        /// Sequentially executes each action on a different thread, and blocking
-        /// the calling thread until done, or millisecondsTimeout have passed.
+        /// Sequentially executes each action without blocking the calling thread.
         /// </summary>
-        /// <param name="millisecondsTimeout">Maximum amount of time to block calling thread.</param>
-        public void ExecuteSequentiallyBlocked(int millisecondsTimeout)
+        public void ExecuteUnblocked()
         {
-            Executor.ExecuteSequentiallyBlocked(this, millisecondsTimeout);
-        }
-
-        /// <summary>
-        /// Sequentially executes each action on a different thread without blocking
-        /// the calling thread.
-        /// </summary>
-        public void ExecuteSequentiallyUnblocked()
-        {
-            Executor.ExecuteSequentiallyUnblocked(this);
+            Executor.SequentiallyUnblocked(this);
         }
 
         /// <summary>
         /// Executes each action in parallel blocking the calling thread until
         /// all actions are finished executing.
         /// </summary>
-        public void ExecuteParallelBlocked()
+        public void ExecuteParallel()
         {
-            Executor.ExecuteParallelBlocked(this);
-        }
-
-        /// <summary>
-        /// Executes each action in parallel blocking the calling thread for a
-        /// maximum amount of time, until execution of all actions are finished,
-        /// or milliseconds have passed, whatever occurs first.
-        /// </summary>
-        /// <param name="millisecondsTimeout">Maximum amount of time to block calling thread.</param>
-        public void ExecuteParallelBlocked(int millisecondsTimeout)
-        {
-            Executor.ExecuteParallelBlocked(this, millisecondsTimeout);
+            Executor.Parallel(this);
         }
 
         /// <summary>
@@ -105,7 +83,7 @@ namespace poetic.lambda.collections
         /// </summary>
         public void ExecuteParallelUnblocked()
         {
-            Executor.ExecuteParallelUnblocked(this);
+            Executor.ParallelUnblocked(this);
         }
     }
 }
