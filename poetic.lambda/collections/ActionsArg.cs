@@ -27,38 +27,38 @@ using poetic.lambda.utilities;
 namespace poetic.lambda.collections
 {
     /// <summary>
-    /// Class encapsulating a list of Action delegates taking no arguments.
+    /// Class encapsulating a list of Action delegates taking one arguments.
     /// </summary>
-    public class Actions : Sequence<Action>
+    public class Actions<T1> : Sequence<Action<T1>>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:poetic.lambda.collections.Actions"/> class.
+        /// Initializes a new instance of the <see cref="T:poetic.lambda.lambdas.Sequence"/> class.
         /// </summary>
         public Actions()
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:poetic.lambda.collections.Actions"/> class.
+        /// Initializes a new instance of the <see cref="T:poetic.lambda.delegates.Sequence"/> class.
         /// </summary>
-        /// <param name="actions">Actions.</param>
-        public Actions(params Action[] actions)
-            : base(actions)
+        /// <param name="lambdas">Initial functors.</param>
+        public Actions(params Action<T1>[] lambdas)
+            : base(lambdas)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:poetic.lambda.collections.Actions"/> class.
+        /// Initializes a new instance of the <see cref="T:poetic.lambda.delegates.Sequence"/> class.
         /// </summary>
-        /// <param name="actions">Actions.</param>
-        public Actions(IEnumerable<Action> actions)
-            : base(actions)
+        /// <param name="lambdas">Initial functors.</param>
+        public Actions(IEnumerable<Action<T1>> lambdas)
+            : base(lambdas)
         { }
 
         /// <summary>
         /// Sequentially executes each action not returning before execution is finished.
         /// </summary>
-        public void ExecuteSequentiallyBlocked()
+        public void ExecuteSequentiallyBlocked(T1 t1)
         {
-            Executor.ExecuteSequentiallyBlocked(this);
+            Executor.ExecuteSequentiallyBlocked(this.Select((ix) => new Action(() => ix(t1))));
         }
 
         /// <summary>
@@ -66,27 +66,26 @@ namespace poetic.lambda.collections
         /// the calling thread until done, or millisecondsTimeout have passed.
         /// </summary>
         /// <param name="millisecondsTimeout">Maximum amount of time to block calling thread.</param>
-        public void ExecuteSequentiallyBlocked(int millisecondsTimeout)
+        public void ExecuteSequentiallyBlocked(T1 t1, int millisecondsTimeout)
         {
-            Executor.ExecuteSequentiallyBlocked(this, millisecondsTimeout);
+            Executor.ExecuteSequentiallyBlocked(this.Select((ix) => new Action(() => ix(t1))), millisecondsTimeout);
         }
 
         /// <summary>
         /// Sequentially executes each action on a different thread without blocking
         /// the calling thread.
         /// </summary>
-        public void ExecuteSequentiallyUnblocked()
+        public void ExecuteSequentiallyUnblocked(T1 t1)
         {
-            Executor.ExecuteSequentiallyUnblocked(this);
+            Executor.ExecuteSequentiallyUnblocked(this.Select((ix) => new Action(() => ix(t1))));
         }
 
         /// <summary>
-        /// Executes each action in parallel blocking the calling thread until
-        /// all actions are finished executing.
+        /// Executes each action in parallel without blocking the calling thread.
         /// </summary>
-        public void ExecuteParallelBlocked()
+        public void ExecuteParallelBlocked(T1 t1)
         {
-            Executor.ExecuteParallelBlocked(this);
+            Executor.ExecuteParallelBlocked(this.Select((ix) => new Action(() => ix(t1))));
         }
 
         /// <summary>
@@ -95,17 +94,18 @@ namespace poetic.lambda.collections
         /// or milliseconds have passed, whatever occurs first.
         /// </summary>
         /// <param name="millisecondsTimeout">Maximum amount of time to block calling thread.</param>
-        public void ExecuteParallelBlocked(int millisecondsTimeout)
+        public void ExecuteParallelBlocked(T1 t1, int millisecondsTimeout)
         {
-            Executor.ExecuteParallelBlocked(this, millisecondsTimeout);
+            Executor.ExecuteParallelBlocked(this.Select((ix) => new Action(() => ix(t1))), millisecondsTimeout);
         }
 
         /// <summary>
-        /// Executes each action in parallel without blocking the calling thread.
+        /// Executes each action in parallel blocking the calling thread until
+        /// all actions are finished executing.
         /// </summary>
-        public void ExecuteParallelUnblocked()
+        public void ExecuteParallelUnblocked(T1 t1)
         {
-            Executor.ExecuteParallelUnblocked(this);
+            Executor.ExecuteParallelUnblocked(this.Select((ix) => new Action(() => ix(t1))));
         }
     }
 }

@@ -30,7 +30,7 @@ namespace poetic.tests
     public class ActionsTest
     {
         [Test]
-        public void Parallel_1()
+        public void ExecuteParallelBlocked_1()
         {
             var sync = new Synchronizer<string>("initial_");
 
@@ -38,17 +38,18 @@ namespace poetic.tests
             actions.Add(() => sync.Assign((res) => res + "foo"));
             actions.Add(() => sync.Assign((res) => res + "bar"));
 
-            actions.Parallel();
+            actions.ExecuteParallelBlocked();
 
-            var result = sync.Get();
+            string result = null;
+            sync.Read(delegate (string val) { result = val; });
             Assert.AreEqual(true, "initial_foobar" == result || result == "initial_barfoo");
         }
 
         [Test]
-        public void Parallel_2()
+        public void ExecuteParallelBlocked_2()
         {
             var result = "";
-            var wait = new EventWaitHandle(false, EventResetMode.ManualReset);
+            var wait = new ManualResetEvent(false);
 
             Actions actions = new Actions();
             actions.Add(delegate {
@@ -62,15 +63,15 @@ namespace poetic.tests
                 result += "bar";
             });
 
-            actions.Parallel();
+            actions.ExecuteParallelBlocked();
             Assert.AreEqual("foobar", result);
         }
 
         [Test]
-        public void Parallel_3()
+        public void ExecuteParallelBlocked_3()
         {
             var result = "";
-            var wait = new EventWaitHandle(false, EventResetMode.ManualReset);
+            var wait = new ManualResetEvent(false);
 
             Actions actions = new Actions();
             actions.Add(delegate {
@@ -84,12 +85,12 @@ namespace poetic.tests
                 wait.Set();
             });
 
-            actions.Parallel();
+            actions.ExecuteParallelBlocked();
             Assert.AreEqual("barfoo", result);
         }
 
         [Test]
-        public void ParallelTimeout()
+        public void ExecuteParallelBlockedTimeout_1()
         {
             var result = "";
 
@@ -104,46 +105,32 @@ namespace poetic.tests
                 result += "bar";
             });
 
-            actions.Parallel(500);
+            actions.ExecuteParallelBlocked(50);
             Assert.AreEqual("foo", result);
         }
 
         [Test]
-        public void Parallel()
+        public void ExecuteParallelBlockedTimeout_2()
         {
             var result = "";
-            var waits = new EventWaitHandle[] {
-                new EventWaitHandle (false, EventResetMode.ManualReset),
-                new EventWaitHandle (false, EventResetMode.ManualReset),
-                new EventWaitHandle (false, EventResetMode.ManualReset)
-            };
 
-            var actions = new Actions();
+            Actions actions = new Actions();
             actions.Add(delegate {
 
-                waits[1].WaitOne();
-                result += "1";
-                waits[0].Set();
+                Thread.Sleep(1000);
+                result += "foo";
             });
             actions.Add(delegate {
 
-                waits[2].WaitOne();
-                result += "2";
-                waits[1].Set();
-            });
-            actions.Add(delegate {
-
-                result += "3";
-                waits[2].Set();
+                result += "bar";
             });
 
-            actions.Parallel();
-            WaitHandle.WaitAll(waits);
-            Assert.AreEqual("321", result);
+            actions.ExecuteParallelBlocked(50);
+            Assert.AreEqual("bar", result);
         }
 
         [Test]
-        public void ParallelArgs()
+        public void ExecuteParallelUnblockedArg()
         {
             var sync = new Synchronizer<string>("initial_");
             var waits = new EventWaitHandle[] {
@@ -171,9 +158,11 @@ namespace poetic.tests
                 waits[2].Set();
             });
 
-            actions.Parallel(sync);
+            actions.ExecuteParallelUnblocked(sync);
             WaitHandle.WaitAll(waits);
-            Assert.AreEqual("initial_321", sync.Get());
+            string res = null;
+            sync.Read(delegate (string val) { res = val; });
+            Assert.AreEqual("initial_321", res);
         }
 
         [Test]
@@ -194,7 +183,7 @@ namespace poetic.tests
                 wait.Set();
             });
 
-            actions.ParallelUnblocked();
+            actions.ExecuteParallelUnblocked();
             wait.WaitOne();
             Assert.AreEqual("123", result);
         }
@@ -219,7 +208,7 @@ namespace poetic.tests
                 result += "4";
             });
 
-            actions.Sequentially(500);
+            actions.ExecuteSequentiallyBlocked(500);
             Assert.AreEqual("123", result);
         }
 
@@ -232,7 +221,7 @@ namespace poetic.tests
             actions.Add(() => result += "foo");
             actions.Add(() => result += "bar");
 
-            actions.Sequentially();
+            actions.ExecuteSequentiallyBlocked();
             Assert.AreEqual("foobar", result);
         }
 
@@ -244,7 +233,7 @@ namespace poetic.tests
             sequence.Add((arg) => arg.Value += "bar");
 
             var mutable = new Mutable<string>("initial_");
-            sequence.Sequentially(mutable);
+            sequence.ExecuteSequentiallyBlocked(mutable);
             Assert.AreEqual("initial_foobar", mutable.Value);
         }
 
@@ -263,7 +252,7 @@ namespace poetic.tests
                 wait.Set();
             });
 
-            sequence.Parallel(result);
+            sequence.ExecuteParallelUnblocked(result);
             wait.WaitOne();
             Assert.AreEqual("123", result.Value);
         }

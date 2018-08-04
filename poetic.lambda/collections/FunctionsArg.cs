@@ -27,9 +27,9 @@ using poetic.lambda.utilities;
 namespace poetic.lambda.collections
 {
     /// <summary>
-    /// Class encapsulating a list of Func delegates taking no arguments.
+    /// Class encapsulating a list of Func delegates taking one argument.
     /// </summary>
-    public class Functions<TResult> : Sequence<Func<TResult>>
+    public class Functions<T1, TResult> : Sequence<Func<T1, TResult>>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.lambdas.Functions`1"/> class.
@@ -40,37 +40,38 @@ namespace poetic.lambda.collections
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.delegates.Functions`1"/> class.
         /// </summary>
-        /// <param name="functions">Initial functions.</param>
-        public Functions(params Func<TResult>[] functions)
-            : base(functions)
+        /// <param name="lambdas">Initial functors.</param>
+        public Functions(params Func<T1, TResult>[] lambdas)
+            : base(lambdas)
         { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.delegates.Functions`1"/> class.
         /// </summary>
-        /// <param name="functions">Initial functions.</param>
-        public Functions(IEnumerable<Func<TResult>> functions)
-            : base(functions)
+        /// <param name="lambdas">Initial functors.</param>
+        public Functions(IEnumerable<Func<T1, TResult>> lambdas)
+            : base(lambdas)
         { }
 
         /// <summary>
-        /// Evaluate each function in a sequence on the calling thread.
+        /// Executes all lambdas in a sequence on the calling thread.
         /// </summary>
-        /// <returns>The result of each evaluation.</returns>
-        public IEnumerable<TResult> EvaluateSequentiallyBlocked()
+        /// <returns>The sequence.</returns>
+        /// <param name="t1">T1.</param>
+        public IEnumerable<TResult> Sequence(T1 t1)
         {
-            return Evaluator<TResult>.EvaluateSequentiallyBlocked(this);
+            return Evaluator<TResult>.EvaluateSequentiallyBlocked(this.Select((ix) => new Func<TResult>(() => ix(t1))));
         }
 
         /// <summary>
-        /// Evaluates each action in parallel blocking the calling thread for a
+        /// Executes each action in sequence blocking the calling thread for a
         /// maximum amount of time, until execution of all actions are finished,
         /// or milliseconds have passed, whatever occurs first.
         /// </summary>
-        /// <returns>The result of each evaluation.</returns>
-        public IEnumerable<TResult> EvaluateParallelBlocked(int millisecondsTimeout)
+        /// <param name="millisecondsTimeout">Maximum amount of time to block calling thread.</param>
+        public IEnumerable<TResult> Sequence(T1 t1, int millisecondsTimeout)
         {
-            return Evaluator<TResult>.EvaluateParallelBlocked(this, millisecondsTimeout);
+            return Evaluator<TResult>.EvaluateParallelBlocked(this.Select((ix) => new Func<TResult>(() => ix (t1))), millisecondsTimeout);
         }
 
         /// <summary>
@@ -78,9 +79,9 @@ namespace poetic.lambda.collections
         /// the result of each function.
         /// </summary>
         /// <returns>The result of each function invocation.</returns>
-        public IEnumerable<TResult> EvaluateParallelBlocked()
+        public IEnumerable<TResult> Parallel(T1 t1)
         {
-            return Evaluator<TResult>.EvaluateParallelBlocked(this);
+            return Evaluator<TResult>.EvaluateParallelBlocked(this.Select((ix) => new Func<TResult>(() => ix(t1))));
         }
     }
 }

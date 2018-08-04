@@ -19,9 +19,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-using System.Linq;
 using NUnit.Framework;
 using System.Threading;
+using poetic.lambda.utilities;
 using poetic.lambda.collections;
 
 namespace poetic.tests
@@ -30,7 +30,7 @@ namespace poetic.tests
     public class FunctionsTest
     {
         [Test]
-        public void Sequential()
+        public void EvaluateSequentiallyBlocked()
         {
             var functions = new Functions<string>();
             functions.Add(() => "1");
@@ -38,50 +38,27 @@ namespace poetic.tests
             functions.Add(() => "3");
 
             var result = "";
-            foreach (var idx in functions.Sequence()) {
+            foreach (var idx in functions.EvaluateSequentiallyBlocked()) {
                 result += idx;
             }
             Assert.AreEqual("123", result);
         }
 
         [Test]
-        public void Parallel()
+        public void EvaluateParallelBlocked()
         {
             var functions = new Functions<string>();
             functions.Add(() => "1");
             functions.Add(() => "2");
             functions.Add(() => "3");
 
-            var result = "";
-            foreach (var idx in functions.Parallel()) {
-                result += idx;
+            var sync = new Synchronizer<string> ("");
+            foreach (var idx in functions.EvaluateParallelBlocked()) {
+                sync.Assign((input) => input + idx);
             }
-            var assert = 
-                result == "123" || 
-                result == "132" || 
-                result == "231" || 
-                result == "213" || 
-                result == "312" || 
-                result == "321";
-            Assert.AreEqual(true, assert);
-        }
-
-        [Test]
-        public void SequenceTimeout()
-        {
-            var functions = new Functions<string>();
-            functions.Add(() => "1");
-            functions.Add(delegate () {
-                Thread.Sleep(2000);
-                return "3";
-            });
-            functions.Add(() => "2");
-
-            var result = "";
-            foreach (var idx in functions.Sequence(500)) {
-                result += idx;
-            }
-            var assert = result == "12" || result == "21";
+            bool assert = false;
+            sync.Read((result) => assert = result == "123" || result == "132" || result == "231" ||
+                result == "213" || result == "312" || result == "321");
             Assert.AreEqual(true, assert);
         }
     }

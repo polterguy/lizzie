@@ -94,22 +94,6 @@ namespace poetic.lambda.utilities
                 _lock.ExitWriteLock();
             }
         }
-
-        /// <summary>
-        /// Enters a read lock and returns the shared instance to caller.
-        /// 
-        /// Useful for changing immutable instances.
-        /// </summary>
-        /// <param name="functor">Functor.</param>
-        public TImpl Get()
-        {
-            _lock.EnterReadLock();
-            try {
-                return _shared;
-            } finally {
-                _lock.ExitReadLock();
-            }
-        }
     }
 
     /// <summary>

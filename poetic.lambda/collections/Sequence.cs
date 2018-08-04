@@ -29,14 +29,14 @@ namespace poetic.lambda.collections
     /// </summary>
     public abstract class Sequence<T> : IEnumerable<T>
     {
-        List<T> _lambdas;
+        List<T> _list;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.lambdas.Sequence`1"/> class.
         /// </summary>
         public Sequence()
         {
-            _lambdas = new List<T>();
+            _list = new List<T>();
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace poetic.lambda.collections
         /// <param name="items">Initial items.</param>
         public Sequence(params T[] items)
         {
-            _lambdas = new List<T>(items);
+            _list = new List<T>(items);
         }
 
         /// <summary>
@@ -54,34 +54,34 @@ namespace poetic.lambda.collections
         /// <param name="items">Initial items.</param>
         public Sequence(IEnumerable<T> items)
         {
-            _lambdas = new List<T>(items);
+            _list = new List<T>(items);
         }
 
         /// <summary>
-        /// Adds the specified lambda to the list of lambdas.
+        /// Appends the specified item to the sequence.
         /// </summary>
-        /// <param name="item">Item to add.</param>
+        /// <param name="item">Item to append.</param>
         public void Add(T item)
         {
-            _lambdas.Add(item);
+            _list.Add(item);
         }
 
         /// <summary>
-        /// Adds a range of items.
+        /// Adds a range of items to the sequence.
         /// </summary>
-        /// <param name="items">Lambdas.</param>
+        /// <param name="items">Items to add.</param>
         public void AddRange(IEnumerable<T> items)
         {
-            _lambdas.AddRange(items);
+            _list.AddRange(items);
         }
 
         /// <summary>
-        /// Adds a range of items.
+        /// Adds a range of items to the sequence.
         /// </summary>
-        /// <param name="items">Items.</param>
+        /// <param name="items">Items to add.</param>
         public void AddRange(params T [] items)
         {
-            _lambdas.AddRange(items);
+            _list.AddRange(items);
         }
 
         #region [ -- Interface implementations -- ]
@@ -92,7 +92,7 @@ namespace poetic.lambda.collections
         /// <returns>The enumerator.</returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return _lambdas.GetEnumerator();
+            return _list.GetEnumerator();
         }
 
         // Private implementation.

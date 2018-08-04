@@ -28,7 +28,7 @@ namespace poetic.lambda.collections
     /// Class encapsulating a list of Func delegates where the output from one
     /// is being passed in as input to the next.
     /// </summary>
-    public class Chain<T> : Sequence<Func<T, T>>
+    public class Chain<T> : Functions<T, T>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.lambdas.Chain`1"/> class.
@@ -39,23 +39,23 @@ namespace poetic.lambda.collections
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.lambdas.Chain`1"/> class.
         /// </summary>
-        /// <param name="lambdas">Initial functors.</param>
-        public Chain(params Func<T, T>[] lambdas)
-            : base(lambdas)
+        /// <param name="functions">Initial functors.</param>
+        public Chain(params Func<T, T>[] functions)
+            : base(functions)
         { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.lambdas.Chain`1"/> class.
         /// </summary>
-        /// <param name="lambdas">Initial functors.</param>
-        public Chain(IEnumerable<Func<T, T>> lambdas)
-            : base(lambdas)
+        /// <param name="functions">Initial functors.</param>
+        public Chain(IEnumerable<Func<T, T>> functions)
+            : base(functions)
         { }
 
         /// <summary>
         /// Evaluates the chain, and returns the result to caller.
         /// </summary>
-        public T Evaluate(T t1)
+        public T Foo(T t1)
         {
             foreach (var ix in this) {
                 t1 = ix(t1);

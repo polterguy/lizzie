@@ -31,13 +31,13 @@ namespace poetic.lambda.utilities
     /// <summary>
     /// Class allowing you to execute a list of actions.
     /// </summary>
-    public static class Execute
+    public static class Executor
     {
         /// <summary>
         /// Sequentially executes each action not returning before execution is finished.
         /// </summary>
         /// <param name="actions">Actions to execute.</param>
-        public static void Sequentially(IEnumerable<Action> actions)
+        public static void ExecuteSequentiallyBlocked(IEnumerable<Action> actions)
         {
             // Sequentially execute each action on calling thread.
             foreach (var ix in actions) {
@@ -49,34 +49,39 @@ namespace poetic.lambda.utilities
         /// Sequentially executes each action on a different thread, and blocking
         /// the calling thread until done, or millisecondsTimeout have passed.
         /// </summary>
+        /// <returns><c>true</c>, if actions finished executing, <c>false</c> otherwise.</returns>
         /// <param name="actions">Actions to execute.</param>
         /// <param name="millisecondsTimeout">Maximum amount of time to block calling thread.</param>
-        public static void Sequentially(IEnumerable<Action> actions, int millisecondsTimeout)
+        public static bool ExecuteSequentiallyBlocked(IEnumerable<Action> actions, int millisecondsTimeout)
         {
             // Making sure we have any work to do.
             if (!actions.Any())
-                return; // Nothing to do here.
-
-            // Checking that we have a valid timeout.
-            if (millisecondsTimeout == -1) {
-
-                // No threads needed, wait time is "forever".
-                Sequentially(actions);
-                return;
-            }
+                return true; // Nothing to do here.
 
             // Sanity checking arguments.
             if (millisecondsTimeout <= 0)
-                throw new ArgumentException("Must be a positive integer value or -1 indicating blocked execution", nameof(millisecondsTimeout));
+                throw new ArgumentException("Must be a positive integer value", nameof(millisecondsTimeout));
+
+            /*
+             * To make method thread safe, we clone incoming actions, and make
+             * sure we execute cloned instance.
+             */
+            var copy = new List<Action>(actions);
 
             // Executing actions on a different thread.
             var thread = new Thread(new ThreadStart(delegate {
-                Sequentially(actions);
+                ExecuteSequentiallyBlocked(copy);
             }));
             thread.Start();
 
             // Waiting for execution to finish, or time to pass.
             thread.Join(millisecondsTimeout);
+
+            /*
+             * Returning true if thread is no longe alive, at which point execution
+             * finished.
+             */
+            return !thread.IsAlive;
         }
 
         /// <summary>
@@ -84,15 +89,21 @@ namespace poetic.lambda.utilities
         /// the calling thread.
         /// </summary>
         /// <param name="actions">Actions to execute.</param>
-        public static void SequentiallyUnblocked(IEnumerable<Action> actions)
+        public static void ExecuteSequentiallyUnblocked(IEnumerable<Action> actions)
         {
             // Sanity checking argument.
             if (!actions.Any())
                 return;
 
+            /*
+             * To make method thread safe, we clone incoming actions, and make
+             * sure we execute cloned instance.
+             */
+            var copy = new List<Action>(actions);
+
             // Executes actions on another thread.
             var thread = new Thread(new ThreadStart(delegate {
-                Sequentially(actions);
+                ExecuteSequentiallyBlocked(copy);
             }));
             thread.Start();
         }
@@ -102,7 +113,7 @@ namespace poetic.lambda.utilities
         /// all actions are finished executing.
         /// </summary>
         /// <param name="actions">Actions to execute.</param>
-        public static void Parallel(IEnumerable<Action> actions)
+        public static void ExecuteParallelBlocked(IEnumerable<Action> actions)
         {
             // Sanity checking argument.
             if (!actions.Any())
@@ -119,25 +130,18 @@ namespace poetic.lambda.utilities
         /// maximum amount of time, until execution of all actions are finished,
         /// or milliseconds have passed, whatever occurs first.
         /// </summary>
+        /// <returns><c>true</c>, if actions finished executing, <c>false</c> otherwise.</returns>
         /// <param name="actions">Actions to execute.</param>
         /// <param name="millisecondsTimeout">Maximum amount of time to block calling thread.</param>
-        public static void Parallel(IEnumerable<Action> actions, int millisecondsTimeout)
+        public static bool ExecuteParallelBlocked(IEnumerable<Action> actions, int millisecondsTimeout)
         {
             // Making sure we have any work to do.
             if (!actions.Any())
-                return; // Nothing to do here.
-
-            // Checking that we have a valid timeout.
-            if (millisecondsTimeout == -1) {
-
-                // No synchronisation needed, wait time is "forever".
-                Parallel(actions);
-                return;
-            }
+                return true; // Nothing to do here.
 
             // Sanity checking argument.
             if (millisecondsTimeout <= 0)
-                throw new ArgumentException("Must be a positive integer value or -1 indicating blocked execution", nameof(millisecondsTimeout));
+                throw new ArgumentException("Must be a positive integer value", nameof(millisecondsTimeout));
 
             // Tracking time.
             var sw = Stopwatch.StartNew();
@@ -169,13 +173,20 @@ namespace poetic.lambda.utilities
                 // Making sure we never wait beyond our maximum amount of time.
                 idx.Join(millisecondsTimeout);
             }
+
+            // Returning true if all threads finished, otherwise false.
+            foreach (var thread in threads) {
+                if (thread.IsAlive)
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>
         /// Executes each action in parallel without blocking the calling thread.
         /// </summary>
         /// <param name="actions">Actions to execute.</param>
-        public static void ParallelUnblocked(IEnumerable<Action> actions)
+        public static void ExecuteParallelUnblocked(IEnumerable<Action> actions)
         {
             foreach (var ix in actions) {
                 var thread = new Thread(new ThreadStart(delegate {
