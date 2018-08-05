@@ -39,6 +39,9 @@
     <Compile Include="example_languages\dictionary_actions\WordTokenizer.cs" />
     <Compile Include="TokenizerTest.cs" />
     <Compile Include="DSL_tests\DictionaryActionTest.cs" />
+    <Compile Include="DSL_tests\FunctionsTest.cs" />
+    <Compile Include="example_languages\functions\FunctionTokenizer.cs" />
+    <Compile Include="example_languages\functions\RemoveParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -53,6 +56,7 @@
     <Folder Include="example_languages\" />
     <Folder Include="example_languages\dictionary_actions\" />
     <Folder Include="DSL_tests\" />
+    <Folder Include="example_languages\functions\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

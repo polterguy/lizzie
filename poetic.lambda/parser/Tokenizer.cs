@@ -22,6 +22,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using System.Collections;
@@ -74,6 +75,51 @@ namespace poetic.lambda.parser
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
             _reader = new StreamReader(stream);
             _tokenizer = tokenizer ?? throw new NullReferenceException(nameof(tokenizer));
+        }
+
+        /// <summary>
+        /// Eats initial whitespace from reader.
+        /// </summary>
+        /// <param name="reader">Reader.</param>
+        public static void EatSpace(StreamReader reader)
+        {
+            while (!reader.EndOfStream) {
+                var ch = (char)reader.Peek();
+                if (ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n') {
+                    reader.Read();
+                } else {
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns true if next character in stream is whitespace character,
+        /// or EOF has been reached.
+        /// </summary>
+        /// <returns><c>true</c>, if is space or EOF was nexted, <c>false</c> otherwise.</returns>
+        /// <param name="reader">Reader.</param>
+        public static bool NextIsSpaceOrEOF(StreamReader reader)
+        {
+            if (reader.EndOfStream)
+                return true;
+            var ch = (char)reader.Peek();
+            return new char[] { ' ', '\t', '\r', '\n' }.Any((ix) => ix == ch);
+        }
+
+        /// <summary>
+        /// Returns true if next character in stream is any of the specified characters,
+        /// or EOF has been reached.
+        /// </summary>
+        /// <returns><c>true</c>, if if next is was ended, <c>false</c> otherwise.</returns>
+        /// <param name="reader">Reader.</param>
+        /// <param name="characters">Characters.</param>
+        public static bool NextIsOfOrEOF (StreamReader reader, params char[] characters)
+        {
+            if (reader.EndOfStream)
+                return true;
+            var ch = (char)reader.Peek();
+            return characters.Any((ix) => ix == ch);
         }
 
         public IEnumerator<string> GetEnumerator()

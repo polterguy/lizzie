@@ -117,7 +117,7 @@ namespace poetic.tests
         [Test]
         public void ExecuteParallelUnblocked()
         {
-            var result = "";
+            var sync = new Synchronizer<Mutable<string>>(new Mutable<string>(""));
             var waits = new ManualResetEvent[] {
                 new ManualResetEvent(false),
                 new ManualResetEvent(false),
@@ -126,20 +126,22 @@ namespace poetic.tests
 
             var actions = new Actions();
             actions.Add(delegate {
-                result += "1";
+                sync.Write((ix) => ix.Value += "1");
                 waits[0].Set();
             });
             actions.Add(delegate {
-                result += "2";
+                sync.Write((ix) => ix.Value += "2");
                 waits[1].Set();
             });
             actions.Add(delegate {
-                result += "3";
+                sync.Write((ix) => ix.Value += "3");
                 waits[2].Set();
             });
 
             actions.ExecuteParallelUnblocked();
             WaitHandle.WaitAll(waits);
+            string result = null;
+            sync.Read(delegate (Mutable<string> mut) { result = mut.Value; });
             var assert = result == "123" || result == "132" || result == "231" || result == "213" || result == "312" || result == "321";
             Assert.AreEqual(true, assert);
         }
