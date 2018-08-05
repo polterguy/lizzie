@@ -35,8 +35,10 @@
     <Compile Include="ActionsTest.cs" />
     <Compile Include="FunctionsTest.cs" />
     <Compile Include="ChainTest.cs" />
-    <Compile Include="ParserTest.cs" />
-    <Compile Include="helpers\WordTokenizer.cs" />
+    <Compile Include="example_languages\dictionary_actions\RemoveParser.cs" />
+    <Compile Include="example_languages\dictionary_actions\WordTokenizer.cs" />
+    <Compile Include="TokenizerTest.cs" />
+    <Compile Include="DSL_tests\DictionaryActionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -48,7 +50,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="helpers\" />
+    <Folder Include="example_languages\" />
+    <Folder Include="example_languages\dictionary_actions\" />
+    <Folder Include="DSL_tests\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

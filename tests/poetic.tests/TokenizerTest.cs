@@ -25,12 +25,13 @@ using System.Text;
 using System.Collections.Generic;
 using NUnit.Framework;
 using poetic.lambda.parser;
-using poetic.tests.halpers;
+using poetic.tests.example_languages.dictionary_actions;
+using poetic.lambda.utilities;
 
 namespace poetic.tests
 {
     [TestFixture]
-    public class ParserTest
+    public class TokenizerTest
     {
         [Test]
         public void TokenizeWordsStream()
@@ -56,7 +57,7 @@ namespace poetic.tests
         public void TokenizeWordsCode()
         {
             // Example code.
-            var code = "foo  bar howdy ";
+            var code = "   foo  bar   howdy  ";
 
             // Using raw code (string) as input to our tokenizer, and our "WordTokenizer".
             var tokenizer = new Tokenizer(code, new WordTokenizer());
