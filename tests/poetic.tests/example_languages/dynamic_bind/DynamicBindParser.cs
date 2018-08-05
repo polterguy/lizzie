@@ -103,7 +103,7 @@ namespace poetic.tests.example_languages.dynamic_bind
                         }
                     }
                 } else {
-                    throw new Exception("Unsupported keyword");
+                    throw new NotImplementedException("Unsupported keyword");
                 }
             }
             return retVal;
