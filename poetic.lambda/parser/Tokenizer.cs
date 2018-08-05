@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
@@ -46,8 +47,16 @@ namespace poetic.lambda.parser
         /// <param name="tokenizer">Tokenizer.</param>
         public Tokenizer(Stream stream, ITokenizer tokenizer)
         {
+            // Sanity check.
+            if (stream == null)
+                throw new NullReferenceException(nameof(stream));
+
+            /*
+             * Notice, we don't take ownership over stream, so caller must make
+             * sure the stream is disposed!
+             */
             _reader = new StreamReader(stream);
-            _tokenizer = tokenizer;
+            _tokenizer = tokenizer ?? throw new NullReferenceException(nameof(tokenizer));
         }
 
         /// <summary>
@@ -57,9 +66,14 @@ namespace poetic.lambda.parser
         /// <param name="tokenizer">Tokenizer.</param>
         public Tokenizer(string code, ITokenizer tokenizer)
         {
+            // Sanity check.
+            if (string.IsNullOrEmpty(code))
+                throw new NullReferenceException(nameof(code));
+
+            // MemoryStream doesn't need to be disposed!
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
             _reader = new StreamReader(stream);
-            _tokenizer = tokenizer;
+            _tokenizer = tokenizer ?? throw new NullReferenceException(nameof(tokenizer));
         }
 
         public IEnumerator<string> GetEnumerator()

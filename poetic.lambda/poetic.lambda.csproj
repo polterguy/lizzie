@@ -18,6 +18,7 @@
   <ItemGroup>
     <Compile Remove="Threads.cs" />
     <Compile Remove="lambdas\SequenceBase.cs" />
+    <Compile Remove="parser\Lambda.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="collections\" />
