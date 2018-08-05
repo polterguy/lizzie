@@ -72,9 +72,10 @@ add(_qwerty, 10)", new FunctionTokenizer());
             /*
              * Creates another instance of our Binder and passes it into the
              * same lambda object created above.
+             *
              * This tests that the same lambda object can be used multiple times,
-             * and hence "cached" if you wish,after having parsed it, executing
-             * it multiple times, for different "contexts".
+             * and hence "cached" if you wish, after having parsed it, executing
+             * it multiple times, for different "contexts" (bound objects).
              */
             binder = new DynamicBinder() {
                 Foo = "x_",
