@@ -40,11 +40,12 @@ namespace poetic.tests.example_languages.dynamic_bind
             _tokenizer = tokenizer ?? throw new NullReferenceException(nameof(tokenizer));
         }
 
-        private bool IsFunction(string token)
+        private bool IsMethod(string token)
         {
-            if (token == "(" || token == ")")
+            if (token == "(" || token == ")" || token == ",")
                 return false;
-            return true;
+            var method = typeof(T).GetMethod(token, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            return method != null;
         }
 
         private Action<T, Arguments> CreateAction(string methodName, Arguments arguments)
@@ -71,7 +72,7 @@ namespace poetic.tests.example_languages.dynamic_bind
             var retVal = new Actions<T>();
             var enumerator = _tokenizer.GetEnumerator();
             while (enumerator.MoveNext()) {
-                if (IsFunction(enumerator.Current)) {
+                if (IsMethod(enumerator.Current)) {
                     var methodName = enumerator.Current;
                     if (!enumerator.MoveNext()) {
                         throw new Exception("Unexpected EOF after function invocation");
