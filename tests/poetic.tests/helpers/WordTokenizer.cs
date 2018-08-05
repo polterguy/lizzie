@@ -25,6 +25,10 @@ using poetic.lambda.parser;
 
 namespace poetic.tests.halpers
 {
+    /*
+     * A simple word tokenizer that return each word kind of like string.Split
+     * would do given " " as separate characters.
+     */
     public class WordTokenizer : ITokenizer
     {
         public string Next(StreamReader reader)
@@ -34,9 +38,12 @@ namespace poetic.tests.halpers
                 if (reader.EndOfStream)
                     return retVal;
                 var ch = (char)reader.Read();
-                if (ch == ' ')
-                    return retVal;
-                retVal += ch;
+                if (ch == ' ') {
+                    if (retVal != null)
+                        return retVal;
+                } else {
+                    retVal += ch;
+                }
             }
         }
     }

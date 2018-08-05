@@ -33,16 +33,42 @@ namespace poetic.tests
     public class ParserTest
     {
         [Test]
-        public void Tokenize_1()
+        public void TokenizeWordsStream()
         {
-            var code = "foo bar";
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(code))) {
-                var tokenizer = new WordTokenizer();
-                var tokens = new List<string>(Parser.Tokenize(stream, tokenizer));
-                Assert.AreEqual(2, tokens.Count);
-                Assert.AreEqual("foo", tokens[0]);
-                Assert.AreEqual("bar", tokens[1]);
-            }
+            // Example code.
+            var code = "foo  bar howdy ";
+
+            // Using Stream as input to our tokenizer, and our "WordTokenizer".
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
+            var tokenizer = new Tokenizer(stream, new WordTokenizer());
+
+            // Retrieving tokens.
+            var words = new List<string>(tokenizer);
+
+            // Sanity checking tokens that were produced as a result from our tokenizer.
+            Assert.AreEqual(3, words.Count);
+            Assert.AreEqual("foo", words[0]);
+            Assert.AreEqual("bar", words[1]);
+            Assert.AreEqual("howdy", words[2]);
+        }
+
+        [Test]
+        public void TokenizeWordsCode()
+        {
+            // Example code.
+            var code = "foo  bar howdy ";
+
+            // Using raw code (string) as input to our tokenizer, and our "WordTokenizer".
+            var tokenizer = new Tokenizer(code, new WordTokenizer());
+
+            // Retrieving tokens.
+            var words = new List<string>(tokenizer);
+
+            // Sanity checking tokens that were produced as a result from our tokenizer.
+            Assert.AreEqual(3, words.Count);
+            Assert.AreEqual("foo", words[0]);
+            Assert.AreEqual("bar", words[1]);
+            Assert.AreEqual("howdy", words[2]);
         }
     }
 }
