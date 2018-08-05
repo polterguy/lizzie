@@ -21,38 +21,37 @@
  */
 
 using System;
+using System.IO;
+using System.Collections.Generic;
 using poetic.lambda.parser;
-using poetic.lambda.utilities;
-using poetic.lambda.collections;
 
-namespace poetic.tests.example_languages.dictionary_actions
+namespace poetic.tests.example_languages.single_parameter
 {
     /*
-     * A simple parses example that mutates a simple string input.
+     * A simple word tokenizer that return each word kind of like string.Split
+     * would do given " " as separate characters.
      */
-    public class RemoveParser
+    public class FunctionTokenizer : ITokenizer
     {
-        readonly Tokenizer _tokenizer;
-
-        public RemoveParser(Tokenizer tokenizer)
+        public string Next (StreamReader reader)
         {
-            _tokenizer = tokenizer ?? throw new NullReferenceException(nameof(tokenizer));
-        }
-
-        public Actions<Mutable<string>> Parse()
-        {
-            var retVal = new Actions<Mutable<string>>();
-            foreach (var ixToken in _tokenizer) {
-                switch (ixToken) {
-                    case "remove_x":
-                        retVal.Add((ix) => ix.Value = ix.Value.Replace("x", ""));
-                        break;
-                    case "remove_y":
-                        retVal.Add((ix) => ix.Value = ix.Value.Replace("y", ""));
+            Tokenizer.EatSpace(reader);
+            var retVal = "";
+            while (!reader.EndOfStream) {
+                var ch = (char)reader.Read();
+                switch (ch) {
+                    case '(':
+                        return "(";
+                    case ')':
+                        return ")";
+                    default:
+                        retVal += ch;
                         break;
                 }
+                if (reader.EndOfStream || Tokenizer.NextIsOf(reader, '(', ')') || Tokenizer.NextIsWhiteSpace(reader))
+                    break;
             }
-            return retVal;
+            return retVal == "" ? null : retVal;
         }
     }
 }

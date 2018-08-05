@@ -25,8 +25,7 @@ using System.Text;
 using System.Collections.Generic;
 using NUnit.Framework;
 using poetic.lambda.parser;
-using poetic.tests.example_languages.dictionary_actions;
-using poetic.lambda.utilities;
+using poetic.tests.example_languages.no_parameters;
 
 namespace poetic.tests
 {

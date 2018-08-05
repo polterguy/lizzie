@@ -20,12 +20,9 @@
  * SOFTWARE.
  */
 
-using System.IO;
-using System.Text;
-using System.Collections.Generic;
 using NUnit.Framework;
 using poetic.lambda.parser;
-using poetic.tests.example_languages.dictionary_actions;
+using poetic.tests.example_languages.no_parameters;
 using poetic.lambda.utilities;
 
 namespace poetic.tests.DSL_tests

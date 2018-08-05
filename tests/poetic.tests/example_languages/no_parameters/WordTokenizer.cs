@@ -25,7 +25,7 @@ using System.IO;
 using System.Collections.Generic;
 using poetic.lambda.parser;
 
-namespace poetic.tests.example_languages.dictionary_actions
+namespace poetic.tests.example_languages.no_parameters
 {
     /*
      * A simple word tokenizer that return each word kind of like string.Split

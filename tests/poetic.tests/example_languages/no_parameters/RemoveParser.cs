@@ -25,11 +25,10 @@ using poetic.lambda.parser;
 using poetic.lambda.utilities;
 using poetic.lambda.collections;
 
-namespace poetic.tests.example_languages.functions
+namespace poetic.tests.example_languages.no_parameters
 {
     /*
-     * A simple parses example that mutates a simple string input with a
-     * parametrised function tokenizer.
+     * A simple parses example that mutates a simple string input.
      */
     public class RemoveParser
     {
@@ -43,26 +42,14 @@ namespace poetic.tests.example_languages.functions
         public Actions<Mutable<string>> Parse()
         {
             var retVal = new Actions<Mutable<string>>();
-            var enumerator = _tokenizer.GetEnumerator();
-            while (enumerator.MoveNext()) {
-                if (enumerator.Current == "remove") {
-                    if (!enumerator.MoveNext()) {
-                        throw new Exception("Unexpected EOF after function invocation");
-                    }
-                    if (enumerator.Current != "(") {
-                        throw new Exception("No arguments supplied to function invocation");
-                    }
-                    if (!enumerator.MoveNext()) {
-                        throw new Exception("Unexpected EOF after opening paranthesis");
-                    }
-                    var arg = enumerator.Current;
-                    retVal.Add((ix) => ix.Value = ix.Value.Replace(arg, ""));
-                    if (!enumerator.MoveNext()) {
-                        throw new Exception("Unexpected EOF after function parameters");
-                    }
-                    if (enumerator.Current != ")") {
-                        throw new Exception("No end of arguments supplied to function invocation");
-                    }
+            foreach (var ixToken in _tokenizer) {
+                switch (ixToken) {
+                    case "remove_x":
+                        retVal.Add((ix) => ix.Value = ix.Value.Replace("x", ""));
+                        break;
+                    case "remove_y":
+                        retVal.Add((ix) => ix.Value = ix.Value.Replace("y", ""));
+                        break;
                 }
             }
             return retVal;

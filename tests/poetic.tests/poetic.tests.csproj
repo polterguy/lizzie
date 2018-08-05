@@ -35,13 +35,13 @@
     <Compile Include="ActionsTest.cs" />
     <Compile Include="FunctionsTest.cs" />
     <Compile Include="ChainTest.cs" />
-    <Compile Include="example_languages\dictionary_actions\RemoveParser.cs" />
-    <Compile Include="example_languages\dictionary_actions\WordTokenizer.cs" />
+    <Compile Include="example_languages\no_parameters\RemoveParser.cs" />
+    <Compile Include="example_languages\no_parameters\WordTokenizer.cs" />
     <Compile Include="TokenizerTest.cs" />
     <Compile Include="DSL_tests\DictionaryActionTest.cs" />
     <Compile Include="DSL_tests\FunctionsTest.cs" />
-    <Compile Include="example_languages\functions\FunctionTokenizer.cs" />
-    <Compile Include="example_languages\functions\RemoveParser.cs" />
+    <Compile Include="example_languages\single_parameter\FunctionTokenizer.cs" />
+    <Compile Include="example_languages\single_parameter\RemoveParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -54,9 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="example_languages\" />
-    <Folder Include="example_languages\dictionary_actions\" />
+    <Folder Include="example_languages\no_parameters\" />
     <Folder Include="DSL_tests\" />
-    <Folder Include="example_languages\functions\" />
+    <Folder Include="example_languages\single_parameter\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

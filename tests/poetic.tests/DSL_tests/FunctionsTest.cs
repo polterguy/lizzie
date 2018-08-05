@@ -25,7 +25,7 @@ using System.Text;
 using System.Collections.Generic;
 using NUnit.Framework;
 using poetic.lambda.parser;
-using poetic.tests.example_languages.functions;
+using poetic.tests.example_languages.single_parameter;
 using poetic.lambda.utilities;
 
 namespace poetic.tests.DSL_tests
@@ -50,12 +50,20 @@ namespace poetic.tests.DSL_tests
         [Test]
         public void FunctionsTest_2()
         {
-            // Creating our tokenizer and parsing it to create a lambda object.
-            var tokenizer = new Tokenizer(@"remove(     x )    
-  remove (y)   
+            /*
+             * Creating our tokenizer and parsing it to create a lambda object.
+             * Notice, we intentionally try to put in superflous white spaces here
+             * to test the white space logic of the Tokenizer class.
+             */
+            var tokenizer = new Tokenizer(@"    remove    (     x )   
+  
+
+ 
+  remove (y )   
 
 ", new FunctionTokenizer());
             var list = new List<string>(tokenizer);
+            Assert.AreEqual(8, list.Count);
             var lambda = new RemoveParser(tokenizer).Parse();
 
             // Executes our lambda passing in an input string that mutates.
