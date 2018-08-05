@@ -20,10 +20,12 @@
  * SOFTWARE.
  */
 
+using System;
 using System.IO;
+using System.Collections.Generic;
 using poetic.lambda.parser;
 
-namespace poetic.tests.halpers
+namespace poetic.tests.example_languages.dictionary_actions
 {
     /*
      * A simple word tokenizer that return each word kind of like string.Split
@@ -31,20 +33,18 @@ namespace poetic.tests.halpers
      */
     public class WordTokenizer : ITokenizer
     {
+        List<string> _tokens;
+
         public string Next(StreamReader reader)
         {
-            string retVal = null;
-            while (true) {
-                if (reader.EndOfStream)
-                    return retVal;
-                var ch = (char)reader.Read();
-                if (ch == ' ') {
-                    if (retVal != null)
-                        return retVal;
-                } else {
-                    retVal += ch;
-                }
+            if (_tokens == null) {
+                _tokens = new List<string>(reader.ReadToEnd().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
             }
+            if (_tokens.Count == 0)
+                return null;
+            var retVal = _tokens[0];
+            _tokens.RemoveAt(0);
+            return retVal;
         }
     }
 }
