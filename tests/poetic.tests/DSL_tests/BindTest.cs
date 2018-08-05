@@ -20,31 +20,31 @@
  * SOFTWARE.
  */
 
-using System;
-using System.IO;
 using System.Collections.Generic;
+using NUnit.Framework;
 using poetic.lambda.parser;
+using poetic.tests.example_languages.bind;
+using poetic.tests.example_languages.single_parameter;
 
-namespace poetic.tests.example_languages.no_parameters
+namespace poetic.tests.DSL_tests
 {
-    /*
-     * A simple word tokenizer that returns each word by simply splitting the
-     * entire reader's content on ' ' (space character) into simple words.
-     */
-    public class WordTokenizer : ITokenizer
+    [TestFixture]
+    public class BindTest
     {
-        List<string> _tokens;
-
-        public string Next(StreamReader reader)
+        [Test]
+        public void BindTest_1()
         {
-            if (_tokens == null) {
-                _tokens = new List<string>(reader.ReadToEnd().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            }
-            if (_tokens.Count == 0)
-                return null;
-            var retVal = _tokens[0];
-            _tokens.RemoveAt(0);
-            return retVal;
+            // Creating our tokenizer and parsing it to create a lambda object.
+            var tokenizer = new Tokenizer("foo(xyz)", new FunctionTokenizer());
+            var list = new List<string>(tokenizer);
+            var lambda = new BindParser(tokenizer).Parse();
+
+            // Creates an instance of our Binder and passes it into our lambda execution.
+            var binder = new Binder();
+
+            // Executes our lambda passing in an input string that mutates.
+            lambda.Execute(binder);
+            Assert.AreEqual("xyz", binder.FooValue);
         }
     }
 }

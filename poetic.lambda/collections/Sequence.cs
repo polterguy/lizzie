@@ -29,7 +29,7 @@ namespace poetic.lambda.collections
     /// </summary>
     public abstract class Sequence<T> : IEnumerable<T>
     {
-        List<T> _list;
+        protected List<T> _list;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.lambdas.Sequence`1"/> class.

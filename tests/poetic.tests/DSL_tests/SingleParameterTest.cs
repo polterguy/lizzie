@@ -20,8 +20,6 @@
  * SOFTWARE.
  */
 
-using System.IO;
-using System.Text;
 using System.Collections.Generic;
 using NUnit.Framework;
 using poetic.lambda.parser;
@@ -31,7 +29,7 @@ using poetic.lambda.utilities;
 namespace poetic.tests.DSL_tests
 {
     [TestFixture]
-    public class FunctionsTest
+    public class SingleParameterTest
     {
         [Test]
         public void FunctionsTest_1()

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\packages\NUnit.3.10.1\build\NUnit.props" Condition="Exists('..\..\packages\NUnit.3.10.1\build\NUnit.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -38,10 +37,16 @@
     <Compile Include="example_languages\no_parameters\RemoveParser.cs" />
     <Compile Include="example_languages\no_parameters\WordTokenizer.cs" />
     <Compile Include="TokenizerTest.cs" />
-    <Compile Include="DSL_tests\DictionaryActionTest.cs" />
-    <Compile Include="DSL_tests\FunctionsTest.cs" />
+    <Compile Include="DSL_tests\NoParametersTest.cs" />
+    <Compile Include="DSL_tests\SingleParameterTest.cs" />
     <Compile Include="example_languages\single_parameter\FunctionTokenizer.cs" />
     <Compile Include="example_languages\single_parameter\RemoveParser.cs" />
+    <Compile Include="DSL_tests\BindTest.cs" />
+    <Compile Include="example_languages\bind\BindParser.cs" />
+    <Compile Include="example_languages\bind\Binder.cs" />
+    <Compile Include="DSL_tests\DynamicBindTest.cs" />
+    <Compile Include="example_languages\dynamic_bind\DynamicBinder.cs" />
+    <Compile Include="example_languages\dynamic_bind\DynamicBindParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -57,6 +62,8 @@
     <Folder Include="example_languages\no_parameters\" />
     <Folder Include="DSL_tests\" />
     <Folder Include="example_languages\single_parameter\" />
+    <Folder Include="example_languages\bind\" />
+    <Folder Include="example_languages\dynamic_bind\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

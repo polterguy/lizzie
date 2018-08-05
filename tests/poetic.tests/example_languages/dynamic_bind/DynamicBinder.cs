@@ -21,30 +21,44 @@
  */
 
 using System;
-using System.IO;
-using System.Collections.Generic;
-using poetic.lambda.parser;
+using poetic.lambda.collections;
 
-namespace poetic.tests.example_languages.no_parameters
+namespace poetic.tests.example_languages.dynamic_bind
 {
     /*
-     * A simple word tokenizer that returns each word by simply splitting the
-     * entire reader's content on ' ' (space character) into simple words.
+     * An instance of this class will be bound to the lambda execution further
+     * down in file.
      */
-    public class WordTokenizer : ITokenizer
+    public class DynamicBinder
     {
-        List<string> _tokens;
-
-        public string Next(StreamReader reader)
+        public string FooValue
         {
-            if (_tokens == null) {
-                _tokens = new List<string>(reader.ReadToEnd().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            }
-            if (_tokens.Count == 0)
-                return null;
-            var retVal = _tokens[0];
-            _tokens.RemoveAt(0);
-            return retVal;
+            get;
+            set;
+        }
+
+        public int BarValue
+        {
+            get;
+            set;
+        }
+
+        public void set_foo(Arguments arguments)
+        {
+            if (arguments.Count < 0)
+                throw new ArgumentException("Too few arguments passed into set_foo");
+            if (arguments.Count > 1)
+                throw new ArgumentException("Too many arguments passed into set_foo");
+            FooValue = arguments.Get<string> (0);
+        }
+
+        public void set_bar(Arguments arguments)
+        {
+            if (arguments.Count < 0)
+                throw new ArgumentException("Too few arguments passed into set_foo");
+            if (arguments.Count > 1)
+                throw new ArgumentException("Too many arguments passed into set_foo");
+            BarValue = arguments.Get<int>(0);
         }
     }
 }

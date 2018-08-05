@@ -20,16 +20,14 @@
  * SOFTWARE.
  */
 
-using System;
 using System.IO;
-using System.Collections.Generic;
 using poetic.lambda.parser;
 
 namespace poetic.tests.example_languages.single_parameter
 {
     /*
-     * A simple word tokenizer that return each word kind of like string.Split
-     * would do given " " as separate characters.
+     * A simple tokenizer that will let you tokenize functions taking parameters.
+     * It ignores white spaces.
      */
     public class FunctionTokenizer : ITokenizer
     {

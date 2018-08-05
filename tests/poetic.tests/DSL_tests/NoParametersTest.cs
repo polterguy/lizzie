@@ -28,7 +28,7 @@ using poetic.lambda.utilities;
 namespace poetic.tests.DSL_tests
 {
     [TestFixture]
-    public class DictionaryActionTest
+    public class NoParametersTest
     {
         [Test]
         public void ParseTest_1()
