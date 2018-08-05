@@ -85,5 +85,17 @@ namespace poetic.lambda.collections
                 return (T)obj; // No conversion is necessary.
             return (T)Convert.ChangeType(obj, typeof(T));
         }
+
+        /// <summary>
+        /// Throws an exception if number of arguments does not equal specified count.
+        /// </summary>
+        /// <param name="count">Number of arguments to expect.</param>
+        public void AssertCount(int count)
+        {
+            if (Count < count)
+                throw new ArgumentException("Too few arguments");
+            if (Count > count)
+                throw new ArgumentException("Too many arguments");
+        }
     }
 }

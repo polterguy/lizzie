@@ -31,34 +31,46 @@ namespace poetic.tests.example_languages.dynamic_bind
      */
     public class DynamicBinder
     {
-        public string FooValue
+        public string Foo
         {
             get;
             set;
         }
 
-        public int BarValue
+        public int Bar
         {
             get;
             set;
         }
 
+        /*
+         * Method we dynamically will bind towards function invocation in DSL.
+         */
         public void set_foo(Arguments arguments)
         {
-            if (arguments.Count < 0)
-                throw new ArgumentException("Too few arguments passed into set_foo");
-            if (arguments.Count > 1)
-                throw new ArgumentException("Too many arguments passed into set_foo");
-            FooValue = arguments.Get<string> (0);
+            arguments.AssertCount(1);
+            Foo = arguments.Get<string> (0);
         }
 
+        /*
+         * Method we dynamically will bind towards function invocation in DSL.
+         */
         public void set_bar(Arguments arguments)
         {
-            if (arguments.Count < 0)
-                throw new ArgumentException("Too few arguments passed into set_foo");
-            if (arguments.Count > 1)
-                throw new ArgumentException("Too many arguments passed into set_foo");
-            BarValue = arguments.Get<int>(0);
+            arguments.AssertCount(1);
+            Bar = arguments.Get<int>(0);
+        }
+
+        /*
+         * Method we dynamically will bind towards function invocation in DSL.
+         */
+        public void add(Arguments arguments)
+        {
+            arguments.AssertCount(2);
+            var str_add = arguments.Get<string>(0);
+            var int_add = arguments.Get<int>(1);
+            Foo += str_add;
+            Bar += int_add;
         }
     }
 }

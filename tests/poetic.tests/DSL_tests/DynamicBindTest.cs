@@ -35,7 +35,9 @@ namespace poetic.tests.DSL_tests
         public void DynamicBindTest_1()
         {
             // Creating our tokenizer and parsing it to create a lambda object.
-            var tokenizer = new Tokenizer("set_foo(xyz) set_bar(57)", new FunctionTokenizer());
+            var tokenizer = new Tokenizer(@"set_foo(xyz)
+set_bar(57)
+add(_qwerty 10)", new FunctionTokenizer());
             var list = new List<string>(tokenizer);
             var lambda = new DynamicBindParser<DynamicBinder>(tokenizer).Parse();
 
@@ -44,8 +46,8 @@ namespace poetic.tests.DSL_tests
 
             // Executes our lambda passing in an input string that mutates.
             lambda.Execute(binder);
-            Assert.AreEqual("xyz", binder.FooValue);
-            Assert.AreEqual(57, binder.BarValue);
+            Assert.AreEqual("xyz_qwerty", binder.Foo);
+            Assert.AreEqual(67, binder.Bar);
         }
     }
 }
