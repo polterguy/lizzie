@@ -23,8 +23,9 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using poetic.lambda.parser;
-using poetic.tests.example_languages.single_parameter;
 using poetic.lambda.utilities;
+using poetic.tests.example_languages;
+using poetic.tests.example_languages.single_parameter;
 
 namespace poetic.tests.DSL_tests
 {
@@ -36,7 +37,6 @@ namespace poetic.tests.DSL_tests
         {
             // Creating our tokenizer and parsing it to create a lambda object.
             var tokenizer = new Tokenizer("remove(x) remove(y)", new FunctionTokenizer());
-            var list = new List<string>(tokenizer);
             var lambda = new RemoveParser(tokenizer).Parse();
 
             // Executes our lambda passing in an input string that mutates.

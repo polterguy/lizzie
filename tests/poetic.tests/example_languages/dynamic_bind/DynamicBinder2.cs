@@ -20,30 +20,30 @@
  * SOFTWARE.
  */
 
-using System.Collections.Generic;
-using NUnit.Framework;
-using poetic.lambda.parser;
-using poetic.tests.example_languages;
-using poetic.tests.example_languages.bind;
+using System;
+using poetic.lambda.collections;
 
-namespace poetic.tests.DSL_tests
+namespace poetic.tests.example_languages.dynamic_bind
 {
-    [TestFixture]
-    public class BindTest
+    /*
+     * An instance of this class will be bound to the lambda execution further
+     * down in file.
+     */
+    public class DynamicBinder2
     {
-        [Test]
-        public void BindTest_1()
+        public string Howdy
         {
-            // Creating our tokenizer and parsing it to create a lambda object.
-            var tokenizer = new Tokenizer("foo(xyz)", new FunctionTokenizer());
-            var lambda = new BindParser(tokenizer).Parse();
+            get;
+            set;
+        }
 
-            // Creates an instance of our Binder and passes it into our lambda execution.
-            var binder = new Binder();
-
-            // Executes our lambda passing in an input string that mutates.
-            lambda.Execute(binder);
-            Assert.AreEqual("xyz", binder.FooValue);
+        /*
+         * Method we dynamically will bind towards function invocation in DSL.
+         */
+        public void set_howdy(Arguments arguments)
+        {
+            arguments.AssertCount(1);
+            Howdy = arguments.Get<string> (0);
         }
     }
 }

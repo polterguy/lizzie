@@ -23,8 +23,8 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using poetic.lambda.parser;
+using poetic.tests.example_languages;
 using poetic.tests.example_languages.dynamic_bind;
-using poetic.tests.example_languages.single_parameter;
 
 namespace poetic.tests.DSL_tests
 {
@@ -38,7 +38,6 @@ namespace poetic.tests.DSL_tests
             var tokenizer = new Tokenizer(@"set_foo(xyz)
 set_bar(57)
 add(_qwerty, 10)", new FunctionTokenizer());
-            var list = new List<string>(tokenizer);
             var lambda = new DynamicBindParser<DynamicBinder>(tokenizer).Parse();
 
             // Creates an instance of our Binder and passes it into our lambda execution.
@@ -54,8 +53,27 @@ add(_qwerty, 10)", new FunctionTokenizer());
         public void DynamicBindTest_2()
         {
             // Creating our tokenizer and parsing it to create a lambda object.
+            var tokenizer = new Tokenizer(@"set_howdy(xyz)", new FunctionTokenizer());
+
+            /*
+             * This time we dynamically bind towards a different type, with
+             * different methods.
+             */
+            var lambda = new DynamicBindParser<DynamicBinder2>(tokenizer).Parse();
+
+            // Creates an instance of our Binder and passes it into our lambda execution.
+            var binder = new DynamicBinder2();
+
+            // Executes our lambda passing in our binding instance.
+            lambda.Execute(binder);
+            Assert.AreEqual("xyz", binder.Howdy);
+        }
+
+        [Test]
+        public void DynamicBindTest_3()
+        {
+            // Creating our tokenizer and parsing it to create a lambda object.
             var tokenizer = new Tokenizer("add(xyz, 55)", new FunctionTokenizer());
-            var list = new List<string>(tokenizer);
             var lambda = new DynamicBindParser<DynamicBinder>(tokenizer).Parse();
 
             // Creates an instance of our Binder and passes it into our lambda execution.

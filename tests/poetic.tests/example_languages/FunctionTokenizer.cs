@@ -23,7 +23,7 @@
 using System.IO;
 using poetic.lambda.parser;
 
-namespace poetic.tests.example_languages.single_parameter
+namespace poetic.tests.example_languages
 {
     /*
      * A simple tokenizer that will let you tokenize functions taking parameters.

@@ -39,7 +39,6 @@
     <Compile Include="TokenizerTest.cs" />
     <Compile Include="DSL_tests\NoParametersTest.cs" />
     <Compile Include="DSL_tests\SingleParameterTest.cs" />
-    <Compile Include="example_languages\single_parameter\FunctionTokenizer.cs" />
     <Compile Include="example_languages\single_parameter\RemoveParser.cs" />
     <Compile Include="DSL_tests\BindTest.cs" />
     <Compile Include="example_languages\bind\BindParser.cs" />
@@ -47,6 +46,8 @@
     <Compile Include="DSL_tests\DynamicBindTest.cs" />
     <Compile Include="example_languages\dynamic_bind\DynamicBinder.cs" />
     <Compile Include="example_languages\dynamic_bind\DynamicBindParser.cs" />
+    <Compile Include="example_languages\FunctionTokenizer.cs" />
+    <Compile Include="example_languages\dynamic_bind\DynamicBinder2.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
