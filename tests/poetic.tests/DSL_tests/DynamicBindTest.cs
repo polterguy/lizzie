@@ -37,7 +37,7 @@ namespace poetic.tests.DSL_tests
             // Creating our tokenizer and parsing it to create a lambda object.
             var tokenizer = new Tokenizer(@"set_foo(xyz)
 set_bar(57)
-add(_qwerty 10)", new FunctionTokenizer());
+add(_qwerty, 10)", new FunctionTokenizer());
             var list = new List<string>(tokenizer);
             var lambda = new DynamicBindParser<DynamicBinder>(tokenizer).Parse();
 

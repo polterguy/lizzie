@@ -96,6 +96,9 @@ namespace poetic.tests.example_languages.dynamic_bind
                             });
                             retVal.Add(wrapper);
                             break;
+                        } else if (enumerator.Current == ",") {
+                            if (!enumerator.MoveNext())
+                                throw new Exception("Unexpected EOF while parsing arguments");
                         }
                     }
                 } else {

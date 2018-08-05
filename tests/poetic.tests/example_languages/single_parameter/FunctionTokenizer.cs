@@ -42,11 +42,13 @@ namespace poetic.tests.example_languages.single_parameter
                         return "(";
                     case ')':
                         return ")";
+                    case ',':
+                        return ",";
                     default:
                         retVal += ch;
                         break;
                 }
-                if (reader.EndOfStream || Tokenizer.NextIsOf(reader, '(', ')') || Tokenizer.NextIsWhiteSpace(reader))
+                if (reader.EndOfStream || Tokenizer.NextIsOf(reader, '(', ')', ',') || Tokenizer.NextIsWhiteSpace(reader))
                     break;
             }
             return retVal == "" ? null : retVal;
