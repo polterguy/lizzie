@@ -80,7 +80,7 @@ namespace poetic.lambda.parser
         /// <summary>
         /// Eats initial whitespace from reader.
         /// </summary>
-        /// <param name="reader">Reader.</param>
+        /// <param name="reader">Reader to eat from.</param>
         public static void EatSpace(StreamReader reader)
         {
             while (!reader.EndOfStream) {
@@ -94,10 +94,73 @@ namespace poetic.lambda.parser
         }
 
         /// <summary>
+        /// Eats the rest of the line.
+        /// </summary>
+        /// <param name="reader">Reader to eat from.</param>
+        public static void EatLine(StreamReader reader)
+        {
+            while(!reader.EndOfStream) {
+                var ch = (char)reader.Read();
+                if (ch == '\r' || ch == '\n') {
+                    if (!reader.EndOfStream) {
+                        ch = (char)reader.Peek();
+                        if (ch == '\r' || ch == '\n')
+                            reader.Read();
+                    }
+                    break;
+                }
+            }
+        }
+
+		/// <summary>
+        /// Eats until sequence of stop is found.
+        /// </summary>
+        /// <returns><c>true</c>, if stop sequence was found, <c>false</c> otherwise.</returns>
+        /// <param name="reader">Reader to eat from.</param>
+		public static bool EatUntil(StreamReader reader, string stop)
+		{
+            // Sanity check.
+            if (!string.IsNullOrEmpty(stop))
+                throw new ArgumentException("No stop sequence", nameof(stop));
+
+            // Reading until we find stop sequence.
+            while (!reader.EndOfStream) {
+                var ch = (char)reader.Peek();
+                if (ch == stop[0]) {
+                    var tmp = "";
+                    while (tmp.Length < stop.Length && !reader.EndOfStream) {
+                        tmp += (char)reader.Read();
+                    }
+                    if (tmp == stop)
+                        return true;
+                }
+            }
+            return false;
+		}
+
+        /// <summary>
+        /// Returns the next word from stream if any.
+        /// </summary>
+        /// <returns>The next word from string.</returns>
+        /// <param name="reader">Reader.</param>
+        public static string ReadWord(StreamReader reader)
+        {
+            const string word_char = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            string retVal = "";
+            while (!reader.EndOfStream) {
+                var ch = (char)reader.Peek();
+                if (word_char.IndexOf(ch) == -1)
+                    return retVal;
+                retVal += (char)reader.Read();
+            }
+            return retVal;
+        }
+
+        /// <summary>
         /// Returns true if next character in stream is whitespace character,
         /// or EOF has been reached.
         /// </summary>
-        /// <returns><c>true</c>, if is space or EOF was nexted, <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c>, if next is space, <c>false</c> otherwise.</returns>
         /// <param name="reader">Reader.</param>
         public static bool NextIsWhiteSpace(StreamReader reader)
         {
@@ -108,7 +171,7 @@ namespace poetic.lambda.parser
         /// Returns true if next character in stream is any of the specified characters,
         /// or EOF has been reached.
         /// </summary>
-        /// <returns><c>true</c>, if if next is was ended, <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c>, if next is one of specified characters, <c>false</c> otherwise.</returns>
         /// <param name="reader">Reader.</param>
         /// <param name="characters">Characters.</param>
         public static bool NextIsOf (StreamReader reader, params char[] characters)

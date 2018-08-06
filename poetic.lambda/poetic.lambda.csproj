@@ -19,10 +19,12 @@
     <Compile Remove="Threads.cs" />
     <Compile Remove="lambdas\SequenceBase.cs" />
     <Compile Remove="parser\Lambda.cs" />
+    <Compile Remove="parser\PoeticException.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="collections\" />
     <Folder Include="utilities\" />
     <Folder Include="parser\" />
+    <Folder Include="exceptions\" />
   </ItemGroup>
 </Project>

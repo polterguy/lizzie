@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7622897F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.tests", "tests\poetic.tests\poetic.tests.csproj", "{7D8DAD2F-AADF-4030-A88D-3551F77EFA33}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poetic.lizzie", "poetic.lizzie\poetic.lizzie.csproj", "{9CB1161F-52D9-437F-BB88-D2E65FF193D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{7D8DAD2F-AADF-4030-A88D-3551F77EFA33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D8DAD2F-AADF-4030-A88D-3551F77EFA33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D8DAD2F-AADF-4030-A88D-3551F77EFA33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CB1161F-52D9-437F-BB88-D2E65FF193D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CB1161F-52D9-437F-BB88-D2E65FF193D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CB1161F-52D9-437F-BB88-D2E65FF193D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CB1161F-52D9-437F-BB88-D2E65FF193D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5EFBEB45-DE81-43CD-BCE1-EE49E2C3A9EB} = {5290ED46-2D97-4B6F-B7F4-5B4BF78AAF67}
