@@ -20,30 +20,19 @@
  * SOFTWARE.
  */
 
-using System.Collections.Generic;
-using NUnit.Framework;
-using poetic.lambda.parser;
-using poetic.tests.example_languages;
-using poetic.tests.example_languages.bind;
-
-namespace poetic.tests.DSL_tests
+namespace poetic.lambda.exceptions
 {
-    [TestFixture]
-    public class BindTest
+    /// <summary>
+    /// Parser exception thrown when parsing of code couldn't for some reasons continue.
+    /// </summary>
+    public class PoeticExecutionException : PoeticException
     {
-        [Test]
-        public void BindTest_1()
-        {
-            // Creating our tokenizer and parsing it to create a lambda object.
-            var tokenizer = new Tokenizer("foo(xyz)", new FunctionTokenizer());
-            var lambda = new BindParser(tokenizer).Parse();
-
-            // Creates an instance of our Binder and passes it into our lambda execution.
-            var binder = new example_languages.bind.Binder();
-
-            // Executes our lambda passing in an input string that mutates.
-            lambda.Execute(binder);
-            Assert.AreEqual("xyz", binder.FooValue);
-        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:poetic.lambda.exceptions.PoeticParsingException"/> class.
+        /// </summary>
+        /// <param name="message">Exception message.</param>
+        public PoeticExecutionException(string message)
+            : base(message)
+        { }
     }
 }

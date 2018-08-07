@@ -48,6 +48,8 @@
     <Compile Include="example_languages\dynamic_bind\DynamicBindParser.cs" />
     <Compile Include="example_languages\FunctionTokenizer.cs" />
     <Compile Include="example_languages\dynamic_bind\DynamicBinder2.cs" />
+    <Compile Include="lizzie_tests\TokenizerTest.cs" />
+    <Compile Include="lizzie_tests\ParserTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -57,6 +59,10 @@
       <Project>{A47CA51F-D5BE-4947-B1EB-AB27BBD1FCD7}</Project>
       <Name>poetic.lambda</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\poetic.lizzie\poetic.lizzie.csproj">
+      <Project>{9CB1161F-52D9-437F-BB88-D2E65FF193D5}</Project>
+      <Name>poetic.lizzie</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="example_languages\" />
@@ -65,6 +71,7 @@
     <Folder Include="example_languages\single_parameter\" />
     <Folder Include="example_languages\bind\" />
     <Folder Include="example_languages\dynamic_bind\" />
+    <Folder Include="lizzie_tests\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

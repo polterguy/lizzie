@@ -60,8 +60,6 @@ namespace poetic.tests.DSL_tests
   remove (y )   
 
 ", new FunctionTokenizer());
-            var list = new List<string>(tokenizer);
-            Assert.AreEqual(8, list.Count);
             var lambda = new RemoveParser(tokenizer).Parse();
 
             // Executes our lambda passing in an input string that mutates.

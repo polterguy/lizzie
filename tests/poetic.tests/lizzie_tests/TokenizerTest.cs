@@ -22,28 +22,54 @@
 
 using System.Collections.Generic;
 using NUnit.Framework;
+using poetic.lizzie;
 using poetic.lambda.parser;
-using poetic.tests.example_languages;
-using poetic.tests.example_languages.bind;
 
-namespace poetic.tests.DSL_tests
+namespace poetic.tests.lizzie_tests
 {
     [TestFixture]
-    public class BindTest
+    public class TokenizerTest
     {
         [Test]
-        public void BindTest_1()
+        public void Tokenize_1()
         {
-            // Creating our tokenizer and parsing it to create a lambda object.
-            var tokenizer = new Tokenizer("foo(xyz)", new FunctionTokenizer());
-            var lambda = new BindParser(tokenizer).Parse();
+            const string code = @"foo()
+bar[5]";
+            var tokenizer = new Tokenizer(code, new LizzieTokenizer());
+            var list = new List<string>(tokenizer);
+            Assert.AreEqual(7, list.Count);
+        }
 
-            // Creates an instance of our Binder and passes it into our lambda execution.
-            var binder = new example_languages.bind.Binder();
+        [Test]
+        public void Tokenize_2()
+        {
+            const string code = @"  foo   ( )   
+bar [    5 ]   
 
-            // Executes our lambda passing in an input string that mutates.
-            lambda.Execute(binder);
-            Assert.AreEqual("xyz", binder.FooValue);
+";
+            var tokenizer = new Tokenizer(code, new LizzieTokenizer());
+            var list = new List<string>(tokenizer);
+            Assert.AreEqual(7, list.Count);
+        }
+
+        [Test]
+        public void Tokenize_3()
+        {
+            const string code = @"foo(())bar([5],[7])";
+            var tokenizer = new Tokenizer(code, new LizzieTokenizer());
+            var list = new List<string>(tokenizer);
+            Assert.AreEqual(15, list.Count);
+        }
+
+        [Test]
+        public void Tokenize_4()
+        {
+            const string code = @"foo ( 57, 77 )
+bar ( {  hello_world : howdy  ,
+    howdy : [  77  ,  2  ,  57 ] }   )   ";
+            var tokenizer = new Tokenizer(code, new LizzieTokenizer());
+            var list = new List<string>(tokenizer);
+            Assert.AreEqual(24, list.Count);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace poetic.tests.example_languages.dynamic_bind
      * A simple parses example that mutates a simple string input with a
      * parametrised function tokenizer.
      */
-    public class DynamicBindParser<T>
+    public class DynamicBindParser<TContext>
     {
         readonly Tokenizer _tokenizer;
 
@@ -44,13 +44,13 @@ namespace poetic.tests.example_languages.dynamic_bind
         {
             if (token == "(" || token == ")" || token == ",")
                 return false;
-            var method = typeof(T).GetMethod(token, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            var method = typeof(TContext).GetMethod(token, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
             return method != null;
         }
 
-        private Action<T, Arguments> CreateAction(string methodName, Arguments arguments)
+        private Action<TContext, Arguments> CreateAction(string methodName, Arguments arguments)
         {
-            var method = typeof(T).GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            var method = typeof(TContext).GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
             var methodArgs = method.GetParameters();
 
             // Sanity checking method.
@@ -64,12 +64,12 @@ namespace poetic.tests.example_languages.dynamic_bind
                 throw new Exception($"Can't bind to {methodName} since it doesn't return void.");
 
             // Creating our delegate.
-            return (Action<T, Arguments>)Delegate.CreateDelegate(typeof(Action<T, Arguments>), method);
+            return (Action<TContext, Arguments>)Delegate.CreateDelegate(typeof(Action<TContext, Arguments>), method);
         }
 
-        public Actions<T> Parse()
+        public Actions<TContext> Parse()
         {
-            var retVal = new Actions<T>();
+            var retVal = new Actions<TContext>();
             var enumerator = _tokenizer.GetEnumerator();
             while (enumerator.MoveNext()) {
                 if (IsMethod(enumerator.Current)) {
@@ -92,7 +92,7 @@ namespace poetic.tests.example_languages.dynamic_bind
 
                             // Creating our method invocation.
                             var action = CreateAction(methodName, arguments);
-                            var wrapper = new Action<T>(delegate (T self) {
+                            var wrapper = new Action<TContext>(delegate (TContext self) {
                                 action(self, arguments);
                             });
                             retVal.Add(wrapper);

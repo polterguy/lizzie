@@ -37,9 +37,8 @@ namespace poetic.lambda.parser
     /// </summary>
     public class Tokenizer : IEnumerable<string>
     {
-        StreamReader _reader;
-        ITokenizer _tokenizer;
-        List<string> _tokens;
+        readonly StreamReader _reader;
+        readonly ITokenizer _tokenizer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.parser.Tokenizer"/> class.
@@ -80,25 +79,31 @@ namespace poetic.lambda.parser
         /// <summary>
         /// Eats initial whitespace from reader.
         /// </summary>
+        /// <returns><c>true</c>, if spacing characters were encountered, <c>false</c> otherwise.</returns>
         /// <param name="reader">Reader to eat from.</param>
-        public static void EatSpace(StreamReader reader)
+        public static bool EatSpace(StreamReader reader)
         {
+            var retVal = false;
             while (!reader.EndOfStream) {
                 var ch = (char)reader.Peek();
                 if (ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n') {
                     reader.Read();
+                    retVal = true;
                 } else {
                     break;
                 }
             }
+            return retVal;
         }
 
         /// <summary>
         /// Eats the rest of the line.
         /// </summary>
+        /// <returns><c>true</c>, if characters were encountered before the end of the line, <c>false</c> otherwise.</returns>
         /// <param name="reader">Reader to eat from.</param>
-        public static void EatLine(StreamReader reader)
+        public static bool EatLine(StreamReader reader)
         {
+            var retVal = false;
             while(!reader.EndOfStream) {
                 var ch = (char)reader.Read();
                 if (ch == '\r' || ch == '\n') {
@@ -108,50 +113,9 @@ namespace poetic.lambda.parser
                             reader.Read();
                     }
                     break;
+                } else {
+                    retVal = true;
                 }
-            }
-        }
-
-		/// <summary>
-        /// Eats until sequence of stop is found.
-        /// </summary>
-        /// <returns><c>true</c>, if stop sequence was found, <c>false</c> otherwise.</returns>
-        /// <param name="reader">Reader to eat from.</param>
-		public static bool EatUntil(StreamReader reader, string stop)
-		{
-            // Sanity check.
-            if (!string.IsNullOrEmpty(stop))
-                throw new ArgumentException("No stop sequence", nameof(stop));
-
-            // Reading until we find stop sequence.
-            while (!reader.EndOfStream) {
-                var ch = (char)reader.Peek();
-                if (ch == stop[0]) {
-                    var tmp = "";
-                    while (tmp.Length < stop.Length && !reader.EndOfStream) {
-                        tmp += (char)reader.Read();
-                    }
-                    if (tmp == stop)
-                        return true;
-                }
-            }
-            return false;
-		}
-
-        /// <summary>
-        /// Returns the next word from stream if any.
-        /// </summary>
-        /// <returns>The next word from string.</returns>
-        /// <param name="reader">Reader.</param>
-        public static string ReadWord(StreamReader reader)
-        {
-            const string word_char = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            string retVal = "";
-            while (!reader.EndOfStream) {
-                var ch = (char)reader.Peek();
-                if (word_char.IndexOf(ch) == -1)
-                    return retVal;
-                retVal += (char)reader.Read();
             }
             return retVal;
         }
@@ -182,28 +146,17 @@ namespace poetic.lambda.parser
 
         public IEnumerator<string> GetEnumerator()
         {
-            if (_tokens == null)
-                Tokenize();
-            return _tokens.GetEnumerator();
+            while (true) {
+                var next = _tokenizer.Next(_reader);
+                if (next == null)
+                    yield break;
+                yield return next;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        /*
-         * Helper method to ensure we have retrieved all our tokens.
-         */
-        private void Tokenize()
-        {
-            _tokens = new List<string>();
-            while (true) {
-                var token = _tokenizer.Next(_reader);
-                if (token == null)
-                    break;
-                _tokens.Add(token);
-            }
         }
     }
 }
