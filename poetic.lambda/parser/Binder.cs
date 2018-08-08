@@ -33,21 +33,22 @@ namespace poetic.lambda.parser
     /// </summary>
     public class Binder<TContext>
     {
-        // Contains cache of all functions.
-        Dictionary<string, Func<TContext, Arguments, object>> _functions = new Dictionary<string, Func<TContext, Arguments, object>>();
+        // All functions.
+        readonly Dictionary<string, Func<TContext, Arguments, object>> _functions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.parser.Binder`1"/> class.
         /// </summary>
         public Binder()
         {
-            Bind();
+            _functions = new Dictionary<string, Func<TContext, Arguments, object>>();
+            BindTypeMethods();
         }
 
         /// <summary>
         /// Returns true if function exists, otherwise false.
         /// </summary>
-        /// <returns><c>true</c>, if function was hased, <c>false</c> otherwise.</returns>
+        /// <returns><c>true</c>, if function exists, <c>false</c> otherwise.</returns>
         /// <param name="name">Name.</param>
         public bool HasFunction(string name)
         {
@@ -55,18 +56,28 @@ namespace poetic.lambda.parser
         }
 
         /// <summary>
-        /// Gets the <see cref="T:poetic.lambda.parser.Binder`1"/> with the specified name.
+        /// Gets the function with the specified name.
         /// </summary>
-        /// <param name="name">Name.</param>
+        /// <param name="name">Name of function to retrieve.</param>
         public Func<TContext, Arguments, object> this[string name] => _functions[name];
 
+        /// <summary>
+        /// Add the specified function with the given name.
+        /// </summary>
+        /// <param name="name">Nameof function to add.</param>
+        /// <param name="function">Function to add.</param>
+        public void Add(string name, Func<TContext, Arguments, object> function)
+        {
+            _functions[name] = function;
+        }
+
         /*
-         * Binds all methods found in type.
+         * Binds all instance methods found in type.
          */
-        private void Bind()
+        private void BindTypeMethods()
         {
             // Finding all relevant methods in type.
-            var methods = typeof(TContext).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+            var methods = typeof(TContext).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
             foreach (var ix in methods) {
 
                 // Checking if this is a mapped method.
@@ -77,15 +88,15 @@ namespace poetic.lambda.parser
                      * Binding method, defaulting its function name to method
                      * name if no explicit name was given in its attribute.
                      */
-                    Bind(ix, attribute.Name ?? ix.Name);
+                    BindMethod(ix, attribute.Name ?? ix.Name);
                 }
             }
         }
 
         /*
-         * Private helper that binds one MethodInfo to a function name.
+         * Private helper that binds one MethodInfo to a function name by creating a Func delegate.
          */
-        private Func<TContext, Arguments, object> Bind(MethodInfo method, string functionName)
+        private Func<TContext, Arguments, object> BindMethod(MethodInfo method, string functionName)
         {
             // Sanity checking function name.
             if (string.IsNullOrEmpty(functionName))

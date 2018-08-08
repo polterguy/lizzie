@@ -64,7 +64,8 @@ namespace poetic.lizzie
 
                     case "function":
 
-                        CreateFunctionDeclaration(enumerator);
+                        // Creating our function.
+                        var function = Function<TContext>.Create(enumerator);
                         break;
 
                     default:
@@ -90,13 +91,151 @@ namespace poetic.lizzie
 
             // Sanity check.
             if (!enumerator.MoveNext())
-                throw new PoeticParsingException("Unexpected EOF while parsing function invocation");
-            if (enumerator.Current!= "(")
+                throw new PoeticParsingException("Unexpected EOF while parsing function invocation expecting opening paranthesis");
+            if (enumerator.Current != "(")
                 throw new PoeticParsingException($"Syntax error after function invocation of {name}");
+            if (!enumerator.MoveNext())
+                throw new PoeticParsingException("Unexpected EOF while parsing function invocation expecting closing paranthesis or arguments");
 
             // Retrieving argument.
             var arguments = new Arguments();
             while (true) {
+                if (enumerator.Current == ",") {
+                    if (!enumerator.MoveNext())
+                        throw new PoeticParsingException("Unexpected EOF while parsing function invocation expecting argument after comma");
+                }
+                if (enumerator.Current == ")") {
+
+                    // Creating our function invocation wrapper.
+                    return new Action<TContext>(delegate (TContext self) {
+                        function(self, arguments);
+                    });
+
+                } else {
+                    arguments.Add(enumerator.Current);
+                }
+                if (!enumerator.MoveNext())
+                    throw new PoeticParsingException("Unexpected EOF while parsing arguments");
+            }
+        }
+
+        /*void CreateFunction(IEnumerator<string> enumerator)
+        {
+            // Retrieving function name.
+            if (!enumerator.MoveNext())
+                throw new PoeticParsingException("Unexpected EOF while parsing function declaration");
+
+            // Storing name of function, and sanity checking name.
+            var name = enumerator.Current;
+            SanityCheckFunctionName(name);
+
+            // Skipping opening paranthesis.
+            if (!enumerator.MoveNext())
+                throw new PoeticParsingException("Unexpected EOF while expecting function declaration opening paranthesis");
+
+            // Parsing arguments to function.
+            var arguments = new List<string>();
+            while (true) {
+                if (!enumerator.MoveNext())
+                    throw new PoeticParsingException("Unexpected EOF while expecting function declaration argument");
+                var arg = enumerator.Current;
+                if (arg == ")")
+                    break;
+                SanityCheckVariableName(arg);
+                arguments.Add(arg);
+                if (!enumerator.MoveNext())
+                    throw new PoeticParsingException("Unexpected EOF while expecting function closing paranthesis");
+                if (enumerator.Current == ")")
+                    break; // End of function declaration arguments.
+                else if (enumerator.Current != ",")
+                    throw new PoeticParsingException("Unexpected token in function declaration, when expecting ',' or ')'");
+            }
+
+            // Parsing function body.
+            if (!enumerator.MoveNext())
+                throw new PoeticParsingException("Unexpected EOF while expecting function body");
+            if (enumerator.Current != "{")
+                throw new PoeticParsingException("No opening brace found in function declaration");
+
+            // Now creating our lambda object for our function.
+            var lambda = CreateScopeLambda(enumerator);
+            var function = new Func<TContext, Arguments, object>(
+            delegate (TContext context, Arguments funcArgs) {
+                lambda.Execute(context);
+                return null;
+            });
+
+            // Creating binding between function name and Func function created above.
+            _binder.Add(name, function);
+        }
+
+        Actions<TContext> CreateScopeLambda(IEnumerator<string> enumerator)
+        {
+            // Return value.
+            Actions<TContext> lambda = new Actions<TContext>();
+
+            // At this point we expect to have already seen the first opening brace.
+            int braceCount = 1;
+            while (braceCount > 0) {
+                if (!enumerator.MoveNext())
+                    throw new PoeticParsingException("Unexpected EOF while parsing function body");
+                if (enumerator.Current == "}") {
+                    braceCount -= 1;
+                } else if (enumerator.Current == "{") {
+
+                    // Inner lambda scope.
+                    var innerLambda = CreateScopeLambda(enumerator);
+                    lambda.Add(new Action<TContext>(delegate (TContext context) {
+                        innerLambda.Execute(context);
+                    }));
+
+                } else {
+
+                    /*
+                     * Besides from function invocations at the root level, this
+                     * is the only place where we can find actual 'code'.
+                     * /
+                    lambda.Add(ParseLambdaToken(enumerator));
+                }
+            }
+            return lambda;
+        }
+
+        Action<TContext> ParseLambdaToken (IEnumerator<string> enumerator)
+        {
+            var token = enumerator.Current;
+            if (IsKeyword(token)) {
+
+                // TODO: Implement
+                // TODO: Also check Stack object if this is a variable reference
+                throw new NotImplementedException();
+
+            } else {
+
+                // This is a function invocation.
+                if (!enumerator.MoveNext())
+                    throw new PoeticParsingException("Unexpected EOF while looking for opening paranthesis for function invocation.");
+                return CreateFunctionInvocation(token, enumerator);
+            }
+        }
+
+        Action<TContext> CreateFunctionInvocation(string name, IEnumerator<string> enumerator)
+        {
+            // Sanity check.
+            if (enumerator.Current != "(")
+                throw new PoeticParsingException($"Syntax error after function invocation of {name}");
+
+            // Making sure function exists.
+            if (!_binder.HasFunction(name))
+                throw new PoeticParsingException($"Function {name} was not found in the current context");
+
+            // Retrieving function delegate.
+            var function = _binder[name];
+
+            // Retrieving argument.
+            var arguments = new Arguments();
+            while (true)
+            {
                 if (!enumerator.MoveNext())
                     throw new PoeticParsingException("Unexpected EOF while parsing arguments");
                 arguments.Add(enumerator.Current);
@@ -105,28 +244,41 @@ namespace poetic.lizzie
                 if (enumerator.Current == ")") {
 
                     // Creating our function invocation wrapper.
-                    return new Action<TContext>(delegate (TContext self) {
-                        function(self, arguments);
+                    return new Action<TContext>(delegate (TContext ctx) {
+                        function(ctx, arguments);
                     });
-                }
-                else if (enumerator.Current == ",")
-                {
+                } else if (enumerator.Current == ",") {
                     if (!enumerator.MoveNext())
                         throw new Exception("Unexpected EOF while parsing arguments");
                 }
             }
         }
 
-        void CreateFunctionDeclaration(IEnumerator<string> enumerator)
+        bool IsKeyword(string token)
         {
-            throw new NotImplementedException();
+            switch (token) {
+                case "var":
+                case "if":
+                case "else":
+                case "else-if":
+                case "while":
+                    return true;
+                default:
+                    return false;
+            }
         }
 
-        void SanityCheckFunctionInvocation(string name)
+        void SanityCheckVariableName(string name)
+        {
+            // Variable name must obey by the same rules as a function name.
+            SanityCheckFunctionName(name);
+        }
+
+        void SanityCheckFunctionName(string name)
         {
             // Function name must start with [a-zA-Z].
             if ("abcdefghijklmnopqrstuvwxyz".IndexOf(char.ToLower(name[0])) == -1)
                 throw new PoeticParsingException($"Function {name} did not start with a-z");
-        }
+        }*/
     }
 }

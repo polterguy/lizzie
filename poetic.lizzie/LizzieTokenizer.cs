@@ -64,8 +64,7 @@ namespace poetic.lizzie
                         if (retVal == null) {
 
                             // This is our token.
-                            reader.Read();
-                            return ch.ToString();
+                            return ((char)reader.Read()).ToString();
 
                         } else {
 
