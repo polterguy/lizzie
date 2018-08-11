@@ -24,40 +24,49 @@ using NUnit.Framework;
 using poetic.lizzie;
 using poetic.lambda.parser;
 using poetic.lambda.collections;
+using poetic.tests.lizzie_tests.contexts;
 
 namespace poetic.tests.lizzie_tests
 {
     [TestFixture]
     public class ParserTest
     {
-        public class Foo
-        {
-            public int Value
-            {
-                get;
-                set;
-            }
-
-            [Function(Name = "foo")]
-            public object SetFoo(Arguments args)
-            {
-                Value = args.Get<int>(0);
-                return null;
-            }
-        }
-
         [Test]
         public void Parse_01()
         {
             // Creating our function.
-            var functor = new LizzieParser<Foo>().Parse(new Tokenizer(new LizzieTokenizer()), "foo(57)");
+            var functor = new LizzieParser<SimpleNumericValue>().Parse(new Tokenizer(new LizzieTokenizer()), "add(57);");
 
             // Evaluating our function.
-            var foo = new Foo();
-            functor(foo);
+            var ctx = new SimpleNumericValue();
+            functor(ctx);
 
             // Verifying it behaved as expected.
-            Assert.AreEqual(57, foo.Value);
+            Assert.AreEqual(57, ctx.Value);
+        }
+
+        [Test]
+        public void Parse_02()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<SimpleNumericValue>().Parse(new Tokenizer(new LizzieTokenizer()), "add(57);");
+
+            // Evaluating our function with our first context.
+            var ctx1 = new SimpleNumericValue();
+            functor(ctx1);
+
+            // Verifying first evaluation behaved as expected.
+            Assert.AreEqual(57, ctx1.Value);
+
+            // Evaluating our function with our second context.
+            var ctx2 = new SimpleNumericValue() { Value = 10 };
+            functor(ctx2);
+
+            // Verifying second evaluation behaved as expected.
+            Assert.AreEqual(67, ctx2.Value);
+
+            // Verifying evaluation of lambda with the second context did not change our first context.
+            Assert.AreEqual(57, ctx1.Value);
         }
     }
 }

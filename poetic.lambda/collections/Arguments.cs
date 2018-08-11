@@ -20,9 +20,8 @@
  * SOFTWARE.
  */
 using System;
-using System.Linq;
+using System.Globalization;
 using System.Collections.Generic;
-using poetic.lambda.utilities;
 
 namespace poetic.lambda.collections
 {
@@ -80,10 +79,31 @@ namespace poetic.lambda.collections
         /// <typeparam name="T">Type to convert object into.</typeparam>
         public T Get<T>(int index)
         {
+            // Retrieving argument and converting it to type specified by caller.
             var obj = Get(index);
             if (obj is T)
                 return (T)obj; // No conversion is necessary.
-            return (T)Convert.ChangeType(obj, typeof(T));
+            return (T)Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// Returns the specified argument and converts it is necessary.
+        /// </summary>
+        /// <returns>The argument at the specified index position.</returns>
+        /// <param name="index">Indexof which argument to retrieve.</param>
+        /// <param name="def">Default value to return if argument doesn't exist.</param>
+        /// <typeparam name="T">Type to convert object into.</typeparam>
+        public T Get<T>(int index, T def)
+        {
+            // If specified argument doesn't exist, we return the default given by caller.
+            if (index >= Count)
+                return def;
+
+            // Retrieving argument and converting it to type specified by caller.
+            var obj = Get(index);
+            if (obj is T)
+                return (T)obj; // No conversion is necessary.
+            return (T)Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture);
         }
 
         /// <summary>

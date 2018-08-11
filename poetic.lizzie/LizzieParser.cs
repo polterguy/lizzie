@@ -250,15 +250,39 @@ namespace poetic.lizzie
                 arguments.Add(CreateExpression(en));
             }
 
+            /*
+             * In Lizzie the semicolon is mandatory after each statement. 
+             */
+            if (!en.MoveNext() || en.Current != ";")
+                throw new PoeticParsingException($"Missing semicolon after '{name}' function invocation.");
+
             // Creating our action and returning to caller.
             return new Action<FunctionStack<TContext>>(delegate (FunctionStack<TContext> st) {
 
+                // Sanity checking invocation, that function actually exists.
+                if (!(st[name] is Func<TContext, Arguments, object> func)) {
+
+                    /*
+                     * Ooops, no such function!
+                     * 
+                     * Checking if there exists an object with the same name at all,
+                     * to throw slightly more informative exceptions.
+                     */
+                    if (st.HasKey(name)) {
+
+                        // Variable exists but is not a function.
+                        throw new PoeticExecutionException($"Tried to evaluate object '{name}' as a function, while object was '{st[name].GetType().Name}'.");
+                    }
+
+                    // Key doesn't exist at all.
+                    throw new PoeticExecutionException($"Function '{name}' doesn't exist.");
+                }
+
                 /*
-                 * Retrieving our function, evaluating our expressions, and invoking
-                 * the function with the result of our expressions as its arguments.
+                 * Evaluating our late bound arguments, and evaluate our function
+                 * with the results of the evaluation of our arguments.
                  */
                 var fArgs = new Arguments(arguments.Evaluate(st));
-                var func = st[name] as Func<TContext, Arguments, object>;
                 func(st.Context, fArgs);
             });
         }
@@ -269,16 +293,22 @@ namespace poetic.lizzie
          */
         Func<FunctionStack<TContext>, object> CreateExpression(IEnumerator<string> en)
         {
-            // Figuring out what current iterator is pointing to.
+            /*
+             * Figuring out what the iterator is currently pointing to.
+             * 
+             * Candidates are constant, function invocation and expressions.
+             */
             var cur = en.Current;
+
+            // Checking if iterator is a numeric constant.
             if ("0123456789".IndexOf(cur[0]) != -1) {
 
                 /*
                  * Some sort of number constant.
                  * 
-                 * Creating our function that evaluates to that constant number,
-                 * as a double value, discarding the current iterator, and returning
-                 * that function to caller.
+                 * PS!
+                 * All numbers in Lizzie are double, which equals 64 bits floating
+                 * point numbers. This is the same logic as JavaScript.
                  */
                 var constNumber = double.Parse(cur, CultureInfo.InvariantCulture);
                 var expression = new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {

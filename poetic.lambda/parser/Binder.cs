@@ -30,6 +30,8 @@ namespace poetic.lambda.parser
 {
     /// <summary>
     /// Binds variable names to objects and functions.
+    /// 
+    /// TODO: Support for properties!
     /// </summary>
     public class Binder<TContext>
     {
@@ -59,6 +61,16 @@ namespace poetic.lambda.parser
             set {
                 _variables[name] = value;
             }
+        }
+
+        /// <summary>
+        /// Returns true if the specified key exists.
+        /// </summary>
+        /// <returns><c>true</c>, if object exists, <c>false</c> otherwise.</returns>
+        /// <param name="name">Name.</param>
+        public bool HasKey(string name)
+        {
+            return _variables.ContainsKey(name);
         }
 
         /*

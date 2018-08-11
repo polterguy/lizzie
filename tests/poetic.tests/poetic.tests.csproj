@@ -36,6 +36,7 @@
     <Compile Include="ChainTest.cs" />
     <Compile Include="lizzie_tests\TokenizerTest.cs" />
     <Compile Include="lizzie_tests\ParserTest.cs" />
+    <Compile Include="lizzie_tests\contexts\SimpleNumericValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -52,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lizzie_tests\" />
+    <Folder Include="lizzie_tests\contexts\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

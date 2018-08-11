@@ -72,6 +72,7 @@ namespace poetic.lambda.parser
         public object this[string name]
         {
             get {
+
                 // Prioritizing values from the stack.
                 if (_stack.ContainsKey(name))
                     return _stack[name];
@@ -80,6 +81,16 @@ namespace poetic.lambda.parser
                 return _binder[name];
             }
             set => _stack[name] = value;
+        }
+
+        /// <summary>
+        /// Returns true if the named item exists as an object in our stack.
+        /// </summary>
+        /// <returns><c>true</c>, if object exists, <c>false</c> otherwise.</returns>
+        /// <param name="name">Name.</param>
+        public bool HasKey(string name)
+        {
+            return _stack.ContainsKey(name) || _binder.HasKey(name);
         }
     }
 }
