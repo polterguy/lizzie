@@ -39,9 +39,10 @@ namespace poetic.lambda.parser
         /// Initializes a new instance of the <see cref="T:poetic.lambda.parser.Stack`1"/> class.
         /// </summary>
         /// <param name="binder">Binder to associate this stack with.</param>
-        public FunctionStack(Binder<TContext> binder)
+        public FunctionStack(Binder<TContext> binder, TContext context)
         {
             _binder = binder;
+            Context = context;
         }
 
         /// <summary>
@@ -52,6 +53,16 @@ namespace poetic.lambda.parser
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// The context instance this FunctionStack is associated with.
+        /// </summary>
+        /// <value>The context of the current stack.</value>
+        public TContext Context
+        {
+            get;
+            private set;
         }
 
         /// <summary>

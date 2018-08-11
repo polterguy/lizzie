@@ -13,6 +13,7 @@
     <Compile Remove="LambdaBuilderOLD.cs" />
     <Compile Remove="FunctionOLD.cs" />
     <Compile Remove="LizzieParserOLD.cs" />
+    <Compile Remove="LizzieParser %28copy%29.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="keywords\" />
