@@ -34,20 +34,6 @@
     <Compile Include="ActionsTest.cs" />
     <Compile Include="FunctionsTest.cs" />
     <Compile Include="ChainTest.cs" />
-    <Compile Include="example_languages\no_parameters\RemoveParser.cs" />
-    <Compile Include="example_languages\no_parameters\WordTokenizer.cs" />
-    <Compile Include="TokenizerTest.cs" />
-    <Compile Include="DSL_tests\NoParametersTest.cs" />
-    <Compile Include="DSL_tests\SingleParameterTest.cs" />
-    <Compile Include="example_languages\single_parameter\RemoveParser.cs" />
-    <Compile Include="DSL_tests\BindTest.cs" />
-    <Compile Include="example_languages\bind\BindParser.cs" />
-    <Compile Include="example_languages\bind\Binder.cs" />
-    <Compile Include="DSL_tests\DynamicBindTest.cs" />
-    <Compile Include="example_languages\dynamic_bind\DynamicBinder.cs" />
-    <Compile Include="example_languages\dynamic_bind\DynamicBindParser.cs" />
-    <Compile Include="example_languages\FunctionTokenizer.cs" />
-    <Compile Include="example_languages\dynamic_bind\DynamicBinder2.cs" />
     <Compile Include="lizzie_tests\TokenizerTest.cs" />
     <Compile Include="lizzie_tests\ParserTest.cs" />
   </ItemGroup>
@@ -65,12 +51,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="example_languages\" />
-    <Folder Include="example_languages\no_parameters\" />
-    <Folder Include="DSL_tests\" />
-    <Folder Include="example_languages\single_parameter\" />
-    <Folder Include="example_languages\bind\" />
-    <Folder Include="example_languages\dynamic_bind\" />
     <Folder Include="lizzie_tests\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

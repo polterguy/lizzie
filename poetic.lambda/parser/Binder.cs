@@ -29,50 +29,40 @@ using poetic.lambda.exceptions;
 namespace poetic.lambda.parser
 {
     /// <summary>
-    /// Class that binds an execution object of type T to a DSL.
+    /// Binds variable names to objects and functions.
     /// </summary>
     public class Binder<TContext>
     {
-        // All functions.
-        readonly Dictionary<string, Func<TContext, Arguments, object>> _functions;
+        // All variables that have been binded to this instance.
+        readonly Dictionary<string, object> _variables;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.parser.Binder`1"/> class.
         /// </summary>
         public Binder()
         {
-            _functions = new Dictionary<string, Func<TContext, Arguments, object>>();
+            _variables = new Dictionary<string, object>();
             BindTypeMethods();
         }
 
         /// <summary>
-        /// Returns true if function exists, otherwise false.
+        /// Gets or sets the object with the specified name.
         /// </summary>
-        /// <returns><c>true</c>, if function exists, <c>false</c> otherwise.</returns>
-        /// <param name="name">Name.</param>
-        public bool HasFunction(string name)
-        {
-            return _functions.ContainsKey(name);
-        }
-
-        /// <summary>
-        /// Gets the function with the specified name.
-        /// </summary>
-        /// <param name="name">Name of function to retrieve.</param>
-        public Func<TContext, Arguments, object> this[string name] => _functions[name];
-
-        /// <summary>
-        /// Add the specified function with the given name.
-        /// </summary>
-        /// <param name="name">Nameof function to add.</param>
-        /// <param name="function">Function to add.</param>
-        public void Add(string name, Func<TContext, Arguments, object> function)
-        {
-            _functions[name] = function;
+        /// <param name="name">Name of object to retrieve or set.</param>
+        public object this[string name] {
+            get {
+                if (!_variables.ContainsKey(name)) {
+                    return null;
+                }
+                return _variables[name];
+            }
+            set {
+                _variables[name] = value;
+            }
         }
 
         /*
-         * Binds all instance methods found in type.
+         * Binds all instance methods found in type that have been marked with the Function attribute.
          */
         private void BindTypeMethods()
         {
@@ -115,7 +105,7 @@ namespace poetic.lambda.parser
 
             // Creating our delegate, caching it, and returning it to caller.
             var retVal = (Func<TContext, Arguments, object>)Delegate.CreateDelegate(typeof(Func<TContext, Arguments, object>), method);
-            _functions[functionName] = retVal;
+            _variables[functionName] = retVal;
             return retVal;
         }
     }

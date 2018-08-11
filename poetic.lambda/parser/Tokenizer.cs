@@ -26,54 +26,85 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using System.Collections;
+using poetic.lambda.exceptions;
 
 namespace poetic.lambda.parser
 {
     /// <summary>
     /// Tokenizer class producing tokens from a stream or string input.
-    /// 
-    /// Implement your own ITokenizer instance and pass in to CTOR as argument
-    /// to create your own DSL.
     /// </summary>
-    public class Tokenizer : IEnumerable<string>
+    public class Tokenizer
     {
-        readonly StreamReader _reader;
         readonly ITokenizer _tokenizer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:poetic.lambda.parser.Tokenizer"/> class.
         /// </summary>
-        /// <param name="stream">Stream.</param>
-        /// <param name="tokenizer">Tokenizer.</param>
-        public Tokenizer(Stream stream, ITokenizer tokenizer)
+        /// <param name="tokenizer">Tokenizer to use for tokenizing snippets.</param>
+        public Tokenizer(ITokenizer tokenizer)
         {
-            // Sanity check.
-            if (stream == null)
-                throw new NullReferenceException(nameof(stream));
-
-            /*
-             * Notice, we don't take ownership over stream, so caller must make
-             * sure the stream is disposed!
-             */
-            _reader = new StreamReader(stream);
+            // Not passing in a tokenizer is a logical runtime error!
             _tokenizer = tokenizer ?? throw new NullReferenceException(nameof(tokenizer));
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:poetic.lambda.parser.Tokenizer"/> class.
+        /// Returns all tokens from the specified stream.
         /// </summary>
-        /// <param name="code">Code.</param>
-        /// <param name="tokenizer">Tokenizer.</param>
-        public Tokenizer(string code, ITokenizer tokenizer)
+        /// <returns>All tokens from the stream.</returns>
+        /// <param name="stream">Stream to retrieve tokens from.</param>
+        public IEnumerable<string> Tokenize(Stream stream)
         {
-            // Sanity check.
-            if (string.IsNullOrEmpty(code))
-                throw new NullReferenceException(nameof(code));
+            // Notice! We do NOT take ownership over stream!
+            StreamReader reader = new StreamReader(stream);
+            while (true) {
+                var token = _tokenizer.Next(reader);
+                if (token == null)
+                    break;
+                yield return token;
+            }
+            yield break;
+        }
 
-            // MemoryStream doesn't need to be disposed!
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(code));
-            _reader = new StreamReader(stream);
-            _tokenizer = tokenizer ?? throw new NullReferenceException(nameof(tokenizer));
+        /// <summary>
+        /// Returns all tokens from all streams specified.
+        /// </summary>
+        /// <returns>The tokens from all streams.</returns>
+        /// <param name="streams">Streams to retrieve tokens from.</param>
+        public IEnumerable<string> Tokenize(IEnumerable<Stream> streams)
+        {
+            foreach (var ixStream in streams) {
+                foreach (var ixToken in Tokenize(ixStream)) {
+                    yield return ixToken;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tokenizes the specified code
+        /// </summary>
+        /// <returns>The tokens from the given code.</returns>
+        /// <param name="code">Code to retrieve tokens from.</param>
+        public IEnumerable<string> Tokenize(string code)
+        {
+            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(code))) {
+                foreach (var ix in Tokenize(stream)) {
+                    yield return ix;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tokenizes the specified code snippets.
+        /// </summary>
+        /// <returns>The tokens retrieved from all the specified code snippets.</returns>
+        /// <param name="code">Code snippets to retrieve tokens from.</param>
+        public IEnumerable<string> Tokenize(IEnumerable<string> code)
+        {
+            foreach (var ixCode in code) {
+                foreach (var ixToken in Tokenize(ixCode)) {
+                    yield return ixToken;
+                }
+            }
         }
 
         /// <summary>
@@ -121,6 +152,50 @@ namespace poetic.lambda.parser
         }
 
         /// <summary>
+        /// Eats until the sequence of characters in found consecutively in stream.
+        /// 
+        /// Useful for discarding multiline comments among other things.
+        /// </summary>
+        /// <param name="reader">Reader.</param>
+        /// <param name="sequence">Sequence.</param>
+        public static void EatUntil(StreamReader reader, string sequence)
+        {
+            if (string.IsNullOrEmpty(sequence))
+                throw new PoeticTokenizerException("Can't read until empty sequence is found");
+            var first = sequence[0];
+            var buffer = "";
+            while (true) {
+                var ix = reader.Read();
+                if (ix == -1)
+                    return;
+                if (buffer != "") {
+
+                    // Seen first character.
+                    buffer += (char)ix;
+                    if (buffer == sequence) {
+                        return; // Found sequence
+                    } else if (buffer.Length == sequence.Length) {
+                        buffer = ""; // Throwing away matches found so far, starting over again.
+                    }
+                } else {
+                    if (first == (char)ix) {
+
+                        // Beginning of sequence.
+                        buffer += (char)ix;
+                        if (buffer == sequence) {
+                            return; // Sequence found
+                        } else if (buffer.Length == sequence.Length) {
+                            buffer = ""; // Throwing away matches found so far, starting over again.
+                            if (first == (char)ix) {
+                                buffer += (char)ix; // This is the opening token for sequence.
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Returns true if next character in stream is whitespace character,
         /// or EOF has been reached.
         /// </summary>
@@ -144,19 +219,76 @@ namespace poetic.lambda.parser
             return characters.Any((ix) => ix == ch);
         }
 
-        public IEnumerator<string> GetEnumerator()
+        /// <summary>
+        /// Reads the specified string from the reader and returns it to caller.
+        /// </summary>
+        /// <returns>The string.</returns>
+        /// <param name="reader">Reader.</param>
+        public static string ReadString (StreamReader reader, char stop = '"')
         {
-            while (true) {
-                var next = _tokenizer.Next(_reader);
-                if (next == null)
-                    yield break;
-                yield return next;
+            var builder = new StringBuilder ();
+            for (var c = reader.Read (); c != -1; c = reader.Read ()) {
+                switch (c) {
+                    case '\\':
+                        builder.Append (GetEscapeCharacter (reader, stop));
+                        break;
+                    case '\n':
+                    case '\r':
+                        throw new PoeticTokenizerException (string.Format ("String literal container CR or LF character."));
+                    default:
+                        if (c == stop)
+                            return builder.ToString();
+                        builder.Append ((char)c);
+                        break;
+                }
+            }
+            throw new ApplicationException (string.Format ("Syntax error, string literal not closed before end of input near '{0}'", builder));
+        }
+
+        /*
+         * Returns escape character.
+         */
+        static string GetEscapeCharacter (StreamReader reader, char stop)
+        {
+            var ch = reader.Read();
+            if (ch == -1)
+                throw new PoeticTokenizerException("EOF found before string literal was closed");
+            switch ((char)ch) {
+                case '\\':
+                    return "\\";
+                case 'a':
+                    return "\a";
+                case 'b':
+                    return "\b";
+                case 'f':
+                    return "\f";
+                case 't':
+                    return "\t";
+                case 'v':
+                    return "\v";
+                case 'n':
+                    return "\n";
+                case 'r':
+                    return "\r";
+                case 'x':
+                    return HexCharacter (reader);
+                default:
+                    if (ch == stop)
+                        return stop.ToString();
+                    throw new PoeticTokenizerException ("Invalid escape sequence found in string literal");
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        /*
+         * Returns hex encoded character.
+         */
+        static string HexCharacter(StreamReader reader)
         {
-            return GetEnumerator();
+            var hexNumberString = "";
+            for (var idxNo = 0; idxNo < 4; idxNo++)
+                hexNumberString += (char)reader.Read();
+            var integerNo = Convert.ToInt32(hexNumberString, 16);
+            return Encoding.UTF8.GetString(BitConverter.GetBytes(integerNo).Reverse().ToArray());
         }
     }
 }

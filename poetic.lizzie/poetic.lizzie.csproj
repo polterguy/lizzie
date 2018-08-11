@@ -7,4 +7,14 @@
   <ItemGroup>
     <ProjectReference Include="..\poetic.lambda\poetic.lambda.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Tokenizer %28copy%29.cs" />
+    <Compile Remove="LambdaBuilder %28copy%29.cs" />
+    <Compile Remove="LambdaBuilderOLD.cs" />
+    <Compile Remove="FunctionOLD.cs" />
+    <Compile Remove="LizzieParserOLD.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="keywords\" />
+  </ItemGroup>
 </Project>

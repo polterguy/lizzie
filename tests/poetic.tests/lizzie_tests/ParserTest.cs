@@ -30,238 +30,34 @@ namespace poetic.tests.lizzie_tests
     [TestFixture]
     public class ParserTest
     {
-        class FooTest
+        public class Foo
         {
-            public int Foo
+            public int Value
             {
                 get;
                 set;
             }
 
             [Function(Name = "foo")]
-            public object SetFoo(Arguments arguments)
+            public object SetFoo(Arguments args)
             {
-                Foo += arguments.Get<int>(0);
-                if (arguments.Count > 1)
-                    Foo += arguments.Get<int>(1);
+                Value = args.Get<int>(0);
                 return null;
             }
         }
 
         [Test]
-        public void Parse_1()
+        public void Parse_01()
         {
-            // Creating tokenizer from code.
-            const string code = @"foo(57)";
-            var tokenizer = new Tokenizer(code, new LizzieTokenizer());
+            // Creating our function.
+            var functor = new LizzieParser<Foo>().Parse(new Tokenizer(new LizzieTokenizer()), "foo(57)");
 
-            // Creating parser.
-            var lizzie_parser = new LizzieParser<FooTest>();
+            // Evaluating our function.
+            var foo = new Foo();
+            functor(foo);
 
-            // Creating our lambda object.
-            var lambda = lizzie_parser.Parse(tokenizer);
-
-            // Executing lambda with a new context instance.
-            var foo = new FooTest();
-            lambda.Execute(foo);
-
-            // Verifying changes were applied.
-            Assert.AreEqual(57, foo.Foo);
-        }
-
-        [Test]
-        public void Parse_2()
-        {
-            // Creating tokenizer from code.
-            const string code = @"foo(57)
-foo(10)";
-            var tokenizer = new Tokenizer(code, new LizzieTokenizer());
-
-            // Creating parser.
-            var lizzie_parser = new LizzieParser<FooTest>();
-
-            // Creating our lambda object.
-            var lambda = lizzie_parser.Parse(tokenizer);
-
-            // Executing lambda with a new context instance.
-            var foo = new FooTest();
-            lambda.Execute(foo);
-
-            // Verifying changes were applied.
-            Assert.AreEqual(67, foo.Foo);
-        }
-
-        [Test]
-        public void Parse_3()
-        {
-            // Creating tokenizer from code.
-            const string code = @"foo(57, 10)";
-            var tokenizer = new Tokenizer(code, new LizzieTokenizer());
-
-            // Creating parser.
-            var lizzie_parser = new LizzieParser<FooTest>();
-
-            // Creating our lambda object.
-            var lambda = lizzie_parser.Parse(tokenizer);
-
-            // Executing lambda with a new context instance.
-            var foo = new FooTest();
-            lambda.Execute(foo);
-
-            // Verifying changes were applied.
-            Assert.AreEqual(67, foo.Foo);
-        }
-
-        [Test]
-        public void Parse_4()
-        {
-            // Creating tokenizer from code.
-            const string code = @"foo(57)";
-            var tokenizer = new Tokenizer(code, new LizzieTokenizer());
-
-            // Creating parser.
-            var lizzie_parser = new LizzieParser<FooTest>();
-
-            // Creating our lambda object.
-            var lambda = lizzie_parser.Parse(tokenizer);
-
-            // Executing lambda with a new context instance.
-            var foo = new FooTest();
-            lambda.Execute(foo);
-
-            // Verifying changes were applied.
-            Assert.AreEqual(57, foo.Foo);
-
-            /*
-             * Executing lambda with ANOTHER context instance.
-             * 
-             * We do this to verify we can reuse the same lambda object for
-             * multiple contexts.
-             */
-            var foo2 = new FooTest() {
-                Foo = 10
-            };
-            lambda.Execute(foo2);
-
-            // Verifying changes were applied.
-            Assert.AreEqual(67, foo2.Foo);
-        }
-
-        [Test]
-        public void Parse_5()
-        {
-            // Code to execute.
-            const string code = @"foo(57)";
-
-            // Creating our lambda object.
-            var lambda = LambdaBuilder<FooTest>.Build(code);
-
-            // Executing lambda with a new context instance.
-            var foo = new FooTest();
-            lambda.Execute(foo);
-
-            // Verifying changes were applied.
-            Assert.AreEqual(57, foo.Foo);
-        }
-
-        class FooTest2
-        {
-            public int Foo
-            {
-                get;
-                set;
-            }
-
-            [Function(Name = "foo")]
-            public virtual object SetFoo(Arguments arguments)
-            {
-                Foo += arguments.Get<int>(0);
-                return null;
-            }
-
-            [Function(Name = "bar")]
-            protected object SetFoo2(Arguments arguments)
-            {
-                Foo += arguments.Get<int>(0) + 55;
-                return null;
-            }
-
-            [Function(Name = "bar2")]
-            private object SetFoo3(Arguments arguments)
-            {
-                Foo += arguments.Get<int>(0) + 57;
-                return null;
-            }
-        }
-
-        class FooTest2Overridden : FooTest2
-        {
-            public override object SetFoo(Arguments arguments)
-            {
-                Foo += arguments.Get<int>(0) + 10;
-                return null;
-            }
-        }
-
-        [Test]
-        public void Parse_6()
-        {
-            // Code to execute.
-            const string code = @"foo(57)";
-
-            // Creating our lambda object.
-            var lambda = LambdaBuilder<FooTest2>.Build(code);
-
-            /*
-             * Notice, this time we execute our lambda object on an instance
-             * of a derived class, that has overridden the method binding!
-             */
-            var foo = new FooTest2Overridden();
-            lambda.Execute(foo);
-
-            // Verifying changes were applied.
-            Assert.AreEqual(67, foo.Foo);
-        }
-
-        [Test]
-        public void Parse_7()
-        {
-            // Code to execute.
-            const string code = @"bar(2)";
-
-            // Creating our lambda object.
-            var lambda = LambdaBuilder<FooTest2Overridden>.Build(code);
-
-            /*
-             * Notice, this time we execue our lambda object on an instance
-             * of a derived class, where the binded method is a protected method
-             * in the base class!
-             */
-            var foo = new FooTest2Overridden();
-            lambda.Execute(foo);
-
-            // Verifying changes were applied.
-            Assert.AreEqual(57, foo.Foo);
-        }
-
-        [Test]
-        public void Parse_8()
-        {
-            // Code to execute.
-            const string code = @"bar2(2)";
-
-            /*
-             * Notice, this time we execute our lambda object on an instance
-             * of a derived class, where the binded method is a PRIVATE method
-             * in the base class!
-             * 
-             * This should NOT work!
-             */
-            Assert.Throws<lambda.exceptions.PoeticParsingException>(delegate {
-
-                // This line throws since the parser doesn't find our function!
-                var lambda = LambdaBuilder<FooTest2Overridden>.Build(code);
-            });
+            // Verifying it behaved as expected.
+            Assert.AreEqual(57, foo.Value);
         }
     }
 }

@@ -20,39 +20,55 @@
  * SOFTWARE.
  */
 
-using System.IO;
-using poetic.lambda.collections;
-using poetic.lambda.parser;
+using System.Collections.Generic;
 
-namespace poetic.lizzie
+namespace poetic.lambda.parser
 {
     /// <summary>
-    /// Convenience class for creating Lizzie execution lambda objects.
+    /// Class encapsulating an execution stack.
     /// </summary>
-    public static class LambdaBuilder<TContext> where TContext : class
+    public class FunctionStack<TContext>
     {
+        // The actual content of your stack.
+        readonly Dictionary<string, object> _stack = new Dictionary<string, object>();
+
+        // The binder for this instance.
+        readonly Binder<TContext> _binder;
+
         /// <summary>
-        /// Creates and returns a Lizzie execution lambda object from the given stream.
+        /// Initializes a new instance of the <see cref="T:poetic.lambda.parser.Stack`1"/> class.
         /// </summary>
-        /// <returns>The lambda execution object.</returns>
-        /// <param name="stream">Stream containing your Lizzie code.</param>
-        public static Actions<TContext> Build(Stream stream)
+        /// <param name="binder">Binder to associate this stack with.</param>
+        public FunctionStack(Binder<TContext> binder)
         {
-            var tokenizer = new Tokenizer(stream, new LizzieTokenizer());
-            var parser = new LizzieParser<TContext>();
-            return parser.Parse(tokenizer);
+            _binder = binder;
         }
 
         /// <summary>
-        /// Creates and returns a Lizzie execution lambda object from the given code.
+        /// Gets or sets the return value for this instance.
         /// </summary>
-        /// <returns>The lambda execution object.</returns>
-        /// <param name="code">Lizzie code.</param>
-        public static Actions<TContext> Build(string code)
+        /// <value>The return value.</value>
+        public object Return
         {
-            var tokenizer = new Tokenizer(code, new LizzieTokenizer());
-            var parser = new LizzieParser<TContext>();
-            return parser.Parse(tokenizer);
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the specified stack value.
+        /// </summary>
+        /// <param name="name">Name of stack item.</param>
+        public object this[string name]
+        {
+            get {
+                // Prioritizing values from the stack.
+                if (_stack.ContainsKey(name))
+                    return _stack[name];
+
+                // Defaulting to binder's value.
+                return _binder[name];
+            }
+            set => _stack[name] = value;
         }
     }
 }
