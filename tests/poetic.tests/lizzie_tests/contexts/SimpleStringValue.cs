@@ -26,18 +26,18 @@ using poetic.lambda.collections;
 namespace poetic.tests.lizzie_tests.contexts
 {
     /*
-     * A simple single numeric value context that simply adds an integer value
-     * to an existing property.
+     * A simple single string value context that simply concatenates a string to
+     * an existing string value.
      */
-    public class SimpleNumericValue
+    public class SimpleStringValue
     {
-        public int Value { get; set; } = 0;
+        public string Value { get; set; } = "";
 
         [Function(Name = "add")]
         public object Add(Arguments args)
         {
-            Value += args.Get<int>(0);
-            return null;
+            Value += args.Get<string>(0);
+            return Value;
         }
     }
 }

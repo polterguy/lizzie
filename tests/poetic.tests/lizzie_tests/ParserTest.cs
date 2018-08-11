@@ -68,5 +68,72 @@ namespace poetic.tests.lizzie_tests
             // Verifying evaluation of lambda with the second context did not change our first context.
             Assert.AreEqual(57, ctx1.Value);
         }
+
+        [Test]
+        public void Parse_03()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), "add('foo');");
+
+            // Evaluating our function.
+            var ctx = new SimpleStringValue();
+            functor(ctx);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual("foo", ctx.Value);
+
+            /*
+             * Executing functor another time with the same context, verifying it
+             * concatenates the string yet another time.
+             */
+            functor(ctx);
+            Assert.AreEqual("foofoo", ctx.Value);
+        }
+
+        [Test]
+        public void Parse_04()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+add('foo');
+add(""bar"");");
+
+            // Evaluating our function.
+            var ctx = new SimpleStringValue();
+            functor(ctx);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual("foobar", ctx.Value);
+        }
+
+        [Test]
+        public void Parse_05()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+add(add('howdy'));");
+
+            // Evaluating our function.
+            var ctx = new SimpleStringValue();
+            functor(ctx);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual("howdyhowdy", ctx.Value);
+        }
+
+        [Test]
+        public void Parse_06()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<TwoNumericValues>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+add(2, 55);");
+
+            // Evaluating our function.
+            var ctx = new TwoNumericValues();
+            var result = functor(ctx);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual(57, result);
+        }
     }
 }

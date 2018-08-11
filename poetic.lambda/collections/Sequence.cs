@@ -58,6 +58,15 @@ namespace poetic.lambda.collections
         }
 
         /// <summary>
+        /// Returns the number of items in current instance.
+        /// </summary>
+        /// <value>The number of items in the current instance.</value>
+        public int Count
+        {
+            get { return _list.Count; }
+        }
+
+        /// <summary>
         /// Appends the specified item to the sequence.
         /// </summary>
         /// <param name="item">Item to append.</param>

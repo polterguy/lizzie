@@ -221,7 +221,7 @@ namespace poetic.lizzie
         /*
          * Creates a function invocation statement and returns to caller.
          */
-        Action<FunctionStack<TContext>> CreateFunctionInvocationStatement(string name, IEnumerator<string> en)
+        Action<FunctionStack<TContext>> CreateFunctionInvocationStatement(string name, IEnumerator<string> en, bool forceClosing = true)
         {
             /*
              * Sanity checking code.
@@ -239,6 +239,19 @@ namespace poetic.lizzie
             Functions<FunctionStack<TContext>, object> arguments = new Functions<FunctionStack<TContext>, object>();
             while (true) {
 
+                /*
+                 * Checking if this is a comma, and such is expected, at which point we
+                 * discard it, and move to our next argument.
+                 */
+                if (en.Current == ",") {
+
+                    // Cannot start a function invocation with a "," as its first parameter!
+                    if (arguments.Count == 0)
+                        throw new PoeticParsingException($"Syntax error after invocation to '{name}', unexpected comma.");
+                    if (!en.MoveNext())
+                        throw new PoeticParsingException($"Unexpected EOF while parsing invocation to '{name}'.");
+                }
+
                 // Figuring out type of parameter.
                 if (en.Current == ")")
                     break; // End off function invocation.
@@ -253,7 +266,7 @@ namespace poetic.lizzie
             /*
              * In Lizzie the semicolon is mandatory after each statement. 
              */
-            if (!en.MoveNext() || en.Current != ";")
+            if (forceClosing && (!en.MoveNext() || en.Current != ";"))
                 throw new PoeticParsingException($"Missing semicolon after '{name}' function invocation.");
 
             // Creating our action and returning to caller.
@@ -283,7 +296,7 @@ namespace poetic.lizzie
                  * with the results of the evaluation of our arguments.
                  */
                 var fArgs = new Arguments(arguments.Evaluate(st));
-                func(st.Context, fArgs);
+                st.Return = func(st.Context, fArgs);
             });
         }
 
@@ -297,10 +310,12 @@ namespace poetic.lizzie
              * Figuring out what the iterator is currently pointing to.
              * 
              * Candidates are constant, function invocation and expressions.
+             * First we retrieve the current token from our tokenizer, and do
+             * the simple checks, which are for some sortof constant.
              */
             var cur = en.Current;
 
-            // Checking if iterator is a numeric constant.
+            // Checking if enumerator is pointing to a numeric constant.
             if ("0123456789".IndexOf(cur[0]) != -1) {
 
                 /*
@@ -315,8 +330,63 @@ namespace poetic.lizzie
                     return constNumber;
                 });
                 if (!en.MoveNext())
-                    throw new PoeticParsingException($"Unexpected EOF after parsing the {cur} constant.");
+                    throw new PoeticParsingException($"Unexpected EOF after parsing the '{cur}' numeric constant.");
                 return expression;
+            }
+
+            // Checking if enumerator is pointing to a string constant.
+            if (cur == "\"" || cur == "'") {
+
+                /*
+                 * A string constant.
+                 * Discarding opening single or double quote character, and sanity
+                 * checking code at the same time.
+                 */
+                if (!en.MoveNext())
+                    throw new PoeticParsingException($"Unexpected EOF while parsing string literal.");
+                var constString = en.Current;
+                var expression = new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
+                    return constString;
+                });
+
+                // Moving enumerator beyond currently handled token, and doing some more sanity checking.
+                if (!en.MoveNext())
+                    throw new PoeticParsingException($"Unexpected EOF after parsing the '{constString}' string constant.");
+                if (en.Current != cur)
+                    throw new PoeticParsingException($"Syntax error, expecting ({cur}) after '{constString}', found '{en.Current}'.");
+                if (!en.MoveNext())
+                    throw new PoeticParsingException($"Unexpected EOF after parsing the '{constString}' string literal constant.");
+                return expression;
+            }
+
+            /*
+             * Current token is not pointing to a string or numeric constant,
+             * hence candidates now are function invocation or expression.
+             * 
+             * If the next token is a "(", it is a function invocation, otherwise
+             * it is an expression. But first some more sanity checking.
+             */
+            if (!en.MoveNext())
+                throw new PoeticParsingException($"Unexpected EOF while parsing expression close to '{cur}'");
+            if (en.Current == "(") {
+
+                // Function invocation.
+                var invocation = CreateFunctionInvocationStatement(cur, en, false /* We don't want the parser to expect a semicolon here! */);
+                Func<FunctionStack<TContext>, object> functor = new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
+                    invocation (fs);
+                    return fs.Return;
+                });
+
+                // Skipping closing paranthesis for function invocation.
+                if (!en.MoveNext())
+                    throw new PoeticParsingException($"Unexpected EOF while parsing expression close to '{cur}'");
+
+                // Returning function invocation to caller.
+                return functor;
+
+            } else {
+
+                // An actual expression.
             }
 
             return null;

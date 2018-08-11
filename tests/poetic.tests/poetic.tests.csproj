@@ -37,6 +37,8 @@
     <Compile Include="lizzie_tests\TokenizerTest.cs" />
     <Compile Include="lizzie_tests\ParserTest.cs" />
     <Compile Include="lizzie_tests\contexts\SimpleNumericValue.cs" />
+    <Compile Include="lizzie_tests\contexts\SimpleStringValue.cs" />
+    <Compile Include="lizzie_tests\contexts\TwoNumericValues.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

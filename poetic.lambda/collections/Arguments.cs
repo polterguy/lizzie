@@ -53,15 +53,6 @@ namespace poetic.lambda.collections
         { }
 
         /// <summary>
-        /// Returns the number of arguments in this instance.
-        /// </summary>
-        /// <value>The count of arguments.</value>
-        public int Count
-        {
-            get { return _list.Count; }
-        }
-
-        /// <summary>
         /// Returns the specified argument.
         /// </summary>
         /// <returns>The argument.</returns>
