@@ -31,10 +31,13 @@ namespace poetic.tests.lizzie_tests.contexts
      */
     public class TwoNumericValues
     {
+        public int Value { get; set; }
+
         [Function(Name = "add")]
         public object Add(Arguments args)
         {
-            return args.Get<int>(0) + args.Get<int>(1);
+            Value = args.Get<int>(0) + args.Get<int>(1);
+            return null;
         }
     }
 }

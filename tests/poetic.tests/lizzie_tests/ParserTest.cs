@@ -39,7 +39,8 @@ namespace poetic.tests.lizzie_tests
 
             // Evaluating our function.
             var ctx = new SimpleNumericValue();
-            functor(ctx);
+            var st = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx);
+            functor.Execute(st);
 
             // Verifying it behaved as expected.
             Assert.AreEqual(57, ctx.Value);
@@ -53,14 +54,16 @@ namespace poetic.tests.lizzie_tests
 
             // Evaluating our function with our first context.
             var ctx1 = new SimpleNumericValue();
-            functor(ctx1);
+            var st = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx1);
+            functor.Execute(st);
 
             // Verifying first evaluation behaved as expected.
             Assert.AreEqual(57, ctx1.Value);
 
             // Evaluating our function with our second context.
             var ctx2 = new SimpleNumericValue() { Value = 10 };
-            functor(ctx2);
+            var st2 = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx2);
+            functor.Execute(st2);
 
             // Verifying second evaluation behaved as expected.
             Assert.AreEqual(67, ctx2.Value);
@@ -77,7 +80,8 @@ namespace poetic.tests.lizzie_tests
 
             // Evaluating our function.
             var ctx = new SimpleStringValue();
-            functor(ctx);
+            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
+            functor.Execute(st);
 
             // Verifying it behaved as expected.
             Assert.AreEqual("foo", ctx.Value);
@@ -86,7 +90,7 @@ namespace poetic.tests.lizzie_tests
              * Executing functor another time with the same context, verifying it
              * concatenates the string yet another time.
              */
-            functor(ctx);
+            functor.Execute(st);
             Assert.AreEqual("foofoo", ctx.Value);
         }
 
@@ -100,7 +104,8 @@ add(""bar"");");
 
             // Evaluating our function.
             var ctx = new SimpleStringValue();
-            functor(ctx);
+            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
+            functor.Execute(st);
 
             // Verifying it behaved as expected.
             Assert.AreEqual("foobar", ctx.Value);
@@ -115,7 +120,8 @@ add(add('howdy'));");
 
             // Evaluating our function.
             var ctx = new SimpleStringValue();
-            functor(ctx);
+            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
+            functor.Execute(st);
 
             // Verifying it behaved as expected.
             Assert.AreEqual("howdyhowdy", ctx.Value);
@@ -129,10 +135,11 @@ add(add('howdy'));");
 
             // Evaluating our function.
             var ctx = new TwoNumericValues();
-            var result = functor(ctx);
+            var st = new FunctionStack<TwoNumericValues>(new Binder<TwoNumericValues>(), ctx);
+            functor.Execute(st);
 
             // Verifying it behaved as expected.
-            Assert.AreEqual(57, result);
+            Assert.AreEqual(57, st.Context.Value);
         }
     }
 }
