@@ -247,7 +247,7 @@ namespace poetic.lizzie
 
                     // Cannot start a function invocation with a "," as its first parameter!
                     if (arguments.Count == 0)
-                        throw new PoeticParsingException($"Syntax error after invocation to '{name}', unexpected comma.");
+                        throw new PoeticParsingException($"Syntax error after invocation to '{name}', unexpected comma as first argument.");
                     if (!en.MoveNext())
                         throw new PoeticParsingException($"Unexpected EOF while parsing invocation to '{name}'.");
                 }
@@ -387,6 +387,7 @@ namespace poetic.lizzie
             } else {
 
                 // An actual expression.
+                // TODO: Continue here!
             }
 
             return null;

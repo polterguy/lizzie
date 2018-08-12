@@ -125,8 +125,7 @@ add(add('howdy'));");
         public void Parse_06()
         {
             // Creating our function.
-            var functor = new LizzieParser<TwoNumericValues>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-add(2, 55);");
+            var functor = new LizzieParser<TwoNumericValues>().Parse(new Tokenizer(new LizzieTokenizer()), @"add(2, 55);");
 
             // Evaluating our function.
             var ctx = new TwoNumericValues();
