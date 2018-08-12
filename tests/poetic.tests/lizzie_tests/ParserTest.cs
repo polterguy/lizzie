@@ -23,7 +23,6 @@
 using NUnit.Framework;
 using poetic.lizzie;
 using poetic.lambda.parser;
-using poetic.lambda.collections;
 using poetic.tests.lizzie_tests.contexts;
 
 namespace poetic.tests.lizzie_tests
@@ -270,6 +269,25 @@ add(foo);");
 
             // Verifying it behaved as expected.
             Assert.AreEqual(57, ctx.Value);
+        }
+
+        [Test]
+        public void Parse_14()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+var foo = ""Hello "";
+var bar = ""World"";
+add(foo);
+add(bar);");
+
+            // Evaluating our function.
+            var ctx = new SimpleStringValue();
+            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
+            functor.Execute(st);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual("Hello World", ctx.Value);
         }
     }
 }

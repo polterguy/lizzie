@@ -47,31 +47,82 @@ namespace poetic.lizzie
              * First we retrieve the current token from our tokenizer, and do
              * the simple checks, which are for some sort of constant.
              */
-            var cur = en.Current;
+            var value = en.Current;
 
             // Checking if enumerator is pointing to a numeric constant.
-            if ("0123456789".IndexOf(cur[0]) != -1) {
+            if ("0123456789".IndexOf(value[0]) != -1) {
 
-                // First character is a number from 0-9, hence this is a number of some sort.
-                return CreateNumericConstant(en);
-            }
+                /*
+                 * NOTICE!
+                 * 
+                 * This might still be an expression, such as "50 + 50" etc ...
+                 * Exactly what it is, depends upon the next token.
+                 */
+                if (!en.MoveNext())
+                    throw new PoeticParsingException($"Unexpected EOF after parsing '{value}'.");
+                if (IsConstant(en.Current))
+                    return CreateNumericConstant(value);
 
-            // Checking if enumerator is pointing to a string constant.
-            if (cur == "\"" || cur == "'") {
+            } else if (value == "\"" || value == "'") {
 
-                // A string literal constant.
-                return CreateStringLiteralConstant(en);
+                /*
+                 * A string literal constant.
+                 * Storing quote type to make sure literal ends with the same type
+                 * of quotes.
+                 */
+                var quote = en.Current;
+                if (!en.MoveNext())
+                    throw new PoeticParsingException($"Unexpected EOF after parsing '{value}'.");
+
+                // Finding our actual string literal constant.
+                value = en.Current;
+
+                // Making sure string literal ends with the same type of quote.
+                if (!en.MoveNext() || en.Current != quote)
+                    throw new PoeticParsingException($"Unexpected EOF after parsing '{value}'.");
+
+                /*
+                 * String literal might still be a part of an expression, which
+                 * we won't know before we have fetched the next token.
+                 * 
+                 * Examples of expressions including string literal constants might be ("foo" + "bar")
+                 * for instance.
+                 */
+                if (!en.MoveNext())
+                    throw new PoeticParsingException($"Unexpected EOF after parsing '{value}'.");
+                if (IsConstant(en.Current))
+                    return CreateStringLiteralConstant(value);
+            } else {
+
+                // Moving forward.
+                if (!en.MoveNext())
+                    throw new PoeticParsingException($"Unexpected EOF after parsing '{value}'.");
             }
 
             /*
+             * This is a "full expression", possibly a function invocation,
+             * and not simply a numeric or string literal constant.
+             */
+            return CreateFullExpression(value, en);
+        }
+
+        /*
+         * Creating a full expression and returning to caller.
+         */
+        static Func<FunctionStack<TContext>, object> CreateFullExpression(string firstToken, IEnumerator<string> en)
+        {
+            /*
              * Current token is not pointing to a string or numeric constant,
              * hence candidates now are function invocation or expression.
-             * 
-             * If the next token is a "(", it is a function invocation, otherwise
-             * it is an expression. But first some more sanity checking.
+             * If it is a function invocation, en.Current equals "(".
+             * If it is a full expression, en.Current might be one of the following.
+             * "+"
+             * "-"
+             * "*"
+             * "/"
+             * "&&"
+             * "||"
              */
-            if (!en.MoveNext())
-                throw new PoeticParsingException($"Unexpected EOF while parsing expression close to '{cur}'");
 
             // Checking if this is a function invocation.
             if (en.Current == "(") {
@@ -82,7 +133,7 @@ namespace poetic.lizzie
                  * NOTICE!
                  * We don't expect a semicolon here after function invocation.
                  */
-                var invocation = StatementParser<TContext>.CreateFunctionInvocation(cur, en, false);
+                var invocation = StatementParser<TContext>.CreateFunctionInvocation(firstToken, en, false);
                 var functor = new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
                     invocation (fs);
                     return fs.Return;
@@ -90,7 +141,7 @@ namespace poetic.lizzie
 
                 // Skipping closing paranthesis for function invocation.
                 if (!en.MoveNext())
-                    throw new PoeticParsingException($"Unexpected EOF while parsing expression close to '{cur}'");
+                    throw new PoeticParsingException($"Unexpected EOF while parsing expression close to '{firstToken}'");
 
                 // Returning function invocation to caller.
                 return functor;
@@ -108,19 +159,28 @@ namespace poetic.lizzie
 
                         // Simple variable de-reference operation.
                         return new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
-                            return fs[cur];
+                            return fs[firstToken];
                         });
                 }
             }
 
-            throw new PoeticParsingException($"Syntax error after '{cur}'.");
+            // Oops ...!
+            throw new PoeticParsingException($"Expected expression, constant or function invocation close to '{firstToken}'");
+        }
+
+        /*
+         * Returns true if token defines the end of a constant.
+         */
+        static bool IsConstant(string token)
+        {
+            return token == "," || token == ")" || token == ";";
         }
 
         /*
          * Creates a numeric constant function, that simply returns the constant
          * number at runtime.
          */
-        static Func<FunctionStack<TContext>, object> CreateNumericConstant (IEnumerator<string> en)
+        static Func<FunctionStack<TContext>, object> CreateNumericConstant (string value)
         {
             /*
              * Parsing our string to become a 64 bits double floating point value.
@@ -129,12 +189,10 @@ namespace poetic.lizzie
              * All numeric value in Lizze are 64 bits floating point double types.
              * This is similar to JavaScript.
              */
-            var constNumber = double.Parse(en.Current, CultureInfo.InvariantCulture);
+            var constNumber = double.Parse(value, CultureInfo.InvariantCulture);
             var expression = new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
                 return constNumber;
             });
-            if (!en.MoveNext())
-                throw new PoeticParsingException($"Unexpected EOF after parsing the '{constNumber}' numeric constant.");
             return expression;
         }
 
@@ -142,33 +200,11 @@ namespace poetic.lizzie
          * Creates a string literal constant function, that simply returns the constant
          * string at runtime.
          */
-        static Func<FunctionStack<TContext>, object> CreateStringLiteralConstant(IEnumerator<string> en)
+        static Func<FunctionStack<TContext>, object> CreateStringLiteralConstant(string value)
         {
-            /*
-             * We need to store the quote type, to verify our string literal is
-             * closed with the same quote type that it was opened with.
-             */
-            var quote = en.Current;
-
-            /*
-             * Discarding opening single or double quote character, and sanity
-             * checking code at the same time.
-             */
-            if (!en.MoveNext())
-                throw new PoeticParsingException($"Unexpected EOF while parsing string literal.");
-            var constString = en.Current;
-            var expression = new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
-                return constString;
+            return new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
+                return value;
             });
-
-            // Moving enumerator beyond currently handled string literal token, and doing some more sanity checking.
-            if (!en.MoveNext())
-                throw new PoeticParsingException($"Unexpected EOF after parsing the '{constString}' string constant, expected single or double quote.");
-            if (en.Current != quote)
-                throw new PoeticParsingException($"Syntax error, expecting ({quote}) after '{constString}', found '{en.Current}'.");
-            if (!en.MoveNext())
-                throw new PoeticParsingException($"Unexpected EOF after parsing the '{constString}' string literal constant.");
-            return expression;
         }
     }
 }
