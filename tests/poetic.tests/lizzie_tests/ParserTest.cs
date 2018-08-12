@@ -339,5 +339,90 @@ add(""5"" + ""52"");");
             // Verifying it behaved as expected.
             Assert.AreEqual("552", ctx.Value);
         }
+
+        [Test]
+        public void Parse_18()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<SimpleNumericValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+add(5 + 49 + 3);");
+
+            // Evaluating our function.
+            var ctx = new SimpleNumericValue();
+            var st = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx);
+            functor.Execute(st);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual(57, ctx.Value);
+        }
+
+        [Test]
+        public void Parse_19()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<SimpleNumericValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+add(5 + 49 + ""3"");");
+
+            // Evaluating our function.
+            var ctx = new SimpleNumericValue();
+            var st = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx);
+            functor.Execute(st);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual(57, ctx.Value);
+        }
+
+        [Test]
+        public void Parse_20()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+add(""5"" + 49 + 3);");
+
+            // Evaluating our function.
+            var ctx = new SimpleStringValue();
+            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
+            functor.Execute(st);
+
+            /*
+             * Verifying it behaved as expected.
+             * 
+             * NOTICE!
+             * Contrary to JavaScript, operators are right associative, implying
+             * the right parts of an expression, which is not grouped with parenthesis,
+             * and where the operators have the same precedence, will be evaluated
+             * first.
+             * This is necessary since there are no actual "constants" per se in
+             * Lizzie, but rather each constant, and variable de-reference operation,
+             * evaluates as the result of a function invocation, returning a const,
+             * or the variable's current value.
+             */
+            Assert.AreEqual("552", ctx.Value);
+        }
+
+        [Test]
+        public void Parse_21()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+add((""5"" + 49) + 3);");
+
+            // Evaluating our function.
+            var ctx = new SimpleStringValue();
+            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
+            functor.Execute(st);
+
+            /*
+             * Verifying it behaved as expected.
+             * 
+             * This example adds paranthesis, to make sure "5" + 49 is evaluated
+             * before the + 3 parts, which obviously results in a different result
+             * than the above example, since this implies adding the string of
+             * "549" to the double value of 3, which means the left hand side
+             * of the second addition controls the result of the second
+             * addition. Which is contrary to our above example.
+             */
+            Assert.AreEqual("5493", ctx.Value);
+        }
     }
 }

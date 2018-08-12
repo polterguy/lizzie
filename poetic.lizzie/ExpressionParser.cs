@@ -50,7 +50,8 @@ namespace poetic.lizzie
             Func<FunctionStack<TContext>, object> lhs = null;
 
             // Checking if enumerator is pointing to a numeric constant.
-            if ("0123456789".IndexOf(value[0]) != -1) {
+            if ("0123456789".IndexOf(value[0]) != -1)
+            {
 
                 /*
                  * NOTICE!
@@ -69,7 +70,9 @@ namespace poetic.lizzie
                  */
                 lhs = CreateNumericConstant(value);
 
-            } else if (value == "\"" || value == "'") {
+            }
+            else if (value == "\"" || value == "'")
+            {
 
                 /*
                  * A string literal constant.
@@ -104,6 +107,40 @@ namespace poetic.lizzie
                  * we'll need it during runtime in our expression further down.
                  */
                 lhs = CreateStringLiteralConstant(value);
+
+            } else if (en.Current == "(") {
+
+                // Sub-expression grouped by paranthesis.
+                if (!en.MoveNext())
+                    throw new PoeticParsingException("Unexpected EOF after opening paranthesis.");
+
+                /*
+                 * Creating our sub-expression.
+                 */
+                var subExpression = Create(en);
+
+                // Sanity checking code, and moving past the closing paranthesis of sub-expression.
+                if (en.Current != ")")
+                    throw new PoeticParsingException($"Expected ')' after expression close to {value}.");
+                if (!en.MoveNext())
+                    throw new PoeticParsingException("Unexpected EOF after sub-expression.");
+
+                /*
+                 * Checking if we have more expressions, and if so, creating a lambda
+                 * that combines the result of both of them.
+                 */
+                if (ExpressionEnds(en.Current))
+                    return subExpression; // No more parts of our expression.
+
+                /*
+                 * Creating the rest of our expression and combining our expressions
+                 * together such that they're combined into a single result.
+                 */
+                var oper = en.Current;
+                if (!en.MoveNext())
+                    throw new PoeticParsingException($"Syntax error after operator '{oper}' close to '{value}'.");
+                var rootRhsExpression = Create(en);
+                return CreateCombinedExpression(subExpression, rootRhsExpression, oper);
 
             } else {
 
@@ -188,34 +225,66 @@ namespace poetic.lizzie
                     // Retrieving RHS of expression.
                     var rhs = Create(en);
 
-                    // Making sure we correctly handle the different operators we support.
-                    switch (oper) {
+                    // Returning combined expression.
+                    return CreateCombinedExpression(lhs, rhs, oper);
 
-                        case "+":
-
-                            /*
-                             * Addition, which also might be string concatenation.
-                             */
-                            return new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
-                                var lhsValue = lhs(fs);
-                                var rhsValue = rhs(fs);
-                                if (lhsValue is double lhsDblValue) {
-                                    if (rhsValue is double rhsDblValue)
-                                        return lhsDblValue + rhsDblValue;
-                                    return lhsDblValue + Convert.ToDouble(rhsValue, CultureInfo.InvariantCulture);
-                                } else if (lhsValue is string lhsStrValue) {
-                                    if (rhsValue is string rhsStrValue)
-                                        return lhsStrValue + rhsStrValue;
-                                    return lhsStrValue + Convert.ToDouble(rhsValue, CultureInfo.InvariantCulture);
-                                }
-                                throw new PoeticExecutionException($"Cannot add '{lhsValue}' and '{rhsValue}' since types are not compatible.");
-                            });
-                    }
                 }
             }
 
             // Oops ...!
             throw new PoeticParsingException($"Expected expression, constant or function invocation close to '{firstToken}'");
+        }
+
+        /*
+         * Creates a combined expression given two expression functions, and
+         * the operator to apply to them.
+         */
+        static Func<FunctionStack<TContext>, object> CreateCombinedExpression(
+            Func<FunctionStack<TContext>, object> lhs, 
+            Func<FunctionStack<TContext>, object> rhs,
+            string oper)
+        {
+            // Making sure we correctly handle the different operators we support.
+            switch (oper) {
+
+                case "+":
+
+                    /*
+                     * Addition, which also might be string concatenation.
+                     * Creating and returning a function encapsulating LHS and RHS runtime evaluation
+                     * of our expression parts.
+                     */
+                    return new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
+
+                        // Evaluating LHS and RHS values.
+                        var lhsValue = lhs(fs);
+                        var rhsValue = rhs(fs);
+
+                        // Figuring out the type of values above evaluation resulted in.
+                        if (lhsValue is double lhsDblValue) {
+
+                            // Numeric LHS side value.
+                            if (rhsValue is double rhsDblValue)
+                                return lhsDblValue + rhsDblValue;
+                            return lhsDblValue + Convert.ToDouble(rhsValue, CultureInfo.InvariantCulture);
+
+                        } else if (lhsValue is string lhsStrValue) {
+
+                            // String LHS side value.
+                            if (rhsValue is string rhsStrValue)
+                                return lhsStrValue + rhsStrValue;
+                            return lhsStrValue + Convert.ToDouble(rhsValue, CultureInfo.InvariantCulture);
+                        }
+
+                        // Oops ...!!
+                        throw new PoeticExecutionException($"Cannot add '{lhsValue}' and '{rhsValue}' since types are not compatible.");
+                    });
+
+                default:
+
+                    // Oops ...!
+                    throw new PoeticParsingException($"Unsupported operator '{oper}'.");
+            }
         }
 
         /*
