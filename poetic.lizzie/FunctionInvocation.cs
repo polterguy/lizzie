@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using poetic.lambda.parser;
 using poetic.lambda.exceptions;
@@ -38,13 +39,26 @@ namespace poetic.lizzie
             var name = en.Current;
             if (!en.MoveNext())
                 throw new PoeticParsingException($"Unexpected EOF whileparsing function invocation to '{name}'");
-            ArgumentsParser<TContext>.Parse(name, en);
+
+            // Making sure we can evaluate our argument late.
+            var args = ArgumentsParser<TContext>.Parse(name, en);
+
+            // Returning a function wrapping our function invocation.
             return new Func<TContext, Arguments, Binder<TContext>, object>(delegate(TContext ctx, Arguments arguments, Binder<TContext> binder) {
+
+                // Making sure key exists.
                 if (!binder.HasKey(name))
                     throw new PoeticExecutionException($"Function '{name}' does not exist.");
+
+                // Making sure key is a function.
                 if (binder[name] is Func<TContext, Arguments, Binder<TContext>, object> func) {
-                    return func(ctx, arguments, binder);
+
+                    // Late binding arguments by evaluating them only when the need is there!
+                    var argsIn = new Arguments(args.Select((ix) => ix(ctx, arguments, binder)));
+                    return func(ctx, argsIn, binder);
                 }
+
+                // Oops! Key was not a function.
                 throw new PoeticExecutionException($"'{name}' is not a function.");
             });
         }

@@ -40,7 +40,7 @@ namespace poetic.lizzie
                 PopulateDefault();
         }
 
-        public void Set (string name, Func<IEnumerator<string>, Func<TContext, Arguments, Binder<TContext>, object>> lambda)
+        public void Set (string name, Func<IEnumerator<string>, Func<TContext, Arguments, Binder<TContext>, object>> lambda = null)
         {
             if (lambda == null)
                 _keywords.Remove(name);
@@ -64,7 +64,7 @@ namespace poetic.lizzie
         void PopulateDefault()
         {
             foreach (var ix in Return<TContext>.Keywords) {
-                _keywords.Add(ix.Item1, ix.Item2);
+                Set(ix.Item1, ix.Item2);
             }
         }
     }

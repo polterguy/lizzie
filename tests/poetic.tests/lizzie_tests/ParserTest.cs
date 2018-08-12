@@ -121,5 +121,54 @@ namespace poetic.tests.lizzie_tests
             // Verifying our result is as expected.
             Assert.AreEqual(10, result);
         }
+
+        [Test]
+        public void Parse_05()
+        {
+            // Creating our parser.
+            var functionParser = new Function<SimpleNumericValue>();
+
+            // Parsing the code below to create a function, using the Lizzie tokenizer.
+            var code = @"set(10)
+return(get())";
+            var function = functionParser.Parse(new lambda.parser.Tokenizer(new lizzie.Tokenizer()), code);
+
+            // Creating the context which our evaluation will be evaluated within.
+            var ctx = new SimpleNumericValue();
+
+            // Creating our binder that binds our CLR methods to functions in our script.
+            var binder = new Binder<SimpleNumericValue>();
+
+            // Evaluating our function, passing in no arguments.
+            var result = function(ctx, null, binder);
+
+            // Verifying our result is as expected.
+            Assert.AreEqual(10, result);
+        }
+
+        [Test]
+        public void Parse_06()
+        {
+            // Creating our parser.
+            var functionParser = new Function<SimpleNumericValue>();
+
+            // Parsing the code below to create a function, using the Lizzie tokenizer.
+            var code = @"set(10)
+set(50)
+return(get())";
+            var function = functionParser.Parse(new lambda.parser.Tokenizer(new lizzie.Tokenizer()), code);
+
+            // Creating the context which our evaluation will be evaluated within.
+            var ctx = new SimpleNumericValue();
+
+            // Creating our binder that binds our CLR methods to functions in our script.
+            var binder = new Binder<SimpleNumericValue>();
+
+            // Evaluating our function, passing in no arguments.
+            var result = function(ctx, null, binder);
+
+            // Verifying our result is as expected.
+            Assert.AreEqual(50, result);
+        }
     }
 }

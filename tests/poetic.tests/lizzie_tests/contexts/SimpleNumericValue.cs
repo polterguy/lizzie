@@ -38,5 +38,12 @@ namespace poetic.tests.lizzie_tests.contexts
         {
             return Value;
         }
+
+        [Function(Name = "set")]
+        public object Set(Arguments args, Binder<SimpleNumericValue> binder)
+        {
+            Value = args.Get<int>(0);
+            return null;
+        }
     }
 }

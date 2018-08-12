@@ -28,10 +28,6 @@ using poetic.lambda.collections;
 
 namespace poetic.lizzie
 {
-    /// <summary>
-    /// Lizzie parser that creates a Lizzie execution object to be evaluated as
-    /// a function.
-    /// </summary>
     public class Function<TContext>
     {
         readonly Keywords<TContext> _keywords;
@@ -51,43 +47,22 @@ namespace poetic.lizzie
             return Parse(tokenizer.Tokenize(streams));
         }
 
-        /// <summary>
-        /// Parses the specified code, using the tokenizer, and returns a function
-        /// to caller.
-        /// </summary>
-        /// <returns>The function object being the result of the parse operation.</returns>
-        /// <param name="tokenizer">Tokenizer to use.</param>
-        /// <param name="code">The code you wish to parse.</param>
         public Func<TContext, Arguments, Binder<TContext>, object> Parse(lambda.parser.Tokenizer tokenizer, string code)
         {
             return Parse(tokenizer.Tokenize(code));
         }
 
-        /// <summary>
-        /// Parses the specified code snippets, using the tokenizer, and returns a function
-        /// to caller.
-        /// </summary>
-        /// <returns>The function object being the result of the parse operation.</returns>
-        /// <param name="tokenizer">Tokenizer to use.</param>
-        /// <param name="code">Snippets of code you wish to create an execution object out of.</param>
         public Func<TContext, Arguments, Binder<TContext>, object> Parse(lambda.parser.Tokenizer tokenizer, IEnumerable<string> code)
         {
             return Parse(tokenizer.Tokenize(code));
         }
 
-        /*
-         * Parses the code in the specified enumerator and returns a function to caller.
-         */
         Func<TContext, Arguments, Binder<TContext>, object> Parse(IEnumerable<string> tokens)
         {
-            /*
-             * All statements in Lizzie are functions with the exact same signature.
-             */
+            // All statements in Lizzie are functions with the exact same signature.
             var functions = new List<Func<TContext, Arguments, Binder<TContext>, object>>();
 
-            /*
-             * Iterating as long as we have more statements.
-             */
+            // Iterating as long as we have more statements.
             var en = tokens.GetEnumerator();
             while (en.MoveNext()) {
 
@@ -102,7 +77,7 @@ namespace poetic.lizzie
 
                 } else {
 
-                    // Function invocation.
+                    // Function invocation of some sort.
                     functions.Add(FunctionInvocation<TContext>.Create(en));
                 }
             }
@@ -111,6 +86,7 @@ namespace poetic.lizzie
             return new Func<TContext, Arguments, Binder<TContext>, object>(delegate (TContext ctx, Arguments args, Binder<TContext> binder) {
 
                 // Iterating through each statement and evaluating it.
+                // TODO: Make sure the "return" keyword can stop execution!
                 object result = null;
                 foreach (var ix in functions) {
                     result = ix(ctx, args, binder);
