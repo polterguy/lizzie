@@ -39,6 +39,7 @@
     <Compile Include="lizzie_tests\contexts\SimpleNumericValue.cs" />
     <Compile Include="lizzie_tests\contexts\SimpleStringValue.cs" />
     <Compile Include="lizzie_tests\contexts\TwoNumericValues.cs" />
+    <Compile Include="lizzie_tests\contexts\MultipleFunctions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -127,8 +127,8 @@ namespace poetic.lizzie
         }
 
         /*
-         * Creates a numeric constant function, that simply returns the constant
-         * number at runtime.
+         * Creates a string literal constant function, that simply returns the constant
+         * string at runtime.
          */
         static Func<FunctionStack<TContext>, object> CreateStringLiteralConstant(IEnumerator<string> en)
         {
@@ -149,9 +149,9 @@ namespace poetic.lizzie
                 return constString;
             });
 
-            // Moving enumerator beyond currently handled token, and doing some more sanity checking.
+            // Moving enumerator beyond currently handled string literal token, and doing some more sanity checking.
             if (!en.MoveNext())
-                throw new PoeticParsingException($"Unexpected EOF after parsing the '{constString}' string constant.");
+                throw new PoeticParsingException($"Unexpected EOF after parsing the '{constString}' string constant, expected single or double quote.");
             if (en.Current != quote)
                 throw new PoeticParsingException($"Syntax error, expecting ({quote}) after '{constString}', found '{en.Current}'.");
             if (!en.MoveNext())

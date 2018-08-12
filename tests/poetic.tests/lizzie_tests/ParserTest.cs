@@ -141,5 +141,72 @@ add(add('howdy'));");
             // Verifying it behaved as expected.
             Assert.AreEqual(57, st.Context.Value);
         }
+
+        [Test]
+        public void Parse_07()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<MultipleFunctions>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+set_1(55);
+set_2(get_1(), 2);");
+
+            // Evaluating our function.
+            var ctx = new MultipleFunctions();
+            var st = new FunctionStack<MultipleFunctions>(new Binder<MultipleFunctions>(), ctx);
+            functor.Execute(st);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual(57, st.Context.Value);
+        }
+
+        [Test]
+        public void Parse_08()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<MultipleFunctions>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+set_1(10);
+set_2(get_1(), get_2());");
+
+            // Evaluating our function.
+            var ctx = new MultipleFunctions();
+            var st = new FunctionStack<MultipleFunctions>(new Binder<MultipleFunctions>(), ctx);
+            functor.Execute(st);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual(30, st.Context.Value);
+        }
+
+        [Test]
+        public void Parse_09()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<MultipleFunctions>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+set_3(1, 2, 3, get_2());
+set_2(get_1(), get_2());");
+
+            // Evaluating our function.
+            var ctx = new MultipleFunctions();
+            var st = new FunctionStack<MultipleFunctions>(new Binder<MultipleFunctions>(), ctx);
+            functor.Execute(st);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual(18, st.Context.Value);
+        }
+
+        [Test]
+        public void Parse_10()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<MultipleFunctions>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+set_2(increment(increment(increment(increment(1)))), 2);");
+
+            // Evaluating our function.
+            var ctx = new MultipleFunctions();
+            var st = new FunctionStack<MultipleFunctions>(new Binder<MultipleFunctions>(), ctx);
+            functor.Execute(st);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual(7, st.Context.Value);
+        }
     }
 }

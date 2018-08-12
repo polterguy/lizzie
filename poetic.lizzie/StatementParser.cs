@@ -186,6 +186,8 @@ namespace poetic.lizzie
                         throw new PoeticParsingException("Syntax error after invocation to function, unexpected comma as first argument.");
                     if (!en.MoveNext())
                         throw new PoeticParsingException("Unexpected EOF while parsing invocation to function.");
+                    if (en.Current == ",")
+                        throw new PoeticParsingException("Unexpecte comma found while parsing arguments to function invocation.");
                 }
 
                 // Figuring out type of parameter.
