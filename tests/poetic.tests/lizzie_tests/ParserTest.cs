@@ -33,396 +33,93 @@ namespace poetic.tests.lizzie_tests
         [Test]
         public void Parse_01()
         {
-            // Creating our function.
-            var functor = new LizzieParser<SimpleNumericValue>().Parse(new Tokenizer(new LizzieTokenizer()), "add(57);");
+            // Creating our parser.
+            var functionParser = new Function<SimpleNumericValue>();
 
-            // Evaluating our function.
+            // Parsing the code below to create a function, using the Lizzie tokenizer.
+            var code = "return(57)";
+            var function = functionParser.Parse(new lambda.parser.Tokenizer(new lizzie.Tokenizer()), code);
+
+            // Creating the context which our evaluation will be evaluated within.
             var ctx = new SimpleNumericValue();
-            var st = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx);
-            functor.Execute(st);
 
-            // Verifying it behaved as expected.
-            Assert.AreEqual(57, ctx.Value);
+            // Creating our binder that binds our CLR methods to functions in our script.
+            var binder = new Binder<SimpleNumericValue>();
+
+            // Evaluating our function, passing in no arguments.
+            var result = function(ctx, null, binder);
+
+            // Verifying our result is as expected.
+            Assert.AreEqual(57, result);
         }
 
         [Test]
         public void Parse_02()
         {
-            // Creating our function.
-            var functor = new LizzieParser<SimpleNumericValue>().Parse(new Tokenizer(new LizzieTokenizer()), "add(57);");
+            // Creating our parser.
+            var functionParser = new Function<SimpleNumericValue>();
 
-            // Evaluating our function with our first context.
-            var ctx1 = new SimpleNumericValue();
-            var st = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx1);
-            functor.Execute(st);
+            // Parsing the code below to create a function, using the Lizzie tokenizer.
+            var code = @"return(""57"")";
+            var function = functionParser.Parse(new lambda.parser.Tokenizer(new lizzie.Tokenizer()), code);
 
-            // Verifying first evaluation behaved as expected.
-            Assert.AreEqual(57, ctx1.Value);
+            // Creating the context which our evaluation will be evaluated within.
+            var ctx = new SimpleNumericValue();
 
-            // Evaluating our function with our second context.
-            var ctx2 = new SimpleNumericValue() { Value = 10 };
-            var st2 = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx2);
-            functor.Execute(st2);
+            // Creating our binder that binds our CLR methods to functions in our script.
+            var binder = new Binder<SimpleNumericValue>();
 
-            // Verifying second evaluation behaved as expected.
-            Assert.AreEqual(67, ctx2.Value);
+            // Evaluating our function, passing in no arguments.
+            var result = function(ctx, null, binder);
 
-            // Verifying evaluation of lambda with the second context did not change our first context.
-            Assert.AreEqual(57, ctx1.Value);
+            // Verifying our result is as expected.
+            Assert.AreEqual("57", result);
         }
 
         [Test]
         public void Parse_03()
         {
-            // Creating our function.
-            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), "add('foo');");
+            // Creating our parser.
+            var functionParser = new Function<SimpleNumericValue>();
 
-            // Evaluating our function.
-            var ctx = new SimpleStringValue();
-            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
-            functor.Execute(st);
+            // Parsing the code below to create a function, using the Lizzie tokenizer.
+            var code = "return('57')";
+            var function = functionParser.Parse(new lambda.parser.Tokenizer(new lizzie.Tokenizer()), code);
 
-            // Verifying it behaved as expected.
-            Assert.AreEqual("foo", ctx.Value);
+            // Creating the context which our evaluation will be evaluated within.
+            var ctx = new SimpleNumericValue();
 
-            /*
-             * Executing functor another time with the same context, verifying it
-             * concatenates the string yet another time.
-             */
-            functor.Execute(st);
-            Assert.AreEqual("foofoo", ctx.Value);
+            // Creating our binder that binds our CLR methods to functions in our script.
+            var binder = new Binder<SimpleNumericValue>();
+
+            // Evaluating our function, passing in no arguments.
+            var result = function(ctx, null, binder);
+
+            // Verifying our result is as expected.
+            Assert.AreEqual("57", result);
         }
 
         [Test]
         public void Parse_04()
         {
-            // Creating our function.
-            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-add('foo');
-add(""bar"");");
+            // Creating our parser.
+            var functionParser = new Function<SimpleNumericValue>();
 
-            // Evaluating our function.
-            var ctx = new SimpleStringValue();
-            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
-            functor.Execute(st);
+            // Parsing the code below to create a function, using the Lizzie tokenizer.
+            var code = "return(get())";
+            var function = functionParser.Parse(new lambda.parser.Tokenizer(new lizzie.Tokenizer()), code);
 
-            // Verifying it behaved as expected.
-            Assert.AreEqual("foobar", ctx.Value);
-        }
+            // Creating the context which our evaluation will be evaluated within.
+            var ctx = new SimpleNumericValue() { Value = 10 };
 
-        [Test]
-        public void Parse_05()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-add(add('howdy'));");
+            // Creating our binder that binds our CLR methods to functions in our script.
+            var binder = new Binder<SimpleNumericValue>();
 
-            // Evaluating our function.
-            var ctx = new SimpleStringValue();
-            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
-            functor.Execute(st);
+            // Evaluating our function, passing in no arguments.
+            var result = function(ctx, null, binder);
 
-            // Verifying it behaved as expected.
-            Assert.AreEqual("howdyhowdy", ctx.Value);
-        }
-
-        [Test]
-        public void Parse_06()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<TwoNumericValues>().Parse(new Tokenizer(new LizzieTokenizer()), @"add(2, 55);");
-
-            // Evaluating our function.
-            var ctx = new TwoNumericValues();
-            var st = new FunctionStack<TwoNumericValues>(new Binder<TwoNumericValues>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual(57, st.Context.Value);
-        }
-
-        [Test]
-        public void Parse_07()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<MultipleFunctions>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-set_1(55);
-set_2(get_1(), 2);");
-
-            // Evaluating our function.
-            var ctx = new MultipleFunctions();
-            var st = new FunctionStack<MultipleFunctions>(new Binder<MultipleFunctions>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual(57, st.Context.Value);
-        }
-
-        [Test]
-        public void Parse_08()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<MultipleFunctions>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-set_1(10);
-set_2(get_1(), get_2());");
-
-            // Evaluating our function.
-            var ctx = new MultipleFunctions();
-            var st = new FunctionStack<MultipleFunctions>(new Binder<MultipleFunctions>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual(30, st.Context.Value);
-        }
-
-        [Test]
-        public void Parse_09()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<MultipleFunctions>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-set_3(1, 2, 3, get_2());
-set_2(get_1(), get_2());");
-
-            // Evaluating our function.
-            var ctx = new MultipleFunctions();
-            var st = new FunctionStack<MultipleFunctions>(new Binder<MultipleFunctions>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual(18, st.Context.Value);
-        }
-
-        [Test]
-        public void Parse_10()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<MultipleFunctions>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-set_2(increment(increment(increment(increment(1)))), 2);");
-
-            // Evaluating our function.
-            var ctx = new MultipleFunctions();
-            var st = new FunctionStack<MultipleFunctions>(new Binder<MultipleFunctions>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual(7, st.Context.Value);
-        }
-
-        [Test]
-        public void Parse_11()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<MultipleFunctions>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-set_2(increment(increment(increment(increment(1)))), 2);
-set_2(49, increment(get_1()));");
-
-            // Evaluating our function.
-            var ctx = new MultipleFunctions();
-            var st = new FunctionStack<MultipleFunctions>(new Binder<MultipleFunctions>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual(57, st.Context.Value);
-        }
-
-        [Test]
-        public void Parse_12()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<MultipleFunctions>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-set_2(
-  increment(
-    increment(
-      increment(
-        increment(1)
-      )
-    )
-), 2);
-
-set_2(  49, 
-  increment(
-    get_1()
-  )
-);");
-
-            // Evaluating our function.
-            var ctx = new MultipleFunctions();
-            var st = new FunctionStack<MultipleFunctions>(new Binder<MultipleFunctions>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual(57, st.Context.Value);
-        }
-
-        [Test]
-        public void Parse_13()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<SimpleNumericValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-var foo = 57;
-add(foo);");
-
-            // Evaluating our function.
-            var ctx = new SimpleNumericValue();
-            var st = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual(57, ctx.Value);
-        }
-
-        [Test]
-        public void Parse_14()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-var foo = ""Hello "";
-var bar = ""World"";
-add(foo);
-add(bar);");
-
-            // Evaluating our function.
-            var ctx = new SimpleStringValue();
-            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual("Hello World", ctx.Value);
-        }
-
-        [Test]
-        public void Parse_15()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<TwoStringValues>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-var foo = ""Hello "";
-var bar = ""World"";
-concatenate(foo, bar);");
-
-            // Evaluating our function.
-            var ctx = new TwoStringValues();
-            var st = new FunctionStack<TwoStringValues>(new Binder<TwoStringValues>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual("Hello World", ctx.Value);
-        }
-
-        [Test]
-        public void Parse_16()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<SimpleNumericValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-add(5 + 52);");
-
-            // Evaluating our function.
-            var ctx = new SimpleNumericValue();
-            var st = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual(57, ctx.Value);
-        }
-
-        [Test]
-        public void Parse_17()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-add(""5"" + ""52"");");
-
-            // Evaluating our function.
-            var ctx = new SimpleStringValue();
-            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual("552", ctx.Value);
-        }
-
-        [Test]
-        public void Parse_18()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<SimpleNumericValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-add(5 + 49 + 3);");
-
-            // Evaluating our function.
-            var ctx = new SimpleNumericValue();
-            var st = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual(57, ctx.Value);
-        }
-
-        [Test]
-        public void Parse_19()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<SimpleNumericValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-add(5 + 49 + ""3"");");
-
-            // Evaluating our function.
-            var ctx = new SimpleNumericValue();
-            var st = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx);
-            functor.Execute(st);
-
-            // Verifying it behaved as expected.
-            Assert.AreEqual(57, ctx.Value);
-        }
-
-        [Test]
-        public void Parse_20()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-add(""5"" + 49 + 3);");
-
-            // Evaluating our function.
-            var ctx = new SimpleStringValue();
-            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
-            functor.Execute(st);
-
-            /*
-             * Verifying it behaved as expected.
-             * 
-             * NOTICE!
-             * Contrary to JavaScript, operators are right associative, implying
-             * the right parts of an expression, which is not grouped with parenthesis,
-             * and where the operators have the same precedence, will be evaluated
-             * first.
-             * This is necessary since there are no actual "constants" per se in
-             * Lizzie, but rather each constant, and variable de-reference operation,
-             * evaluates as the result of a function invocation, returning a const,
-             * or the variable's current value.
-             */
-            Assert.AreEqual("552", ctx.Value);
-        }
-
-        [Test]
-        public void Parse_21()
-        {
-            // Creating our function.
-            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
-add((""5"" + 49) + 3);");
-
-            // Evaluating our function.
-            var ctx = new SimpleStringValue();
-            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
-            functor.Execute(st);
-
-            /*
-             * Verifying it behaved as expected.
-             * 
-             * This example adds paranthesis, to make sure "5" + 49 is evaluated
-             * before the + 3 parts, which obviously results in a different result
-             * than the above example, since this implies adding the string of
-             * "549" to the double value of 3, which means the left hand side
-             * of the second addition controls the result of the second
-             * addition. Which is contrary to our above example.
-             */
-            Assert.AreEqual("5493", ctx.Value);
+            // Verifying our result is as expected.
+            Assert.AreEqual(10, result);
         }
     }
 }

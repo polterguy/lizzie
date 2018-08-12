@@ -24,35 +24,23 @@ using System;
 using System.Collections.Generic;
 using poetic.lambda.parser;
 using poetic.lizzie.keywords;
+using poetic.lambda.collections;
 
 namespace poetic.lizzie
 {
-    /// <summary>
-    /// Class encapsulating which keywords you want to use.
-    /// </summary>
-    public class LizzieKeywords<TContext>
+    public class Keywords<TContext>
     {
         // Dictionary of keywords to actions.
-        readonly Dictionary<string, Func<IEnumerator<string>, Action<FunctionStack<TContext>>>> _keywords = 
-            new Dictionary<string, Func<IEnumerator<string>, Action<FunctionStack<TContext>>>>();
+        readonly Dictionary<string, Func<IEnumerator<string>, Func<TContext, Arguments, Binder<TContext>, object>>> _keywords = 
+            new Dictionary<string, Func<IEnumerator<string>, Func<TContext, Arguments, Binder<TContext>, object>>>();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:poetic.lizzie.LizzieKeywords`1"/> class.
-        /// </summary>
-        /// <param name="populateDefault">If set to <c>true</c> will populate the default keywords, otherwise will not create any keyword dictionary mappings for you at all.</param>
-        public LizzieKeywords(bool populateDefault = true)
+        public Keywords(bool populateDefault = true)
         {
             if (populateDefault)
                 PopulateDefault();
         }
 
-        /// <summary>
-        /// Sets or removes the specified named keyword to the specified lambda action.
-        /// If you pass in lambda as null, the keyword is removed.
-        /// </summary>
-        /// <param name="name">Name of keyword.</param>
-        /// <param name="lambda">Lambda to associate with keyword.</param>
-        public void Set (string name, Func<IEnumerator<string>, Action<FunctionStack<TContext>>> lambda)
+        public void Set (string name, Func<IEnumerator<string>, Func<TContext, Arguments, Binder<TContext>, object>> lambda)
         {
             if (lambda == null)
                 _keywords.Remove(name);
@@ -60,21 +48,12 @@ namespace poetic.lizzie
                 _keywords[name] = lambda;
         }
 
-        /// <summary>
-        /// Returns true if the specified keyword exists.
-        /// </summary>
-        /// <returns><c>true</c>, if keyword exists, <c>false</c> otherwise.</returns>
-        /// <param name="name">Name.</param>
         public bool HasKeyword(string name)
         {
             return _keywords.ContainsKey(name);
         }
 
-        /// <summary>
-        /// Gets the function for parsing the specified keyword having the specified name.
-        /// </summary>
-        /// <param name="name">Name of keyword parser to return.</param>
-        public Func<IEnumerator<string>, Action<FunctionStack<TContext>>> this[string name]
+        public Func<IEnumerator<string>, Func<TContext, Arguments, Binder<TContext>, object>> this[string name]
         {
             get { return _keywords[name]; }
         }
@@ -84,10 +63,7 @@ namespace poetic.lizzie
          */
         void PopulateDefault()
         {
-            foreach (var ix in Branching<TContext>.Keywords) {
-                _keywords.Add(ix.Item1, ix.Item2);
-            }
-            foreach (var ix in Variables<TContext>.Keywords) {
+            foreach (var ix in Return<TContext>.Keywords) {
                 _keywords.Add(ix.Item1, ix.Item2);
             }
         }

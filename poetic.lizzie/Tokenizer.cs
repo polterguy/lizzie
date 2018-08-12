@@ -30,7 +30,7 @@ namespace poetic.lizzie
     /// <summary>
     /// Tokenizer for Lizzie.
     /// </summary>
-    public class LizzieTokenizer : ITokenizer
+    public class Tokenizer : ITokenizer
     {
         /*
          * Occassionally we need to read more than one token ahead, at which point we
@@ -50,7 +50,7 @@ namespace poetic.lizzie
                 return _cachedTokens.Pop(); // Returning cached token and popping it off our stack.
 
             // Eating white space from stream.
-            Tokenizer.EatSpace(reader);
+            lambda.parser.Tokenizer.EatSpace(reader);
             if (reader.EndOfStream)
                 return null; // No more tokens.
 
@@ -215,7 +215,7 @@ namespace poetic.lizzie
                     case '"':
 
                         reader.Read(); //  Skipping '"'.
-                        var strLiteral = Tokenizer.ReadString(reader);
+                        var strLiteral = lambda.parser.Tokenizer.ReadString(reader);
 
                         /*
                          * This time we need to cache our tokens for future invocations.
@@ -229,7 +229,7 @@ namespace poetic.lizzie
                     case '\'':
 
                         reader.Read(); //  Skipping '\''.
-                        strLiteral = Tokenizer.ReadString(reader, '\'');
+                        strLiteral = lambda.parser.Tokenizer.ReadString(reader, '\'');
 
                         /*
                          * This time we need to cache our tokens for future invocations.
@@ -253,7 +253,7 @@ namespace poetic.lizzie
                             /*
                              * Single line comment.
                              */
-                            var hasMore = Tokenizer.EatLine(reader);
+                            var hasMore = lambda.parser.Tokenizer.EatLine(reader);
                             if (!string.IsNullOrEmpty(retVal)) {
                                 return retVal;
                             } else if (hasMore) {
@@ -267,7 +267,7 @@ namespace poetic.lizzie
                              * Multiline comment
                              */
                             reader.Read(); // Ignoring '*' character.
-                            Tokenizer.EatUntil(reader, "*/");
+                            lambda.parser.Tokenizer.EatUntil(reader, "*/");
                             if (!string.IsNullOrEmpty(retVal)) {
                                 return retVal;
                             } else {

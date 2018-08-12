@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+using System;
 using System.IO;
 using System.Collections.Generic;
 using poetic.lambda.parser;
@@ -31,44 +32,21 @@ namespace poetic.lizzie
     /// Lizzie parser that creates a Lizzie execution object to be evaluated as
     /// a function.
     /// </summary>
-    public class LizzieParser<TContext>
+    public class Function<TContext>
     {
-        // Binder for this instance.
-        readonly Binder<TContext> _binder = new Binder<TContext>();
+        readonly Keywords<TContext> _keywords;
 
-        // Which keywords to use.
-        readonly LizzieKeywords<TContext> _keywords;
-
-        public LizzieParser(LizzieKeywords<TContext> keywords = null)
+        public Function(Keywords<TContext> keywords = null)
         {
-            /*
-             * If no explicit keywords override have been supplied, we use the default
-             * CTOR, which will populate our keywords dictionary with the default Lizzie
-             * keywords.
-             */
-            _keywords = keywords ?? new LizzieKeywords<TContext>();
+            _keywords = keywords ?? new Keywords<TContext>();
         }
 
-        /// <summary>
-        /// Parses the code in the stream, using the tokenizer, and returns a function
-        /// to caller.
-        /// </summary>
-        /// <returns>The function object being the result of the parse operation.</returns>
-        /// <param name="tokenizer">Tokenizer to use.</param>
-        /// <param name="stream">Stream containing your code.</param>
-        public Actions<FunctionStack<TContext>> Parse(Tokenizer tokenizer, Stream stream)
+        public Func<TContext, Arguments, Binder<TContext>, object> Parse(lambda.parser.Tokenizer tokenizer, Stream stream)
         {
             return Parse(tokenizer.Tokenize(stream));
         }
 
-        /// <summary>
-        /// Parses the code in all streams, using the tokenizer, and returns a function
-        /// to caller.
-        /// </summary>
-        /// <returns>The function object being the result of the parse operation.</returns>
-        /// <param name="tokenizer">Tokenizer to use.</param>
-        /// <param name="streams">Streams containing your code.</param>
-        public Actions<FunctionStack<TContext>> Parse(Tokenizer tokenizer, IEnumerable<Stream> streams)
+        public Func<TContext, Arguments, Binder<TContext>, object> Parse(lambda.parser.Tokenizer tokenizer, IEnumerable<Stream> streams)
         {
             return Parse(tokenizer.Tokenize(streams));
         }
@@ -80,7 +58,7 @@ namespace poetic.lizzie
         /// <returns>The function object being the result of the parse operation.</returns>
         /// <param name="tokenizer">Tokenizer to use.</param>
         /// <param name="code">The code you wish to parse.</param>
-        public Actions<FunctionStack<TContext>> Parse(Tokenizer tokenizer, string code)
+        public Func<TContext, Arguments, Binder<TContext>, object> Parse(lambda.parser.Tokenizer tokenizer, string code)
         {
             return Parse(tokenizer.Tokenize(code));
         }
@@ -92,7 +70,7 @@ namespace poetic.lizzie
         /// <returns>The function object being the result of the parse operation.</returns>
         /// <param name="tokenizer">Tokenizer to use.</param>
         /// <param name="code">Snippets of code you wish to create an execution object out of.</param>
-        public Actions<FunctionStack<TContext>> Parse(Tokenizer tokenizer, IEnumerable<string> code)
+        public Func<TContext, Arguments, Binder<TContext>, object> Parse(lambda.parser.Tokenizer tokenizer, IEnumerable<string> code)
         {
             return Parse(tokenizer.Tokenize(code));
         }
@@ -100,27 +78,45 @@ namespace poetic.lizzie
         /*
          * Parses the code in the specified enumerator and returns a function to caller.
          */
-        Actions<FunctionStack<TContext>> Parse(IEnumerable<string> tokens)
+        Func<TContext, Arguments, Binder<TContext>, object> Parse(IEnumerable<string> tokens)
         {
             /*
-             * Creating our actions that will be the actual content of our lambda
-             * function object.
+             * All statements in Lizzie are functions with the exact same signature.
              */
-            var actions = new Actions<FunctionStack<TContext>>();
+            var functions = new List<Func<TContext, Arguments, Binder<TContext>, object>>();
 
             /*
-             * Creating our actual actions, which are a bunch of dynamically
-             * created delegates, created according to what the parser finds in
-             * our code.
+             * Iterating as long as we have more statements.
              */
             var en = tokens.GetEnumerator();
             while (en.MoveNext()) {
-                var statement = StatementParser<TContext>.Create(_keywords, en);
-                actions.Add(statement);
+
+                // Checking if this is a keyword.
+                if (_keywords.HasKeyword(en.Current)) {
+
+                    // Finding keyword parser.
+                    var keywordParser = _keywords[en.Current];
+
+                    // Using keyword parser to parse keyword and add to our list of functions.
+                    functions.Add(keywordParser(en));
+
+                } else {
+
+                    // Function invocation.
+                    functions.Add(FunctionInvocation<TContext>.Create(en));
+                }
             }
 
             // Creating our root level function object and returning it to caller.
-            return actions;
+            return new Func<TContext, Arguments, Binder<TContext>, object>(delegate (TContext ctx, Arguments args, Binder<TContext> binder) {
+
+                // Iterating through each statement and evaluating it.
+                object result = null;
+                foreach (var ix in functions) {
+                    result = ix(ctx, args, binder);
+                }
+                return result;
+            });
         }
     }
 }

@@ -30,8 +30,6 @@ namespace poetic.lambda.parser
 {
     /// <summary>
     /// Binds variable names to objects and functions.
-    /// 
-    /// TODO: Support for properties!
     /// </summary>
     public class Binder<TContext>
     {
@@ -98,7 +96,7 @@ namespace poetic.lambda.parser
         /*
          * Private helper that binds one MethodInfo to a function name by creating a Func delegate.
          */
-        private Func<TContext, Arguments, object> BindMethod(MethodInfo method, string functionName)
+        private void BindMethod(MethodInfo method, string functionName)
         {
             // Sanity checking function name.
             if (string.IsNullOrEmpty(functionName))
@@ -106,19 +104,21 @@ namespace poetic.lambda.parser
 
             // Sanity checking method.
             var methodArgs = method.GetParameters();
-            if (methodArgs.Length != 1)
+            if (methodArgs.Length != 2)
                 throw new PoeticParsingException($"Can't bind to {method.Name} since it doesn't take exactly one argument");
             if (methodArgs[0].ParameterType != typeof(Arguments))
-                throw new PoeticParsingException($"Can't bind to {method.Name} since it doesn't take an '{nameof(Arguments)}' type of argument");
+                throw new PoeticParsingException($"Can't bind to {method.Name} since it doesn't take an '{nameof(Arguments)}' type of argument as first argument.");
+            if (methodArgs[1].ParameterType != typeof(Binder<TContext>))
+                throw new PoeticParsingException($"Can't bind to {method.Name} since it doesn't take a '{nameof(Binder<TContext>)}' type of argument as second argument.");
             if (method.ContainsGenericParameters)
-                throw new PoeticParsingException($"Can't bind to {method.Name} since it takes a generic argument.");
+                throw new PoeticParsingException($"Can't bind to {method.Name} since it requires a generic argument.");
             if (method.ReturnType != typeof(object))
                 throw new PoeticParsingException($"Can't bind to {method.Name} since it doesn't return '{nameof(Object)}'.");
 
             // Creating our delegate, caching it, and returning it to caller.
-            var retVal = (Func<TContext, Arguments, object>)Delegate.CreateDelegate(typeof(Func<TContext, Arguments, object>), method);
-            _variables[functionName] = retVal;
-            return retVal;
+            _variables[functionName] = 
+                (Func<TContext, Arguments, Binder<TContext>, object>)
+                Delegate.CreateDelegate(typeof(Func<TContext, Arguments, Binder<TContext>, object>), method);
         }
     }
 }

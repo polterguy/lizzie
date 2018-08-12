@@ -20,23 +20,33 @@
  * SOFTWARE.
  */
 
+using System;
+using System.Collections.Generic;
 using poetic.lambda.parser;
+using poetic.lambda.exceptions;
 using poetic.lambda.collections;
 
-namespace poetic.tests.lizzie_tests.contexts
+namespace poetic.lizzie
 {
-    /*
-     * A simple single numeric value context that simply adds an integer value
-     * to an existing property.
-     */
-    public class SimpleNumericValue
+    public static class FunctionInvocation<TContext>
     {
-        public int Value { get; set; } = 0;
-
-        [Function(Name = "get")]
-        public object Get(Arguments args, Binder<SimpleNumericValue> binder)
+        public static Func<TContext, Arguments, Binder<TContext>, object> Create(IEnumerator<string> en)
         {
-            return Value;
+            /*
+             * Some sort of function invocation.
+             */
+            var name = en.Current;
+            if (!en.MoveNext())
+                throw new PoeticParsingException($"Unexpected EOF whileparsing function invocation to '{name}'");
+            ArgumentsParser<TContext>.Parse(name, en);
+            return new Func<TContext, Arguments, Binder<TContext>, object>(delegate(TContext ctx, Arguments arguments, Binder<TContext> binder) {
+                if (!binder.HasKey(name))
+                    throw new PoeticExecutionException($"Function '{name}' does not exist.");
+                if (binder[name] is Func<TContext, Arguments, Binder<TContext>, object> func) {
+                    return func(ctx, arguments, binder);
+                }
+                throw new PoeticExecutionException($"'{name}' is not a function.");
+            });
         }
     }
 }

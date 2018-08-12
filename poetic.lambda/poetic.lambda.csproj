@@ -20,6 +20,7 @@
     <Compile Remove="lambdas\SequenceBase.cs" />
     <Compile Remove="parser\Lambda.cs" />
     <Compile Remove="parser\PoeticException.cs" />
+    <Compile Remove="parser\FunctionStack.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="collections\" />

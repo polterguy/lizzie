@@ -37,7 +37,7 @@ namespace poetic.tests.lizzie_tests
         {
             const string code = @"foo()
 bar[5]";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(7, list.Count);
         }
@@ -49,7 +49,7 @@ bar[5]";
 bar [    5 ]   
 
 ";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(7, list.Count);
         }
@@ -58,7 +58,7 @@ bar [    5 ]
         public void Tokenize_03()
         {
             const string code = @"foo(())bar([5],[7])";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(15, list.Count);
         }
@@ -69,7 +69,7 @@ bar [    5 ]
             const string code = @"foo ( 57, 77 )
 bar ( {  hello_world : howdy  ,
     howdy : [  77  ,  2  ,  57 ] }   )   ";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(24, list.Count);
         }
@@ -82,7 +82,7 @@ function foo(input) {
   var x = [1,2,3]
   var y = {first:1,second:2 }
 }";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             string result = "";
             foreach (var ix in list) {
@@ -99,7 +99,7 @@ function foo(input) {
  function foo   ( input     ){
   var x=    [      1   ,  2  ,  3    ]
   var y ={   first  : 1 , second :2}}";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             string result = "";
             foreach (var ix in list) {
@@ -113,7 +113,7 @@ function foo(input) {
         public void Tokenize_07()
         {
             const string code = @"function foo(input){var x=[1,2,3]var y={first:1,second:2}}";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             string result = "";
             foreach (var ix in list) {
@@ -128,7 +128,7 @@ function foo(input) {
         {
             const string code = @"
 foo(""Hello World"")";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual("\"", list[2]);
@@ -146,7 +146,7 @@ foo(""Hello World"")";
         {
             const string code = @"
 foo(""Hello \""World"")";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual("Hello \"World", list[3]);
@@ -157,7 +157,7 @@ foo(""Hello \""World"")";
         {
             const string code = @"
 foo(""Hello \r\nWorld"")";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual("Hello \r\nWorld", list[3]);
@@ -168,7 +168,7 @@ foo(""Hello \r\nWorld"")";
         {
             const string code = @"
 foo(""Hello \nWorld"")";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual("Hello \nWorld", list[3]);
@@ -179,7 +179,7 @@ foo(""Hello \nWorld"")";
         {
             const string code = @"
 foo(""Hello \rWorld"")";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual("Hello \rWorld", list[3]);
@@ -190,7 +190,7 @@ foo(""Hello \rWorld"")";
         {
             const string code = @"
 foo('Hello World')";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual("'", list[2]);
@@ -208,7 +208,7 @@ foo('Hello World')";
         {
             const string code = @"
 foo('Hello \'World')";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual("Hello 'World", list[3]);
@@ -219,7 +219,7 @@ foo('Hello \'World')";
         {
             const string code = @"
 foo('Hello \r\nWorld')";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual("'", list[2]);
@@ -232,7 +232,7 @@ foo('Hello \r\nWorld')";
         {
             const string code = @"
 foo('Hello \tWorld""""')";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual("'", list[2]);
@@ -245,7 +245,7 @@ foo('Hello \tWorld""""')";
         {
             const string code = @"
 foo(""Hello World''"")";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual("\"", list[2]);
@@ -257,7 +257,7 @@ foo(""Hello World''"")";
         public void Tokenize_18()
         {
             const string code = @"foo.bar(57)";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
         }
@@ -268,7 +268,7 @@ foo(""Hello World''"")";
             const string code = @"
 var foo = 5
 foo += 52";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(7, list.Count);
             Assert.AreEqual("+=", list[5]);
@@ -280,7 +280,7 @@ foo += 52";
             const string code = @"
 var foo = 5
 foo++";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual("++", list[5]);
@@ -292,7 +292,7 @@ foo++";
             const string code = @"
 var foo = 5
 ++foo";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual("++", list[4]);
@@ -307,7 +307,7 @@ var foo = 5
 
 
 ";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
         }
@@ -329,7 +329,7 @@ var/*INLINE IN CODE*/ howdy /* MORE INLINE ! */ foo = /**/5 // Previous is inten
  * bar
  */
 ";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(7, list.Count);
         }
@@ -340,7 +340,7 @@ var/*INLINE IN CODE*/ howdy /* MORE INLINE ! */ foo = /**/5 // Previous is inten
             const string code = @"
 var foo = 5.0;
 foo += 1.57;";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(9, list.Count);
             Assert.AreEqual("1.57", list[7]);
@@ -351,7 +351,7 @@ foo += 1.57;";
         {
             const string code1 = "foo(57)";
             const string code2 = "bar(67)";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(new string[] { code1, code2 }));
             Assert.AreEqual(8, list.Count);
             Assert.AreEqual("57", list[2]);
@@ -363,7 +363,7 @@ foo += 1.57;";
         {
             Stream code1 = new MemoryStream(Encoding.UTF8.GetBytes("foo(57)"));
             Stream code2 = new MemoryStream(Encoding.UTF8.GetBytes("bar(67)"));
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var tokenizer = new lambda.parser.Tokenizer(new lizzie.Tokenizer());
             var list = new List<string>(tokenizer.Tokenize(new Stream[] { code1, code2 }));
             Assert.AreEqual(8, list.Count);
             Assert.AreEqual("57", list[2]);
