@@ -25,7 +25,6 @@ using System.Globalization;
 using System.Collections.Generic;
 using poetic.lambda.parser;
 using poetic.lambda.exceptions;
-using poetic.lambda.collections;
 
 namespace poetic.lizzie
 {
@@ -48,6 +47,7 @@ namespace poetic.lizzie
              * the simple checks, which are for some sort of constant.
              */
             var value = en.Current;
+            Func<FunctionStack<TContext>, object> lhs = null;
 
             // Checking if enumerator is pointing to a numeric constant.
             if ("0123456789".IndexOf(value[0]) != -1) {
@@ -60,8 +60,14 @@ namespace poetic.lizzie
                  */
                 if (!en.MoveNext())
                     throw new PoeticParsingException($"Unexpected EOF after parsing '{value}'.");
-                if (IsConstant(en.Current))
+                if (ExpressionEnds(en.Current))
                     return CreateNumericConstant(value);
+
+                /*
+                 * Need to still create a function that returns our constant, since
+                 * we'll need it during runtime in our expression further down.
+                 */
+                lhs = CreateNumericConstant(value);
 
             } else if (value == "\"" || value == "'") {
 
@@ -90,8 +96,15 @@ namespace poetic.lizzie
                  */
                 if (!en.MoveNext())
                     throw new PoeticParsingException($"Unexpected EOF after parsing '{value}'.");
-                if (IsConstant(en.Current))
+                if (ExpressionEnds(en.Current))
                     return CreateStringLiteralConstant(value);
+
+                /*
+                 * Need to still create a function that returns our constant, since
+                 * we'll need it during runtime in our expression further down.
+                 */
+                lhs = CreateStringLiteralConstant(value);
+
             } else {
 
                 // Moving forward.
@@ -103,17 +116,20 @@ namespace poetic.lizzie
              * This is a "full expression", possibly a function invocation,
              * and not simply a numeric or string literal constant.
              */
-            return CreateFullExpression(value, en);
+            return CreateExpressionOrFunctionInvocation(value, lhs, en);
         }
 
         /*
          * Creating a full expression and returning to caller.
          */
-        static Func<FunctionStack<TContext>, object> CreateFullExpression(string firstToken, IEnumerator<string> en)
+        static Func<FunctionStack<TContext>, object> CreateExpressionOrFunctionInvocation(
+            string firstToken, 
+            Func<FunctionStack<TContext>, object> lhs, 
+            IEnumerator<string> en)
         {
             /*
              * Current token is not pointing to a string or numeric constant,
-             * hence candidates now are function invocation or expression.
+             * hence candidates now are function invocation or expressions.
              * If it is a function invocation, en.Current equals "(".
              * If it is a full expression, en.Current might be one of the following.
              * "+"
@@ -150,17 +166,51 @@ namespace poetic.lizzie
 
                 /*
                  * This might be a full expression, or a simple variable de-reference operation.
-                 * Exactly what it is depends upon the next token.
+                 * Exactly what it is depends upon the en.Current token.
                  */
-                switch (en.Current) {
+                if (ExpressionEnds(en.Current)) {
 
-                    case ")":
-                    case ";":
+                    // Simple variable de-reference operation.
+                    return new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
+                        return fs[firstToken];
+                    });
 
-                        // Simple variable de-reference operation.
-                        return new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
-                            return fs[firstToken];
-                        });
+                } else {
+
+                    /*
+                     * This actually is a fully fledged expression, and may contain a number
+                     * of different entities or tokens, such as "+", "-", "&&", etc ...
+                     */
+                    var oper = en.Current;
+                    if (!en.MoveNext())
+                        throw new PoeticParsingException($"Unexpected EOF while parsing close to '{firstToken}'");
+
+                    // Retrieving RHS of expression.
+                    var rhs = Create(en);
+
+                    // Making sure we correctly handle the different operators we support.
+                    switch (oper) {
+
+                        case "+":
+
+                            /*
+                             * Addition, which also might be string concatenation.
+                             */
+                            return new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
+                                var lhsValue = lhs(fs);
+                                var rhsValue = rhs(fs);
+                                if (lhsValue is double lhsDblValue) {
+                                    if (rhsValue is double rhsDblValue)
+                                        return lhsDblValue + rhsDblValue;
+                                    return lhsDblValue + Convert.ToDouble(rhsValue, CultureInfo.InvariantCulture);
+                                } else if (lhsValue is string lhsStrValue) {
+                                    if (rhsValue is string rhsStrValue)
+                                        return lhsStrValue + rhsStrValue;
+                                    return lhsStrValue + Convert.ToDouble(rhsValue, CultureInfo.InvariantCulture);
+                                }
+                                throw new PoeticExecutionException($"Cannot add '{lhsValue}' and '{rhsValue}' since types are not compatible.");
+                            });
+                    }
                 }
             }
 
@@ -171,7 +221,7 @@ namespace poetic.lizzie
         /*
          * Returns true if token defines the end of a constant.
          */
-        static bool IsConstant(string token)
+        static bool ExpressionEnds(string token)
         {
             return token == "," || token == ")" || token == ";";
         }

@@ -289,5 +289,55 @@ add(bar);");
             // Verifying it behaved as expected.
             Assert.AreEqual("Hello World", ctx.Value);
         }
+
+        [Test]
+        public void Parse_15()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<TwoStringValues>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+var foo = ""Hello "";
+var bar = ""World"";
+concatenate(foo, bar);");
+
+            // Evaluating our function.
+            var ctx = new TwoStringValues();
+            var st = new FunctionStack<TwoStringValues>(new Binder<TwoStringValues>(), ctx);
+            functor.Execute(st);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual("Hello World", ctx.Value);
+        }
+
+        [Test]
+        public void Parse_16()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<SimpleNumericValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+add(5 + 52);");
+
+            // Evaluating our function.
+            var ctx = new SimpleNumericValue();
+            var st = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx);
+            functor.Execute(st);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual(57, ctx.Value);
+        }
+
+        [Test]
+        public void Parse_17()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<SimpleStringValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+add(""5"" + ""52"");");
+
+            // Evaluating our function.
+            var ctx = new SimpleStringValue();
+            var st = new FunctionStack<SimpleStringValue>(new Binder<SimpleStringValue>(), ctx);
+            functor.Execute(st);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual("552", ctx.Value);
+        }
     }
 }
