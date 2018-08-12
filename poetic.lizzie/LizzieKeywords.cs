@@ -87,6 +87,9 @@ namespace poetic.lizzie
             foreach (var ix in Branching<TContext>.Keywords) {
                 _keywords.Add(ix.Item1, ix.Item2);
             }
+            foreach (var ix in Variables<TContext>.Keywords) {
+                _keywords.Add(ix.Item1, ix.Item2);
+            }
         }
     }
 }

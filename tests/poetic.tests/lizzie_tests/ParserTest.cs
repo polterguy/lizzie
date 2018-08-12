@@ -208,5 +208,68 @@ set_2(increment(increment(increment(increment(1)))), 2);");
             // Verifying it behaved as expected.
             Assert.AreEqual(7, st.Context.Value);
         }
+
+        [Test]
+        public void Parse_11()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<MultipleFunctions>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+set_2(increment(increment(increment(increment(1)))), 2);
+set_2(49, increment(get_1()));");
+
+            // Evaluating our function.
+            var ctx = new MultipleFunctions();
+            var st = new FunctionStack<MultipleFunctions>(new Binder<MultipleFunctions>(), ctx);
+            functor.Execute(st);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual(57, st.Context.Value);
+        }
+
+        [Test]
+        public void Parse_12()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<MultipleFunctions>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+set_2(
+  increment(
+    increment(
+      increment(
+        increment(1)
+      )
+    )
+), 2);
+
+set_2(  49, 
+  increment(
+    get_1()
+  )
+);");
+
+            // Evaluating our function.
+            var ctx = new MultipleFunctions();
+            var st = new FunctionStack<MultipleFunctions>(new Binder<MultipleFunctions>(), ctx);
+            functor.Execute(st);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual(57, st.Context.Value);
+        }
+
+        [Test]
+        public void Parse_13()
+        {
+            // Creating our function.
+            var functor = new LizzieParser<SimpleNumericValue>().Parse(new Tokenizer(new LizzieTokenizer()), @"
+var foo = 57;
+add(foo);");
+
+            // Evaluating our function.
+            var ctx = new SimpleNumericValue();
+            var st = new FunctionStack<SimpleNumericValue>(new Binder<SimpleNumericValue>(), ctx);
+            functor.Execute(st);
+
+            // Verifying it behaved as expected.
+            Assert.AreEqual(57, ctx.Value);
+        }
     }
 }

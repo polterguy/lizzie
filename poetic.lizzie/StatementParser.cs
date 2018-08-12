@@ -196,7 +196,7 @@ namespace poetic.lizzie
 
                 /*
                  * At this point we are at the beginning of an expression, which
-                 * might be a constant, a variable reference, or a full expression.
+                 * might be a constant, a variable reference, or an actual expression.
                  */
                 arguments.Add(ExpressionParser<TContext>.Create(en));
             }

@@ -83,7 +83,7 @@ namespace poetic.lizzie
                  * We don't expect a semicolon here after function invocation.
                  */
                 var invocation = StatementParser<TContext>.CreateFunctionInvocation(cur, en, false);
-                Func<FunctionStack<TContext>, object> functor = new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
+                var functor = new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
                     invocation (fs);
                     return fs.Return;
                 });
@@ -97,11 +97,23 @@ namespace poetic.lizzie
 
             } else {
 
-                // Defaulting to expression.
-                // TODO: Continue here!
+                /*
+                 * This might be a full expression, or a simple variable de-reference operation.
+                 * Exactly what it is depends upon the next token.
+                 */
+                switch (en.Current) {
+
+                    case ")":
+                    case ";":
+
+                        // Simple variable de-reference operation.
+                        return new Func<FunctionStack<TContext>, object>(delegate (FunctionStack<TContext> fs) {
+                            return fs[cur];
+                        });
+                }
             }
 
-            return null;
+            throw new PoeticParsingException($"Syntax error after '{cur}'.");
         }
 
         /*
