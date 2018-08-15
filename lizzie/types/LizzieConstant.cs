@@ -22,50 +22,55 @@
 
 using System;
 using System.Collections.Generic;
-using poetic.lambda.parser;
-using poetic.lizzie.keywords;
-using poetic.lambda.collections;
 
-namespace poetic.lizzie
+namespace lizzie.types
 {
-    public class Keywords<TContext>
+    public abstract class LizzieConstant : LizzieType
     {
-        // Dictionary of keywords to actions.
-        readonly Dictionary<string, Func<IEnumerator<string>, Func<TContext, Arguments, Binder<TContext>, object>>> _keywords = 
-            new Dictionary<string, Func<IEnumerator<string>, Func<TContext, Arguments, Binder<TContext>, object>>>();
+        protected object _value;
 
-        public Keywords(bool populateDefault = true)
+        public static LizzieConstant CreateConstant(IEnumerator<string> en)
         {
-            if (populateDefault)
-                PopulateDefault();
-        }
+            switch (en.Current) {
+                case "\"":
+                    return LizzieString.CreateString(en);
+                default:
 
-        public void Set (string name, Func<IEnumerator<string>, Func<TContext, Arguments, Binder<TContext>, object>> lambda = null)
-        {
-            if (lambda == null)
-                _keywords.Remove(name);
-            else
-                _keywords[name] = lambda;
-        }
-
-        public bool HasKeyword(string name)
-        {
-            return _keywords.ContainsKey(name);
-        }
-
-        public Func<IEnumerator<string>, Func<TContext, Arguments, Binder<TContext>, object>> this[string name]
-        {
-            get { return _keywords[name]; }
-        }
-
-        /*
-         * Populates the default keywords.
-         */
-        void PopulateDefault()
-        {
-            foreach (var ix in Return<TContext>.Keywords) {
-                Set(ix.Item1, ix.Item2);
+                    // Checking if this is a number or a symbol.
+                    foreach (var ix in en.Current) {
+                        if("0123456789.".IndexOf(ix) == -1) {
+                            return LizzieSymbol.CreateSymbol(en.Current);
+                        }
+                    }
+                    return LizzieNumber.CreateNumber(en.Current);
             }
+        }
+
+        protected LizzieConstant(object value)
+        {
+            _value = value;
+        }
+
+        public override object Value
+        {
+            get { return _value; }
+        }
+
+        public override string ToString()
+        {
+            return _value.ToString();
+        }
+
+        public override Func<TContext, Binder<TContext>, object> Compile<TContext>()
+        {
+            return new Func<TContext, Binder<TContext>, object>((ix, binder) => {
+                return _value;
+            });
+        }
+
+        public override object Evaluate<TContext>(TContext ctx, Binder<TContext> binder)
+        {
+            return _value;
         }
     }
 }

@@ -1,0 +1,32 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{5290ED46-2D97-4B6F-B7F4-5B4BF78AAF67}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lizzie", "lizzie\lizzie.csproj", "{35EA98F0-E07C-4D60-BD80-E0F9318AECCE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lizzie.tests", "lizzie.tests\lizzie.tests.csproj", "{0CE10381-65C5-4A55-A90C-FB4B1F98CDA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{35EA98F0-E07C-4D60-BD80-E0F9318AECCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35EA98F0-E07C-4D60-BD80-E0F9318AECCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35EA98F0-E07C-4D60-BD80-E0F9318AECCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35EA98F0-E07C-4D60-BD80-E0F9318AECCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CE10381-65C5-4A55-A90C-FB4B1F98CDA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CE10381-65C5-4A55-A90C-FB4B1F98CDA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CE10381-65C5-4A55-A90C-FB4B1F98CDA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CE10381-65C5-4A55-A90C-FB4B1F98CDA7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5EFBEB45-DE81-43CD-BCE1-EE49E2C3A9EB} = {5290ED46-2D97-4B6F-B7F4-5B4BF78AAF67}
+	EndGlobalSection
+EndGlobal

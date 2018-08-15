@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageVersion>0.1</PackageVersion>
+    <Authors>Thomas Hansen</Authors>
+    <PackageLicenseUrl>https://github.com/polterguy/lizzie/blob/master/LICENSE</PackageLicenseUrl>
+    <Owners>Thomas Hansen</Owners>
+    <PackageProjectUrl>https://github.com/polterguy/lizzie</PackageProjectUrl>
+    <Summary>Lizzie, a dynamically interpreted quasi LISP implementation for .Net</Summary>
+    <PackageTags>LISP, delegates, scripting</PackageTags>
+    <Title>lizzie</Title>
+    <Description>S-expressions from delegates</Description>
+    <PackageId>lizzie</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="generic\" />
+    <Folder Include="exceptions\" />
+    <Folder Include="types\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Keywords.cs" />
+    <Compile Remove="types\LizzieConstant %28copy%29.cs" />
+    <Compile Remove="collections\Arguments.cs" />
+  </ItemGroup>
+</Project>
