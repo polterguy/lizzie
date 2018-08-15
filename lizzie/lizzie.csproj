@@ -19,9 +19,4 @@
     <Folder Include="exceptions\" />
     <Folder Include="types\" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Keywords.cs" />
-    <Compile Remove="types\LizzieConstant %28copy%29.cs" />
-    <Compile Remove="collections\Arguments.cs" />
-  </ItemGroup>
 </Project>
