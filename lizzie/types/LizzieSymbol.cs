@@ -19,25 +19,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-using NUnit.Framework;
-using poetic.lambda.collections;
 
-namespace poetic.tests
+using System;
+using lizzie.exceptions;
+
+namespace lizzie.types
 {
-    [TestFixture]
-    public class ChainTest
+    public class LizzieSymbol : LizzieConstant
     {
-        [Test]
-        public void Evaluate()
+        internal LizzieSymbol(object value)
+            : base (value)
+        { }
+
+        public static LizzieSymbol CreateSymbol(string value)
         {
-            var chain = new Chain<string>();
-            chain.Add((input) => input + "1");
-            chain.Add((input) => input + "2");
-            chain.Add((input) => input + "3");
+            return new LizzieSymbol(value);
+        }
 
-            var result = chain.EvaluateChain("initial_");
+        public override Func<TContext, Binder<TContext>, object> Compile<TContext>()
+        {
+            return new Func<TContext, Binder<TContext>, object>((ix, binder) => {
+                return null;
+            });
+        }
 
-            Assert.AreEqual("initial_123", result);
+        public override object Evaluate<TContext>(TContext ctx, Binder<TContext> binder)
+        {
+            throw new LizzieExecutionException("Can't evaluate a symbol.");
         }
     }
 }

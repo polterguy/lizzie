@@ -20,21 +20,30 @@
  * SOFTWARE.
  */
 
-using System;
+using System.Collections.Generic;
+using lizzie.exceptions;
 
-namespace poetic.lambda.exceptions
+namespace lizzie.types
 {
-    /// <summary>
-    /// Base class exception for all exceptions thrown by poetic.
-    /// </summary>
-    public class PoeticException : Exception
+    public class LizzieString : LizzieConstant
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:poetic.lambda.exceptions.PoeticException"/> class.
-        /// </summary>
-        /// <param name="message">Exception message.</param>
-        public PoeticException(string message)
-            : base(message)
+        private LizzieString(string value)
+            : base (value)
         { }
+
+        public static LizzieConstant CreateString(IEnumerator<string> en)
+        {
+            if (!en.MoveNext())
+                throw new LizzieParsingException("Unexpected EOF while parsing string literal constant.");
+            var result = new LizzieString(en.Current);
+            if (!en.MoveNext())
+                throw new LizzieParsingException("Unexpected EOF while parsing string literal constant.");
+            return result;
+        }
+
+        public override string ToString()
+        {
+            return "\"" + base.ToString().Replace("\"", "\\\"") + "\"";
+        }
     }
 }

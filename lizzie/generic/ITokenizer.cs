@@ -20,30 +20,12 @@
  * SOFTWARE.
  */
 
-using poetic.lambda.parser;
-using poetic.lambda.collections;
+using System.IO;
 
-namespace poetic.tests.lizzie_tests.contexts
+namespace lizzie.generic
 {
-    /*
-     * A simple single numeric value context that simply adds an integer value
-     * to an existing property.
-     */
-    public class SimpleNumericValue
+    public interface ITokenizer
     {
-        public int Value { get; set; } = 0;
-
-        [Function(Name = "get")]
-        public object Get(Arguments args, Binder<SimpleNumericValue> binder)
-        {
-            return Value;
-        }
-
-        [Function(Name = "set")]
-        public object Set(Arguments args, Binder<SimpleNumericValue> binder)
-        {
-            Value = args.Get<int>(0);
-            return null;
-        }
+        string Next(StreamReader reader);
     }
 }

@@ -19,47 +19,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-using NUnit.Framework;
-using System.Threading;
-using poetic.lambda.utilities;
-using poetic.lambda.collections;
 
-namespace poetic.tests
+using System.Globalization;
+
+namespace lizzie.types
 {
-    [TestFixture]
-    public class FunctionsTest
+    public class LizzieNumber : LizzieConstant
     {
-        [Test]
-        public void Evaluate()
-        {
-            var functions = new Functions<string>();
-            functions.Add(() => "1");
-            functions.Add(() => "2");
-            functions.Add(() => "3");
+        private LizzieNumber(object value)
+            : base (value)
+        { }
 
-            var result = "";
-            foreach (var idx in functions.Evaluate()) {
-                result += idx;
+        public static LizzieNumber CreateNumber(string value)
+        {
+            if (value.Contains(".")) {
+                return new LizzieNumber(double.Parse(value,CultureInfo.InvariantCulture));
+            } else {
+                return new LizzieNumber(int.Parse(value, CultureInfo.InvariantCulture));
             }
-            Assert.AreEqual("123", result);
         }
 
-        [Test]
-        public void EvaluateParallel()
+        public override string ToString()
         {
-            var functions = new Functions<string>();
-            functions.Add(() => "1");
-            functions.Add(() => "2");
-            functions.Add(() => "3");
-
-            var sync = new Synchronizer<string> ("");
-            foreach (var idx in functions.EvaluateParallel()) {
-                sync.Assign((input) => input + idx);
+            if (_value is int) {
+                return base.ToString();
+            } else {
+                var res = ((double)_value).ToString(CultureInfo.InvariantCulture);
+                if (!res.Contains("."))
+                    return res + ".0";
+                else
+                    return res;
             }
-            bool assert = false;
-            sync.Read((result) => assert = result == "123" || result == "132" || result == "231" ||
-                result == "213" || result == "312" || result == "321");
-            Assert.AreEqual(true, assert);
         }
     }
 }

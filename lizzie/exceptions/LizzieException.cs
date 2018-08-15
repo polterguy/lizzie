@@ -20,18 +20,13 @@
  * SOFTWARE.
  */
 
-namespace poetic.lambda.exceptions
+using System;
+
+namespace lizzie.exceptions
 {
-    /// <summary>
-    /// Parser exception thrown when parsing of code couldn't for some reasons continue.
-    /// </summary>
-    public class PoeticParsingException : PoeticException
+    public class LizzieException : Exception
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:poetic.lambda.exceptions.PoeticParsingException"/> class.
-        /// </summary>
-        /// <param name="message">Exception message.</param>
-        public PoeticParsingException(string message)
+        public LizzieException(string message)
             : base(message)
         { }
     }

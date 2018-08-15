@@ -20,24 +20,12 @@
  * SOFTWARE.
  */
 
-using poetic.lambda.parser;
-using poetic.lambda.collections;
-
-namespace poetic.tests.lizzie_tests.contexts
+namespace lizzie.exceptions
 {
-    /*
-     * A simple single string value context that simply concatenates a string to
-     * an existing string value.
-     */
-    public class TwoStringValues
+    public class LizzieExecutionException : LizzieException
     {
-        public string Value { get; set; } = "";
-
-        [Function(Name = "concatenate")]
-        public object Concatenate(Arguments args)
-        {
-            Value += args.Get<string>(0) + args.Get<string>(1);
-            return null;
-        }
+        public LizzieExecutionException(string message)
+            : base(message)
+        { }
     }
 }

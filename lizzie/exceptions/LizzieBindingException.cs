@@ -20,21 +20,12 @@
  * SOFTWARE.
  */
 
-using System.IO;
-
-namespace poetic.lambda.parser
+namespace lizzie.exceptions
 {
-    /// <summary>
-    /// Tokenizer you need to implement on your own tokenizer class, if you want
-    /// to create your own tokenizer and/or parser.
-    /// </summary>
-    public interface ITokenizer
+    public class LizzieBindingException : LizzieException
     {
-        /// <summary>
-        /// Expected to return the next token from the specified stream reader.
-        /// </summary>
-        /// <returns>The next token from the reader.</returns>
-        /// <param name="reader">Reader to read tokens from.</param>
-        string Next(StreamReader reader);
+        public LizzieBindingException(string message)
+            : base(message)
+        { }
     }
 }

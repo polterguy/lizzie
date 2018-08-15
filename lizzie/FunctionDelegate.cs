@@ -20,24 +20,8 @@
  * SOFTWARE.
  */
 
-using poetic.lambda.parser;
-using poetic.lambda.collections;
 
-namespace poetic.tests.lizzie_tests.contexts
+namespace lizzie
 {
-    /*
-     * A simple single numeric value context that simply adds two integers and
-     * returns the result to caller.
-     */
-    public class TwoNumericValues
-    {
-        public int Value { get; set; }
-
-        [Function(Name = "add")]
-        public object Add(Arguments args)
-        {
-            Value = args.Get<int>(0) + args.Get<int>(1);
-            return null;
-        }
-    }
+    //public delegate object FunctionDelegate<TContext>(TContext ctx, Arguments arguments, Binder<TContext> binder);
 }

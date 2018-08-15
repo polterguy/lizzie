@@ -21,23 +21,38 @@
  */
 
 using System;
+using System.Collections.Generic;
+using lizzie.exceptions;
 
-namespace poetic.lambda.parser
+namespace lizzie.types
 {
-    /// <summary>
-    /// Function attribute to parametrise dynamic functions you wish to bind towards methods.
-    /// </summary>
-    [AttributeUsage (AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-    public class FunctionAttribute : Attribute
+    public abstract class LizzieType
     {
-        /// <summary>
-        /// Function name to map method towards.
-        /// </summary>
-        /// <value>The name.</value>
-        public string Name
+        public static LizzieType Create(IEnumerator<string> en)
+        {
+            switch (en.Current) {
+                case "(":
+                    return LizzieList.CreateList(en);
+                case "'":
+                    if (!en.MoveNext())
+                        throw new LizzieParsingException("Unexpected EOF after single quote.");
+                    var inner = LizzieType.Create(en);
+                    var list = new LizzieForm();
+                    list.Add(new LizzieSymbol("quote"));
+                    list.Add(inner);
+                    return list;
+                default:
+                    return LizzieConstant.CreateConstant(en);
+            }
+        }
+
+        public abstract object Value
         {
             get;
-            set;
         }
+
+        public abstract Func<TContext, Binder<TContext>, object> Compile<TContext>();
+
+        public abstract object Evaluate<TContext>(TContext ctx, Binder<TContext> binder);
     }
 }

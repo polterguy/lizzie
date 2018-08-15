@@ -21,7 +21,9 @@
  */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using lizzie.exceptions;
 
 namespace lizzie.types
 {
@@ -35,10 +37,18 @@ namespace lizzie.types
             _list.AddRange(list._list);
         }
 
-        public override Func<TContext, object> Compile<TContext>()
+        public override Func<TContext, Binder<TContext>, object> Compile<TContext>()
         {
-            return new Func<TContext, object>(ix => {
-                return _list;
+            var name = _list[0].Value.ToString();
+            var list = new List<LizzieType>(_list);
+            list.RemoveAt(0);
+            return new Func<TContext, Binder<TContext>, object>((ctx, binder) => {
+                var arguments = new LizzieArguments(list.Select(ix => ix.Evaluate(ctx, binder)));
+                var function = binder.GetFunction(name);
+                if (function == null) {
+                    throw new LizzieExecutionException($"'{name}' function does not exist.");
+                }
+                return function(ctx, arguments);
             });
         }
     }

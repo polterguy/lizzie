@@ -20,19 +20,32 @@
  * SOFTWARE.
  */
 
-namespace poetic.lambda.exceptions
+using lizzie.types;
+
+namespace lizzie.tests.domain_objects
 {
-    /// <summary>
-    /// Tokenizer exception thrown when tokenizing code couldn't for some reasons continue.
-    /// </summary>
-    public class PoeticTokenizerException : PoeticException
+    public class SimpleInteger
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:poetic.lambda.exceptions.PoeticParsingException"/> class.
-        /// </summary>
-        /// <param name="message">Exception message.</param>
-        public PoeticTokenizerException(string message)
-            : base(message)
-        { }
+        public int Value { get; set; }
+
+        [Function (Name = "set-value")]
+        object SetValue(LizzieArguments arguments)
+        {
+            Value = arguments.Get<int>(0);
+            return null;
+        }
+
+        [Function(Name = "set-and-return-value")]
+        object SetAndReturnValue(LizzieArguments arguments)
+        {
+            Value = arguments.Get<int>(0);
+            return Value;
+        }
+
+        [Function(Name = "get-value")]
+        object GetValue(LizzieArguments arguments)
+        {
+            return Value;
+        }
     }
 }

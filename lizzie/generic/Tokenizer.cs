@@ -25,33 +25,20 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
-using System.Collections;
-using poetic.lambda.exceptions;
+using lizzie.exceptions;
 
-namespace poetic.lambda.parser
+namespace lizzie.generic
 {
-    /// <summary>
-    /// Tokenizer class producing tokens from a stream or string input.
-    /// </summary>
     public class Tokenizer
     {
         readonly ITokenizer _tokenizer;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:poetic.lambda.parser.Tokenizer"/> class.
-        /// </summary>
-        /// <param name="tokenizer">Tokenizer to use for tokenizing snippets.</param>
         public Tokenizer(ITokenizer tokenizer)
         {
             // Not passing in a tokenizer is a logical runtime error!
             _tokenizer = tokenizer ?? throw new NullReferenceException(nameof(tokenizer));
         }
 
-        /// <summary>
-        /// Returns all tokens from the specified stream.
-        /// </summary>
-        /// <returns>All tokens from the stream.</returns>
-        /// <param name="stream">Stream to retrieve tokens from.</param>
         public IEnumerable<string> Tokenize(Stream stream)
         {
             // Notice! We do NOT take ownership over stream!
@@ -65,11 +52,6 @@ namespace poetic.lambda.parser
             yield break;
         }
 
-        /// <summary>
-        /// Returns all tokens from all streams specified.
-        /// </summary>
-        /// <returns>The tokens from all streams.</returns>
-        /// <param name="streams">Streams to retrieve tokens from.</param>
         public IEnumerable<string> Tokenize(IEnumerable<Stream> streams)
         {
             foreach (var ixStream in streams) {
@@ -79,11 +61,6 @@ namespace poetic.lambda.parser
             }
         }
 
-        /// <summary>
-        /// Tokenizes the specified code
-        /// </summary>
-        /// <returns>The tokens from the given code.</returns>
-        /// <param name="code">Code to retrieve tokens from.</param>
         public IEnumerable<string> Tokenize(string code)
         {
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(code))) {
@@ -93,11 +70,6 @@ namespace poetic.lambda.parser
             }
         }
 
-        /// <summary>
-        /// Tokenizes the specified code snippets.
-        /// </summary>
-        /// <returns>The tokens retrieved from all the specified code snippets.</returns>
-        /// <param name="code">Code snippets to retrieve tokens from.</param>
         public IEnumerable<string> Tokenize(IEnumerable<string> code)
         {
             foreach (var ixCode in code) {
@@ -107,11 +79,6 @@ namespace poetic.lambda.parser
             }
         }
 
-        /// <summary>
-        /// Eats initial whitespace from reader.
-        /// </summary>
-        /// <returns><c>true</c>, if spacing characters were encountered, <c>false</c> otherwise.</returns>
-        /// <param name="reader">Reader to eat from.</param>
         public static bool EatSpace(StreamReader reader)
         {
             var retVal = false;
@@ -127,11 +94,6 @@ namespace poetic.lambda.parser
             return retVal;
         }
 
-        /// <summary>
-        /// Eats the rest of the line.
-        /// </summary>
-        /// <returns><c>true</c>, if characters were encountered before the end of the line, <c>false</c> otherwise.</returns>
-        /// <param name="reader">Reader to eat from.</param>
         public static bool EatLine(StreamReader reader)
         {
             var retVal = false;
@@ -151,17 +113,10 @@ namespace poetic.lambda.parser
             return retVal;
         }
 
-        /// <summary>
-        /// Eats until the sequence of characters in found consecutively in stream.
-        /// 
-        /// Useful for discarding multiline comments among other things.
-        /// </summary>
-        /// <param name="reader">Reader.</param>
-        /// <param name="sequence">Sequence.</param>
         public static void EatUntil(StreamReader reader, string sequence)
         {
             if (string.IsNullOrEmpty(sequence))
-                throw new PoeticTokenizerException("Can't read until empty sequence is found");
+                throw new LizzieTokenizerException("Can't read until empty sequence is found");
             var first = sequence[0];
             var buffer = "";
             while (true) {
@@ -195,35 +150,17 @@ namespace poetic.lambda.parser
             }
         }
 
-        /// <summary>
-        /// Returns true if next character in stream is whitespace character,
-        /// or EOF has been reached.
-        /// </summary>
-        /// <returns><c>true</c>, if next is space, <c>false</c> otherwise.</returns>
-        /// <param name="reader">Reader.</param>
         public static bool NextIsWhiteSpace(StreamReader reader)
         {
             return NextIsOf(reader, ' ', '\t', '\r', '\n');
         }
 
-        /// <summary>
-        /// Returns true if next character in stream is any of the specified characters,
-        /// or EOF has been reached.
-        /// </summary>
-        /// <returns><c>true</c>, if next is one of specified characters, <c>false</c> otherwise.</returns>
-        /// <param name="reader">Reader.</param>
-        /// <param name="characters">Characters.</param>
         public static bool NextIsOf (StreamReader reader, params char[] characters)
         {
             var ch = (char)reader.Peek();
             return characters.Any((ix) => ix == ch);
         }
 
-        /// <summary>
-        /// Reads the specified string from the reader and returns it to caller.
-        /// </summary>
-        /// <returns>The string.</returns>
-        /// <param name="reader">Reader.</param>
         public static string ReadString (StreamReader reader, char stop = '"')
         {
             var builder = new StringBuilder ();
@@ -234,7 +171,7 @@ namespace poetic.lambda.parser
                         break;
                     case '\n':
                     case '\r':
-                        throw new PoeticTokenizerException (string.Format ("String literal container CR or LF character."));
+                        throw new LizzieTokenizerException (string.Format ("String literal contains CR or LF characters."));
                     default:
                         if (c == stop)
                             return builder.ToString();
@@ -252,7 +189,7 @@ namespace poetic.lambda.parser
         {
             var ch = reader.Read();
             if (ch == -1)
-                throw new PoeticTokenizerException("EOF found before string literal was closed");
+                throw new LizzieTokenizerException("EOF found before string literal was closed");
             switch ((char)ch) {
                 case '\\':
                     return "\\";
@@ -275,7 +212,7 @@ namespace poetic.lambda.parser
                 default:
                     if (ch == stop)
                         return stop.ToString();
-                    throw new PoeticTokenizerException ("Invalid escape sequence found in string literal");
+                    throw new LizzieTokenizerException ("Invalid escape sequence found in string literal");
             }
         }
 

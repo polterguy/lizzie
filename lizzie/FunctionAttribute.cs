@@ -20,19 +20,17 @@
  * SOFTWARE.
  */
 
-namespace poetic.lambda.exceptions
+using System;
+
+namespace lizzie
 {
-    /// <summary>
-    /// Parser exception thrown when parsing of code couldn't for some reasons continue.
-    /// </summary>
-    public class PoeticBindingException : PoeticException
+    [AttributeUsage (AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    public class FunctionAttribute : Attribute
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:poetic.lambda.exceptions.PoeticParsingException"/> class.
-        /// </summary>
-        /// <param name="message">Exception message.</param>
-        public PoeticBindingException(string message)
-            : base(message)
-        { }
+        public string Name
+        {
+            get;
+            set;
+        }
     }
 }
