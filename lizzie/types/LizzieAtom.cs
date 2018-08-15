@@ -25,28 +25,11 @@ using System.Collections.Generic;
 
 namespace lizzie.types
 {
-    public abstract class LizzieConstant : LizzieType
+    public abstract class LizzieAtom : LizzieType
     {
         protected object _value;
 
-        public static new LizzieConstant Create(IEnumerator<string> en)
-        {
-            switch (en.Current) {
-                case "\"":
-                    return LizzieString.Create(en);
-                default:
-
-                    // Checking if this is a number or a symbol.
-                    foreach (var ix in en.Current) {
-                        if("0123456789.".IndexOf(ix) == -1) {
-                            return LizzieSymbol.Create(en.Current);
-                        }
-                    }
-                    return LizzieNumber.Create(en.Current);
-            }
-        }
-
-        protected LizzieConstant(object value)
+        protected LizzieAtom(object value)
         {
             _value = value;
         }
@@ -56,14 +39,9 @@ namespace lizzie.types
             get { return _value; }
         }
 
-        public override string ToString()
+        public override LizzieFunction<TContext> Compile<TContext>()
         {
-            return _value.ToString();
-        }
-
-        public override Func<TContext, Binder<TContext>, object> Compile<TContext>()
-        {
-            return new Func<TContext, Binder<TContext>, object>((ix, binder) => {
+            return new LizzieFunction<TContext>((ix, binder) => {
                 return _value;
             });
         }

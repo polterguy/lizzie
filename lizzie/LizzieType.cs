@@ -32,29 +32,55 @@ namespace lizzie
     {
         public static LizzieType Create(IEnumerator<string> en)
         {
-            switch (en.Current) {
+            switch (en.Current)
+            {
+                case "\"":
+                    return LizzieString.Create(en);
                 case "(":
                     return LizzieList.Create(en);
                 case "'":
                     if (!en.MoveNext())
-                        throw new LizzieParsingException("Unexpected EOF after single quote.");
-                    var inner = LizzieType.Create(en);
+                        throw new LizzieParsingException("Unexpected EOF after quote character (').");
+                    var inner = Create(en);
                     var list = new LizzieForm();
                     list.Add(new LizzieSymbol("quote"));
                     list.Add(inner);
                     return list;
                 default:
-                    return LizzieConstant.Create(en);
+                    if (IsSymbol(en.Current))
+                        return LizzieSymbol.Create(en);
+                    else
+                        return LizzieNumber.Create(en);
             }
         }
 
-        public abstract object Value
+        static bool IsSymbol(string name)
         {
-            get;
+            foreach (var ix in name)
+            {
+                if ("0123456789.".IndexOf(ix) == -1)
+                    return true;
+            }
+            return false;
         }
 
-        public abstract Func<TContext, Binder<TContext>, object> Compile<TContext>();
+        #region [ -- Abstract methods -- ]
 
-        public abstract object Evaluate<TContext>(TContext ctx, Binder<TContext> binder);
+        public abstract object Value { get; }
+
+        public abstract LizzieFunction<TContext> Compile<TContext>() where TContext : class;
+
+        public abstract object Evaluate<TContext>(TContext ctx, Binder<TContext> binder) where TContext : class;
+
+        #endregion
+
+        #region [ -- Overriden base classmethods -- ]
+
+        public override string ToString()
+        {
+            return Value?.ToString() ?? "null";
+        }
+
+        #endregion
     }
 }

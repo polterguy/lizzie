@@ -27,21 +27,21 @@ using System.Collections.Generic;
 
 namespace lizzie.types
 {
-    public class LizzieSequence : IEnumerable
+    public class LizzieBody : LizzieType, IEnumerable
     {
         protected List<LizzieType> _list;
 
-        public LizzieSequence()
+        public LizzieBody()
         {
             _list = new List<LizzieType>();
         }
 
-        public LizzieSequence(params LizzieType[] items)
+        public LizzieBody(params LizzieType[] items)
         {
             _list = new List<LizzieType>(items);
         }
 
-        public LizzieSequence(IEnumerable<LizzieType> items)
+        public LizzieBody(IEnumerable<LizzieType> items)
         {
             _list = new List<LizzieType>(items);
         }
@@ -72,13 +72,15 @@ namespace lizzie.types
             set { _list[index] = value; }
         }
 
+        #region [ -- Overridden base class methods -- ]
+
         /*
          * Compiles AST down to a function.
          */
-        public Func<TContext, Binder<TContext>, object> Compile<TContext>() where TContext : class
+        public override LizzieFunction<TContext> Compile<TContext>()
         {
             var functors = _list.Select(ix => ix.Compile<TContext>()).ToList();
-            return new Func<TContext, Binder<TContext>, object> ((ctx, binder) => {
+            return new LizzieFunction<TContext>((ctx, binder) => {
                 object result = null;
                 foreach (var ix in functors) {
                     result = ix(ctx, binder);
@@ -87,7 +89,15 @@ namespace lizzie.types
             });
         }
 
-        #region [ -- Overridden base class methods -- ]
+        public override object Evaluate<TContext>(TContext ctx, Binder<TContext> binder)
+        {
+            return null;
+        }
+
+        public override object Value
+        {
+            get { return _list; }
+        }
 
         public override string ToString()
         {

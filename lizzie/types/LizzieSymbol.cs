@@ -20,32 +20,20 @@
  * SOFTWARE.
  */
 
-using System;
+using System.Collections.Generic;
 using lizzie.exceptions;
 
 namespace lizzie.types
 {
-    public class LizzieSymbol : LizzieConstant
+    public class LizzieSymbol : LizzieAtom
     {
         internal LizzieSymbol(object value)
             : base (value)
         { }
 
-        public static LizzieSymbol Create(string value)
+        public static new LizzieType Create(IEnumerator<string> en)
         {
-            return new LizzieSymbol(value);
-        }
-
-        public override Func<TContext, Binder<TContext>, object> Compile<TContext>()
-        {
-            return new Func<TContext, Binder<TContext>, object>((ix, binder) => {
-                return null;
-            });
-        }
-
-        public override object Evaluate<TContext>(TContext ctx, Binder<TContext> binder)
-        {
-            throw new LizzieExecutionException("Can't evaluate a symbol.");
+            return new LizzieSymbol(en.Current);
         }
     }
 }

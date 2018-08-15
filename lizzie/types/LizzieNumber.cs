@@ -21,21 +21,22 @@
  */
 
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace lizzie.types
 {
-    public class LizzieNumber : LizzieConstant
+    public class LizzieNumber : LizzieAtom
     {
         private LizzieNumber(object value)
             : base (value)
         { }
 
-        public static LizzieNumber Create(string value)
+        public static new LizzieNumber Create(IEnumerator<string> en)
         {
-            if (value.Contains(".")) {
-                return new LizzieNumber(double.Parse(value,CultureInfo.InvariantCulture));
+            if (en.Current.Contains(".")) {
+                return new LizzieNumber(double.Parse(en.Current,CultureInfo.InvariantCulture));
             } else {
-                return new LizzieNumber(int.Parse(value, CultureInfo.InvariantCulture));
+                return new LizzieNumber(int.Parse(en.Current, CultureInfo.InvariantCulture));
             }
         }
 

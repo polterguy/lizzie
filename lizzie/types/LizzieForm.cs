@@ -37,12 +37,12 @@ namespace lizzie.types
             _list.AddRange(list._list);
         }
 
-        public override Func<TContext, Binder<TContext>, object> Compile<TContext>()
+        public override LizzieFunction<TContext> Compile<TContext>()
         {
             var name = _list[0].Value.ToString();
             var list = new List<LizzieType>(_list);
             list.RemoveAt(0);
-            return new Func<TContext, Binder<TContext>, object>((ctx, binder) => {
+            return new LizzieFunction<TContext>((ctx, binder) => {
                 var arguments = new LizzieArguments(list.Select(ix => ix.Evaluate(ctx, binder)));
                 var function = binder.GetFunction(name);
                 if (function == null) {

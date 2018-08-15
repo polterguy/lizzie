@@ -20,42 +20,7 @@
  * SOFTWARE.
  */
 
-using System.IO;
-using System.Collections.Generic;
-using lizzie.types;
-
 namespace lizzie
 {
-    public class Parser
-    {
-        public LizzieBody Parse(Tokenizer tokenizer, Stream stream)
-        {
-            return Parse(tokenizer.Tokenize(stream));
-        }
-
-        public LizzieBody Parse(Tokenizer tokenizer, IEnumerable<Stream> streams)
-        {
-            return Parse(tokenizer.Tokenize(streams));
-        }
-
-        public LizzieBody Parse(Tokenizer tokenizer, string snippet)
-        {
-            return Parse(tokenizer.Tokenize(snippet));
-        }
-
-        public LizzieBody Parse(Tokenizer tokenizer, IEnumerable<string> snippets)
-        {
-            return Parse(tokenizer.Tokenize(snippets));
-        }
-
-        public LizzieBody Parse(IEnumerable<string> tokens)
-        {
-            var result = new LizzieBody();
-            var en = tokens.GetEnumerator();
-            while (en.MoveNext()) {
-                result.Add(LizzieType.Create(en));
-            }
-            return result;
-        }
-    }
+    public delegate object LizzieFunction<TContext>(TContext ctx, Binder<TContext> binder);
 }

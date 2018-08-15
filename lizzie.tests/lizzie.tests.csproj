@@ -35,7 +35,7 @@
     <Compile Include="EvaluateSimpleExpressionsTests.cs" />
     <Compile Include="domain_objects\Nothing.cs" />
     <Compile Include="EvaluateSimpleContext.cs" />
-    <Compile Include="EvaluateCustomBindeFunctions.cs" />
+    <Compile Include="EvaluateCustomBindFunctions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lizzie\lizzie.csproj">

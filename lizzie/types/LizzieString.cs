@@ -25,13 +25,13 @@ using lizzie.exceptions;
 
 namespace lizzie.types
 {
-    public class LizzieString : LizzieConstant
+    public class LizzieString : LizzieAtom
     {
         private LizzieString(string value)
             : base (value)
         { }
 
-        public static new LizzieConstant Create(IEnumerator<string> en)
+        public static new LizzieString Create(IEnumerator<string> en)
         {
             if (!en.MoveNext())
                 throw new LizzieParsingException("Unexpected EOF while parsing string literal constant.");

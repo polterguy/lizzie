@@ -36,6 +36,8 @@ namespace lizzie.types
             while (en.MoveNext() && en.Current != ")") {
                 result._list.Add(LizzieType.Create(en));
             }
+
+            // Checking if this is a Lizzie Form, at which point we convert it to such.
             if (result._list.Count > 0 && result._list[0] is LizzieSymbol) {
                 return new LizzieForm(result);
             }
@@ -77,7 +79,7 @@ namespace lizzie.types
             return result;
         }
 
-        public override Func<TContext, Binder<TContext>, object> Compile<TContext>()
+        public override LizzieFunction<TContext> Compile<TContext>()
         {
             throw new LizzieExecutionException("You can't execute a list unless it has a symbol as its first value.");
         }

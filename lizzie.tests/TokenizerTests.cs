@@ -28,7 +28,7 @@ namespace lizzie.tests
     public class TokenizerTests
     {
         [Test]
-        public void SimpleSExpression()
+        public void SimpleExpression()
         {
             var code = "(a 1 2)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
@@ -37,7 +37,7 @@ namespace lizzie.tests
         }
 
         [Test]
-        public void NestedSExpression()
+        public void NestedExpression()
         {
             var code = "(a (a b c) 2)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
