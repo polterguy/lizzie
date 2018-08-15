@@ -42,7 +42,7 @@ namespace lizzie.tests
             binder["foo"] = new Func<SimpleInteger, LizzieArguments, object>((si, arguments) => {
                 return "hello world";
             });
-            var result = functor(ctx, binder);
+            var result = functor(ctx, binder, null);
             Assert.AreEqual("hello world", result);
         }
 
@@ -63,7 +63,7 @@ namespace lizzie.tests
                 }
                 return res;
             });
-            var result = functor(ctx, binder);
+            var result = functor(ctx, binder, null);
             Assert.AreEqual(7, result);
         }
     }

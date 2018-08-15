@@ -42,7 +42,7 @@ namespace lizzie.types
             var name = _list[0].Value.ToString();
             var list = new List<LizzieType>(_list);
             list.RemoveAt(0);
-            return new LizzieFunction<TContext>((ctx, binder) => {
+            return new LizzieFunction<TContext>((ctx, binder, args) => {
                 var arguments = new LizzieArguments(list.Select(ix => ix.Evaluate(ctx, binder)));
                 var function = binder.GetFunction(name);
                 if (function == null) {

@@ -39,7 +39,7 @@ namespace lizzie.tests
             var functor = list.Compile<SimpleInteger>();
             var ctx = new SimpleInteger();
             var binder = new Binder<SimpleInteger>();
-            var result = functor(ctx, binder);
+            var result = functor(ctx, binder, null);
             Assert.IsNull(result);
             Assert.AreEqual(57, ctx.Value);
         }
@@ -54,7 +54,7 @@ namespace lizzie.tests
             var functor = list.Compile<SimpleInteger>();
             var ctx = new SimpleInteger();
             var binder = new Binder<SimpleInteger>();
-            var result = functor(ctx, binder);
+            var result = functor(ctx, binder, null);
             Assert.AreEqual(57, result);
             Assert.AreEqual(57, ctx.Value);
         }
@@ -72,7 +72,7 @@ namespace lizzie.tests
             var functor = list.Compile<SimpleInteger>();
             var ctx = new SimpleInteger();
             var binder = new Binder<SimpleInteger>();
-            var result = functor(ctx, binder);
+            var result = functor(ctx, binder, null);
             Assert.IsNull(result);
             Assert.AreEqual(67, ctx.Value);
         }
@@ -90,7 +90,7 @@ namespace lizzie.tests
             var functor = list.Compile<SimpleInteger>();
             var ctx = new SimpleInteger();
             var binder = new Binder<SimpleInteger>();
-            var result = functor(ctx, binder);
+            var result = functor(ctx, binder, null);
             Assert.AreEqual(67, result);
             Assert.AreEqual(67, ctx.Value);
         }
@@ -107,7 +107,7 @@ namespace lizzie.tests
             var binder = new Binder<SimpleInteger>();
             var success = false;
             try {
-                var result = functor(ctx, binder);
+                var result = functor(ctx, binder, null);
             } catch (lizzie.exceptions.LizzieExecutionException) {
                 success = true;
             }

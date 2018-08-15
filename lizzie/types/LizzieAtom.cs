@@ -41,7 +41,7 @@ namespace lizzie.types
 
         public override LizzieFunction<TContext> Compile<TContext>()
         {
-            return new LizzieFunction<TContext>((ix, binder) => {
+            return new LizzieFunction<TContext>((ix, binder, arguments) => {
                 return _value;
             });
         }

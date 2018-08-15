@@ -39,7 +39,7 @@ namespace lizzie.tests
             var functor = list.Compile<Nothing>();
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            var result = functor(ctx, binder);
+            var result = functor(ctx, binder, null);
             Assert.AreEqual(1, result);
         }
 
@@ -53,7 +53,7 @@ namespace lizzie.tests
             var functor = list.Compile<Nothing>();
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            var result = functor(ctx, binder);
+            var result = functor(ctx, binder, null);
             Assert.AreEqual("1", result);
         }
 
@@ -67,7 +67,7 @@ namespace lizzie.tests
             var functor = list.Compile<Nothing>();
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            var result = functor(ctx, binder);
+            var result = functor(ctx, binder, null);
             Assert.AreEqual(1.1D, result);
         }
 
@@ -83,7 +83,7 @@ namespace lizzie.tests
                 var functor = list.Compile<Nothing>();
                 var ctx = new Nothing();
                 var binder = new Binder<Nothing>();
-                var result = functor(ctx, binder);
+                var result = functor(ctx, binder, null);
             } catch (exceptions.LizzieExecutionException) {
                 success = true;
             }

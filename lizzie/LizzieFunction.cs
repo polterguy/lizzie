@@ -22,5 +22,5 @@
 
 namespace lizzie
 {
-    public delegate object LizzieFunction<TContext>(TContext ctx, Binder<TContext> binder);
+    public delegate object LizzieFunction<TContext>(TContext ctx, Binder<TContext> binder, LizzieArguments arguments);
 }

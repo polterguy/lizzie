@@ -36,40 +36,9 @@ namespace lizzie.types
             _list = new List<LizzieType>();
         }
 
-        public LizzieBody(params LizzieType[] items)
-        {
-            _list = new List<LizzieType>(items);
-        }
-
-        public LizzieBody(IEnumerable<LizzieType> items)
-        {
-            _list = new List<LizzieType>(items);
-        }
-
-        public int Count
-        {
-            get { return _list.Count; }
-        }
-
         public void Add(LizzieType item)
         {
             _list.Add(item);
-        }
-
-        public void AddRange(IEnumerable<LizzieType> items)
-        {
-            _list.AddRange(items);
-        }
-
-        public void AddRange(params LizzieType[] items)
-        {
-            _list.AddRange(items);
-        }
-
-        public LizzieType this [int index]
-        {
-            get { return _list[index]; }
-            set { _list[index] = value; }
         }
 
         #region [ -- Overridden base class methods -- ]
@@ -80,10 +49,10 @@ namespace lizzie.types
         public override LizzieFunction<TContext> Compile<TContext>()
         {
             var functors = _list.Select(ix => ix.Compile<TContext>()).ToList();
-            return new LizzieFunction<TContext>((ctx, binder) => {
+            return new LizzieFunction<TContext>((ctx, binder, arguments) => {
                 object result = null;
                 foreach (var ix in functors) {
-                    result = ix(ctx, binder);
+                    result = ix(ctx, binder, arguments);
                 }
                 return result;
             });
