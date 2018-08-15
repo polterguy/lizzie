@@ -24,7 +24,9 @@ using System;
 using System.Collections.Generic;
 using lizzie.exceptions;
 
-namespace lizzie.types
+using lizzie.types;
+
+namespace lizzie
 {
     public abstract class LizzieType
     {
@@ -32,7 +34,7 @@ namespace lizzie.types
         {
             switch (en.Current) {
                 case "(":
-                    return LizzieList.CreateList(en);
+                    return LizzieList.Create(en);
                 case "'":
                     if (!en.MoveNext())
                         throw new LizzieParsingException("Unexpected EOF after single quote.");
@@ -42,7 +44,7 @@ namespace lizzie.types
                     list.Add(inner);
                     return list;
                 default:
-                    return LizzieConstant.CreateConstant(en);
+                    return LizzieConstant.Create(en);
             }
         }
 

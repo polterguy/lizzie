@@ -29,20 +29,20 @@ namespace lizzie.types
     {
         protected object _value;
 
-        public static LizzieConstant CreateConstant(IEnumerator<string> en)
+        public static new LizzieConstant Create(IEnumerator<string> en)
         {
             switch (en.Current) {
                 case "\"":
-                    return LizzieString.CreateString(en);
+                    return LizzieString.Create(en);
                 default:
 
                     // Checking if this is a number or a symbol.
                     foreach (var ix in en.Current) {
                         if("0123456789.".IndexOf(ix) == -1) {
-                            return LizzieSymbol.CreateSymbol(en.Current);
+                            return LizzieSymbol.Create(en.Current);
                         }
                     }
-                    return LizzieNumber.CreateNumber(en.Current);
+                    return LizzieNumber.Create(en.Current);
             }
         }
 

@@ -22,7 +22,7 @@
 
 using System.IO;
 
-namespace lizzie.generic
+namespace lizzie
 {
     public interface ITokenizer
     {

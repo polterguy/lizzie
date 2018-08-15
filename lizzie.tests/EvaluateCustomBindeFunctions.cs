@@ -33,7 +33,7 @@ namespace lizzie.tests
         public void NoArgumentDelegate()
         {
             var code = "(foo)";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             var functor = list.Compile<SimpleInteger>();
@@ -50,7 +50,7 @@ namespace lizzie.tests
         public void IntegerArgumentDelegate()
         {
             var code = "(foo 2 5)";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             var functor = list.Compile<SimpleInteger>();

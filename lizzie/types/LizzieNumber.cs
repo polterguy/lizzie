@@ -30,7 +30,7 @@ namespace lizzie.types
             : base (value)
         { }
 
-        public static LizzieNumber CreateNumber(string value)
+        public static LizzieNumber Create(string value)
         {
             if (value.Contains(".")) {
                 return new LizzieNumber(double.Parse(value,CultureInfo.InvariantCulture));

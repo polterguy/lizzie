@@ -30,7 +30,7 @@ namespace lizzie.tests
         public void SimpleListOneIntegerValue()
         {
             var code = "1";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual("1", list.ToString());
@@ -40,7 +40,7 @@ namespace lizzie.tests
         public void SimpleListOneDoubleValue()
         {
             var code = "1.0";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual("1.0", list.ToString());
@@ -50,7 +50,7 @@ namespace lizzie.tests
         public void SimpleListOneLongDoubleValue()
         {
             var code = "1.0005";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual("1.0005", list.ToString());
@@ -60,7 +60,7 @@ namespace lizzie.tests
         public void SimpleListOneSymbolValue()
         {
             var code = "x";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual("x", list.ToString());
@@ -70,7 +70,7 @@ namespace lizzie.tests
         public void SimpleListOneStringValue()
         {
             var code = @"""1""";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual(@"""1""", list.ToString());
@@ -80,7 +80,7 @@ namespace lizzie.tests
         public void SimpleListTwoIntegerValues()
         {
             var code = "1 2";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual("1 2", list.ToString());
@@ -90,7 +90,7 @@ namespace lizzie.tests
         public void SimpleListTwoStringValues()
         {
             var code = @"""1"" ""2""";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual(@"""1"" ""2""", list.ToString());
@@ -100,7 +100,7 @@ namespace lizzie.tests
         public void SimpleListTwoMixedValues()
         {
             var code = @"""1"" 2";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual(@"""1"" 2", list.ToString());
@@ -110,7 +110,7 @@ namespace lizzie.tests
         public void InnerListOneIntegerValue()
         {
             var code = "(1)";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual("(1)", list.ToString());
@@ -120,7 +120,7 @@ namespace lizzie.tests
         public void InnerListTwoIntegerValues()
         {
             var code = "(1 2)";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual("(1 2)", list.ToString());
@@ -130,7 +130,7 @@ namespace lizzie.tests
         public void InnerListTwoMixedValues()
         {
             var code = @"(1 ""2"")";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual(@"(1 ""2"")", list.ToString());
@@ -140,7 +140,7 @@ namespace lizzie.tests
         public void NestedListsIntegerValues()
         {
             var code = "(1 (2 3))";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual("(1 (2 3))", list.ToString());
@@ -150,7 +150,7 @@ namespace lizzie.tests
         public void NestedListsMixedValues()
         {
             var code = @"(1 (""2"" 3))";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual(@"(1 (""2"" 3))", list.ToString());
@@ -160,7 +160,7 @@ namespace lizzie.tests
         public void NestedListsMixedSymbolValues()
         {
             var code = @"(1 (""2"" 3x))";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual(@"(1 (""2"" 3x))", list.ToString());
@@ -170,7 +170,7 @@ namespace lizzie.tests
         public void QuotedSymbol()
         {
             var code = "'a";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual("(quote a)", list.ToString());
@@ -180,7 +180,7 @@ namespace lizzie.tests
         public void QuotedInnerSymbols()
         {
             var code = "(a 'b ('c d)";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             Assert.AreEqual("(a (quote b) ((quote c) d))", list.ToString());

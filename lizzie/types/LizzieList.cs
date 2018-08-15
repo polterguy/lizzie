@@ -30,7 +30,7 @@ namespace lizzie.types
     {
         internal List<LizzieType> _list = new List<LizzieType>();
 
-        public static LizzieList CreateList(IEnumerator<string> en)
+        public static new LizzieList Create(IEnumerator<string> en)
         {
             LizzieList result = new LizzieList();
             while (en.MoveNext() && en.Current != ")") {

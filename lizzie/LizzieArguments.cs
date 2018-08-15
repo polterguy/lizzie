@@ -25,7 +25,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace lizzie.types
+namespace lizzie
 {
     public class LizzieArguments : IEnumerable<object>
     {

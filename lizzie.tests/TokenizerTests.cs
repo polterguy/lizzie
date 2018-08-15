@@ -31,7 +31,7 @@ namespace lizzie.tests
         public void SimpleSExpression()
         {
             var code = "(a 1 2)";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(5, list.Count);
         }
@@ -40,7 +40,7 @@ namespace lizzie.tests
         public void NestedSExpression()
         {
             var code = "(a (a b c) 2)";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(9, list.Count);
         }
@@ -49,7 +49,7 @@ namespace lizzie.tests
         public void StringLiteral()
         {
             var code = @"(a ""this is a string"")";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
         }
@@ -58,7 +58,7 @@ namespace lizzie.tests
         public void EscapedStringLiteral()
         {
             var code = @"(a ""this is a \""string"")";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(6, list.Count);
         }
@@ -67,7 +67,7 @@ namespace lizzie.tests
         public void WeirdCharacters()
         {
             var code = @"(a $%&--&|#@)";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(4, list.Count);
         }
@@ -77,7 +77,7 @@ namespace lizzie.tests
         {
             // Notice, we do NOT support single quote character!
             var code = @"(a 'b)";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(5, list.Count);
         }

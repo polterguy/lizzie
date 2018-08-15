@@ -15,8 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="generic\" />
     <Folder Include="exceptions\" />
     <Folder Include="types\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="generic\.DS_Store" />
   </ItemGroup>
 </Project>

@@ -31,7 +31,7 @@ namespace lizzie.types
             : base (value)
         { }
 
-        public static LizzieSymbol CreateSymbol(string value)
+        public static LizzieSymbol Create(string value)
         {
             return new LizzieSymbol(value);
         }

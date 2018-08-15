@@ -31,7 +31,7 @@ namespace lizzie.types
             : base (value)
         { }
 
-        public static LizzieConstant CreateString(IEnumerator<string> en)
+        public static new LizzieConstant Create(IEnumerator<string> en)
         {
             if (!en.MoveNext())
                 throw new LizzieParsingException("Unexpected EOF while parsing string literal constant.");

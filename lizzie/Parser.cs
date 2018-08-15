@@ -28,22 +28,22 @@ namespace lizzie
 {
     public class Parser
     {
-        public LizzieSequence Parse(generic.Tokenizer tokenizer, Stream stream)
+        public LizzieSequence Parse(Tokenizer tokenizer, Stream stream)
         {
             return Parse(tokenizer.Tokenize(stream));
         }
 
-        public LizzieSequence Parse(generic.Tokenizer tokenizer, IEnumerable<Stream> streams)
+        public LizzieSequence Parse(Tokenizer tokenizer, IEnumerable<Stream> streams)
         {
             return Parse(tokenizer.Tokenize(streams));
         }
 
-        public LizzieSequence Parse(generic.Tokenizer tokenizer, string snippet)
+        public LizzieSequence Parse(Tokenizer tokenizer, string snippet)
         {
             return Parse(tokenizer.Tokenize(snippet));
         }
 
-        public LizzieSequence Parse(generic.Tokenizer tokenizer, IEnumerable<string> snippets)
+        public LizzieSequence Parse(Tokenizer tokenizer, IEnumerable<string> snippets)
         {
             return Parse(tokenizer.Tokenize(snippets));
         }

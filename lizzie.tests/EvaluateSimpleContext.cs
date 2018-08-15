@@ -33,7 +33,7 @@ namespace lizzie.tests
         public void IntegerFunctionNullReturn()
         {
             var code = "(set-value 57)";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             var functor = list.Compile<SimpleInteger>();
@@ -48,7 +48,7 @@ namespace lizzie.tests
         public void IntegerFunctionIntegerReturn()
         {
             var code = "(set-and-return-value 57)";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             var functor = list.Compile<SimpleInteger>();
@@ -66,7 +66,7 @@ namespace lizzie.tests
 (set-value 57)
 (set-value 67)
 ";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             var functor = list.Compile<SimpleInteger>();
@@ -84,7 +84,7 @@ namespace lizzie.tests
 (set-value 57)
 (set-and-return-value 67)
 ";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             var functor = list.Compile<SimpleInteger>();
@@ -99,7 +99,7 @@ namespace lizzie.tests
         public void NotExistsThrows()
         {
             var code = "(does-not-exist 57)";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             var functor = list.Compile<SimpleInteger>();

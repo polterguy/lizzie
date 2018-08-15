@@ -33,7 +33,7 @@ namespace lizzie.tests
         public void Integer()
         {
             var code = "1";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             var functor = list.Compile<Nothing>();
@@ -47,7 +47,7 @@ namespace lizzie.tests
         public void String()
         {
             var code = @"""1""";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             var functor = list.Compile<Nothing>();
@@ -61,7 +61,7 @@ namespace lizzie.tests
         public void Double()
         {
             var code = @"1.1";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             var functor = list.Compile<Nothing>();
@@ -75,7 +75,7 @@ namespace lizzie.tests
         public void NonFormThrows()
         {
             var code = "(1 2)";
-            var tokenizer = new lizzie.generic.Tokenizer(new lizzie.Tokenizer());
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var parser = new Parser();
             var list = parser.Parse(tokenizer, code);
             var success = false;
