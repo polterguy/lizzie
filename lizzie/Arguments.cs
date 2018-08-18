@@ -27,19 +27,19 @@ using System.Globalization;
 
 namespace lizzie
 {
-    public class LizzieArguments : IEnumerable<object>
+    public class Arguments<T> : IEnumerable<T>
     {
-        List<object> _list = new List<object>();
+        List<T> _list = new List<T>();
 
-        public LizzieArguments()
+        public Arguments()
         { }
 
-        public LizzieArguments(params object[] arguments)
+        public Arguments(params T[] arguments)
         {
             _list.AddRange(arguments);
         }
 
-        public LizzieArguments(IEnumerable<object> arguments)
+        public Arguments(IEnumerable<T> arguments)
         {
             _list.AddRange(arguments);
         }
@@ -49,21 +49,26 @@ namespace lizzie
             get { return _list.Count; }
         }
 
-        public object Get(int index)
+        public void Add(T value)
+        {
+            _list.Add(value);
+        }
+
+        public T Get(int index)
         {
             return _list[index];
         }
 
-        public T Get<T>(int index)
+        public TConvert Get<TConvert>(int index)
         {
             // Retrieving argument and converting it to type specified by caller.
             var obj = Get(index);
-            if (obj is T)
-                return (T)obj; // No conversion is necessary.
-            return (T)Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture);
+            if (obj is TConvert)
+                return (TConvert)(object)obj; // No conversion is necessary.
+            return (TConvert)Convert.ChangeType(obj, typeof(TConvert), CultureInfo.InvariantCulture);
         }
 
-        public T Get<T>(int index, T def)
+        public TConvert Get<TConvert>(int index, TConvert def)
         {
             // If specified argument doesn't exist, we return the default given by caller.
             if (index >= Count)
@@ -71,14 +76,14 @@ namespace lizzie
 
             // Retrieving argument and converting it to type specified by caller.
             var obj = Get(index);
-            if (obj is T)
-                return (T)obj; // No conversion is necessary.
-            return (T)Convert.ChangeType(obj, typeof(T), CultureInfo.InvariantCulture);
+            if (obj is TConvert)
+                return (TConvert)(object)obj; // No conversion is necessary.
+            return (TConvert)Convert.ChangeType(obj, typeof(TConvert), CultureInfo.InvariantCulture);
         }
 
         #region [ -- Interface implementations -- ]
 
-        public IEnumerator<object> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
             return _list.GetEnumerator();
         }
@@ -89,5 +94,19 @@ namespace lizzie
         }
 
         #endregion
+    }
+
+    public class Arguments : Arguments<object>
+    {
+        public Arguments()
+        { }
+
+        public Arguments(params object[] arguments)
+            : base (arguments)
+        { }
+
+        public Arguments(IEnumerable<object> arguments)
+            : base (arguments)
+        { }
     }
 }

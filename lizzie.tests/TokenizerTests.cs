@@ -28,58 +28,72 @@ namespace lizzie.tests
     public class TokenizerTests
     {
         [Test]
-        public void SimpleExpression()
+        public void FunctionInvocationInteger()
         {
-            var code = "(a 1 2)";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var list = new List<string>(tokenizer.Tokenize(code));
-            Assert.AreEqual(5, list.Count);
-        }
-
-        [Test]
-        public void NestedExpression()
-        {
-            var code = "(a (a b c) 2)";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var list = new List<string>(tokenizer.Tokenize(code));
-            Assert.AreEqual(9, list.Count);
-        }
-
-        [Test]
-        public void StringLiteral()
-        {
-            var code = @"(a ""this is a string"")";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var list = new List<string>(tokenizer.Tokenize(code));
-            Assert.AreEqual(6, list.Count);
-        }
-
-        [Test]
-        public void EscapedStringLiteral()
-        {
-            var code = @"(a ""this is a \""string"")";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var list = new List<string>(tokenizer.Tokenize(code));
-            Assert.AreEqual(6, list.Count);
-        }
-
-        [Test]
-        public void WeirdCharacters()
-        {
-            var code = @"(a $%&--&|#@)";
+            var code = "a(1)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(4, list.Count);
         }
 
         [Test]
-        public void LiteralCharacter()
+        public void FunctionInvocationString()
         {
-            // Notice, we do NOT support single quote character!
-            var code = @"(a 'b)";
+            var code = @"a(""foo"")";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
-            Assert.AreEqual(5, list.Count);
+            Assert.AreEqual(6, list.Count);
+        }
+
+        [Test]
+        public void FunctionInvocationMixed()
+        {
+            var code = @"a(""foo"", 5, ""bar"")";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var list = new List<string>(tokenizer.Tokenize(code));
+            Assert.AreEqual(12, list.Count);
+        }
+
+        [Test]
+        public void FunctionInvocationMixedNested()
+        {
+            var code = @"a(""foo"", bar(5), ""bar"")";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var list = new List<string>(tokenizer.Tokenize(code));
+            Assert.AreEqual(15, list.Count);
+        }
+
+        [Test]
+        public void WeirdSpacing()
+        {
+            var code = @"  a (   ""\""fo\""o""   ,bar(  5 )     ,""bar""   )   ";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var list = new List<string>(tokenizer.Tokenize(code));
+            Assert.AreEqual(15, list.Count);
+        }
+
+        [Test]
+        public void SingleLineComment()
+        {
+            var code = @"a(""foo"", bar(5)) // , ""bar"")";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var list = new List<string>(tokenizer.Tokenize(code));
+            Assert.AreEqual(11, list.Count);
+        }
+
+        [Test]
+        public void MultiLineComment()
+        {
+            var code = @"
+a(""foo"" /* comment */,
+     bar(5)/* FOO!! *** */ ) // , ""bar"")
+   /* 
+ * hello
+ */
+jo()";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var list = new List<string>(tokenizer.Tokenize(code));
+            Assert.AreEqual(14, list.Count);
         }
     }
 }

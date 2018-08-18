@@ -23,18 +23,16 @@
 using System;
 using System.Reflection;
 using System.Collections.Generic;
-using lizzie.types;
 using lizzie.exceptions;
 
 namespace lizzie
 {
     public class Binder<TContext>
     {
-        readonly Dictionary<string, object> _functions;
+        readonly Dictionary<string, object> _functions = new Dictionary<string, object>();
 
         public Binder()
         {
-            _functions = new Dictionary<string, object>();
             BindTypeMethods();
         }
 
@@ -49,17 +47,12 @@ namespace lizzie
             set => _functions[name] = value;
         }
 
-        public Func<TContext, LizzieArguments, object> GetFunction(string name)
+        public T Get<T>(string name) where T : class
         {
-            if (!_functions.ContainsKey(name)) {
-                return null;
-            }
-            return _functions[name] as Func<TContext, LizzieArguments, object>;
-        }
-
-        public void SetFunction(string name, Func<TContext, LizzieArguments, object> value)
-        {
-            _functions[name] = value;
+            var result = this[name];
+            if (result is T)
+                return result as T;
+            return default(T);
         }
 
         void BindTypeMethods()
@@ -67,7 +60,7 @@ namespace lizzie
             var methods = typeof(TContext).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
             foreach (var ix in methods) {
 
-                var attribute = ix.GetCustomAttribute<FunctionAttribute>();
+                var attribute = ix.GetCustomAttribute<BindAttribute>();
                 if (attribute != null) {
 
                     BindMethod(ix, attribute.Name ?? ix.Name);
@@ -75,24 +68,26 @@ namespace lizzie
             }
         }
 
-        private void BindMethod(MethodInfo method, string functionName)
+        void BindMethod(MethodInfo method, string functionName)
         {
             if (string.IsNullOrEmpty(functionName))
                 throw new LizzieBindingException("Can't have functions with empty names");
 
             var methodArgs = method.GetParameters();
 
-            if (methodArgs.Length != 1)
-                throw new LizzieParsingException($"Can't bind to {method.Name} since it doesn't take exactly one argument");
-            if (methodArgs[0].ParameterType != typeof(LizzieArguments))
-                throw new LizzieParsingException($"Can't bind to {method.Name} since it doesn't take an '{nameof(LizzieArguments)}' type of argument as its first argument.");
+            if (methodArgs.Length != 2)
+                throw new LizzieParsingException($"Can't bind to {method.Name} since it doesn't take exactly two arguments");
+            if (methodArgs[0].ParameterType != typeof(Binder<TContext>))
+                throw new LizzieParsingException($"Can't bind to {method.Name} since it doesn't take an '{nameof(Arguments)}' type of argument as its first argument.");
+            if (methodArgs[1].ParameterType != typeof(Arguments))
+                throw new LizzieParsingException($"Can't bind to {method.Name} since it doesn't take an '{nameof(Arguments)}' type of argument as its first argument.");
             if (method.ContainsGenericParameters)
                 throw new LizzieParsingException($"Can't bind to {method.Name} since it requires a generic argument.");
             if (method.ReturnType != typeof(object))
                 throw new LizzieParsingException($"Can't bind to {method.Name} since it doesn't return '{nameof(Object)}'.");
 
-            _functions[functionName] = (Func<TContext, LizzieArguments, object>)
-                Delegate.CreateDelegate(typeof(Func<TContext, LizzieArguments, object>), method);
+            _functions[functionName] = (Function<TContext>)
+                Delegate.CreateDelegate(typeof(Function<TContext>), method);
         }
     }
 }

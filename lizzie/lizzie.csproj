@@ -20,5 +20,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="generic\.DS_Store" />
+    <None Remove="types\.DS_Store" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="types\LizzieConstant.cs" />
+    <Compile Remove="types\Body %28copy%29.cs" />
   </ItemGroup>
 </Project>

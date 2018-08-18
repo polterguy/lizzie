@@ -25,7 +25,7 @@ using System;
 namespace lizzie
 {
     [AttributeUsage (AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-    public class FunctionAttribute : Attribute
+    public class BindAttribute : Attribute
     {
         public string Name
         {

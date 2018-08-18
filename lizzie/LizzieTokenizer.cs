@@ -22,6 +22,7 @@
 
 using System.IO;
 using System.Collections.Generic;
+using lizzie.exceptions;
 
 namespace lizzie
 {
@@ -53,6 +54,21 @@ namespace lizzie
                 switch(ch) {
 
                     /*
+                     * Reserved characters to make it possible to expand syntax in future releases,
+                     * without making old code incompatible.
+                     */
+
+                    case '[':
+                    case ']':
+                    case '.':
+                    case '*':
+                    case '?':
+                    case '#':
+                    case '$':
+
+                        throw new LizzieTokenizerException($"'{ch}' is a reserved character.");
+
+                    /*
                      * End of token characters.
                      */
 
@@ -73,6 +89,7 @@ namespace lizzie
                      * Single character tokens.
                      */
 
+                    case ',':
                     case '\'':
                     case '(':
                     case ')':
@@ -107,15 +124,33 @@ namespace lizzie
                         return "\"";
 
                     /*
-                     * Single line comment token.
+                     * Possible single line comment token.
                      */
 
-                    case ';':
+                    case '/':
 
-                        Tokenizer.EatLine(reader);
-                        if (retVal != null)
-                            return retVal;
+                        reader.Read(); // Discarding first "/".
+                        ch = (char)reader.Peek();
+                        if (ch == '/'){
+
+                            // Single line comment.
+                            Tokenizer.EatLine(reader);
+                            if (retVal != null)
+                                return retVal;
+
+                        } else if (ch == '*') {
+
+                            // Multiline comment.
+                            Tokenizer.EatUntil(reader, "*/");
+                        }
+
+                        // There might be some spaces at the front of our stream now ...
+                        Tokenizer.EatSpace(reader);
                         break;
+
+                    /*
+                     * Default, simply appending character to token buffer.
+                     */
 
                     default:
 

@@ -20,8 +20,6 @@
  * SOFTWARE.
  */
 
-using lizzie.types;
-
 namespace lizzie.tests.domain_objects
 {
     public class Nothing

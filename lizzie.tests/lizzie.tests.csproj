@@ -30,12 +30,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TokenizerTests.cs" />
-    <Compile Include="ParserTests.cs" />
-    <Compile Include="domain_objects\SimpleInteger.cs" />
-    <Compile Include="EvaluateSimpleExpressionsTests.cs" />
+    <Compile Include="domain_objects\SimpleValues.cs" />
     <Compile Include="domain_objects\Nothing.cs" />
-    <Compile Include="EvaluateSimpleContext.cs" />
-    <Compile Include="EvaluateCustomBindFunctions.cs" />
+    <Compile Include="ParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lizzie\lizzie.csproj">

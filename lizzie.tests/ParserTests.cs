@@ -21,169 +21,111 @@
  */
 
 using NUnit.Framework;
+using lizzie.tests.domain_objects;
 
 namespace lizzie.tests
 {
     public class ParserTests
     {
         [Test]
-        public void SimpleListOneIntegerValue()
+        public void SetIntegerValueToIntegerConstant()
         {
-            var code = "1";
+            var code = "set-value-integer(57)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual("1", list.ToString());
+            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
+            var ctx = new SimpleValues();
+            var binder = new Binder<SimpleValues>();
+            var result = function(ctx, binder);
+            Assert.AreEqual(57, ctx.ValueInteger);
         }
 
         [Test]
-        public void SimpleListOneDoubleValue()
+        public void SetStringValueToStringConstant()
         {
-            var code = "1.0";
+            var code = @"set-value-string(""foo"")";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual("1.0", list.ToString());
+            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
+            var ctx = new SimpleValues();
+            var binder = new Binder<SimpleValues>();
+            var result = function(ctx, binder);
+            Assert.AreEqual("foo", ctx.ValueString);
         }
 
         [Test]
-        public void SimpleListOneLongDoubleValue()
+        public void SetStringValueToSymbol()
         {
-            var code = "1.0005";
+            var code = "set-value-string(foo)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual("1.0005", list.ToString());
+            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
+            var ctx = new SimpleValues();
+            var binder = new Binder<SimpleValues>();
+            binder["foo"] = 57;
+            var result = function(ctx, binder);
+            Assert.AreEqual("foo", ctx.ValueString);
         }
 
         [Test]
-        public void SimpleListOneSymbolValue()
+        public void SetStringValueToSymbolValue()
         {
-            var code = "x";
+            var code = "set-value-string(@foo)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual("x", list.ToString());
+            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
+            var ctx = new SimpleValues();
+            var binder = new Binder<SimpleValues>();
+            binder["foo"] = "bar";
+            var result = function(ctx, binder);
+            Assert.AreEqual("bar", ctx.ValueString);
         }
 
         [Test]
-        public void SimpleListOneStringValue()
+        public void SetIntegerValueToSymbolValue()
         {
-            var code = @"""1""";
+            var code = "set-value-integer(@foo)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual(@"""1""", list.ToString());
+            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
+            var ctx = new SimpleValues();
+            var binder = new Binder<SimpleValues>();
+            binder["foo"] = 57;
+            var result = function(ctx, binder);
+            Assert.AreEqual(57, ctx.ValueInteger);
         }
 
         [Test]
-        public void SimpleListTwoIntegerValues()
+        public void SetIntegerValueToRecursivelyReferencedSymbolValue()
         {
-            var code = "1 2";
+            var code = "set-value-integer(@@foo)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual("1 2", list.ToString());
+            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
+            var ctx = new SimpleValues();
+            var binder = new Binder<SimpleValues>();
+            binder["foo"] = "bar";
+            binder["bar"] = 57;
+            var result = function(ctx, binder);
+            Assert.AreEqual(57, ctx.ValueInteger);
         }
 
         [Test]
-        public void SimpleListTwoStringValues()
+        public void SetIntegerValueToValueOfFunction()
         {
-            var code = @"""1"" ""2""";
+            var code = "set-value-integer(get-constant-integer())";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual(@"""1"" ""2""", list.ToString());
+            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
+            var ctx = new SimpleValues();
+            var binder = new Binder<SimpleValues>();
+            var result = function(ctx, binder);
+            Assert.AreEqual(57, ctx.ValueInteger);
         }
 
         [Test]
-        public void SimpleListTwoMixedValues()
+        public void AddTwoIntegers()
         {
-            var code = @"""1"" 2";
+            var code = "add-integers(57, 10)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual(@"""1"" 2", list.ToString());
-        }
-
-        [Test]
-        public void InnerListOneIntegerValue()
-        {
-            var code = "(1)";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual("(1)", list.ToString());
-        }
-
-        [Test]
-        public void InnerListTwoIntegerValues()
-        {
-            var code = "(1 2)";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual("(1 2)", list.ToString());
-        }
-
-        [Test]
-        public void InnerListTwoMixedValues()
-        {
-            var code = @"(1 ""2"")";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual(@"(1 ""2"")", list.ToString());
-        }
-
-        [Test]
-        public void NestedListsIntegerValues()
-        {
-            var code = "(1 (2 3))";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual("(1 (2 3))", list.ToString());
-        }
-
-        [Test]
-        public void NestedListsMixedValues()
-        {
-            var code = @"(1 (""2"" 3))";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual(@"(1 (""2"" 3))", list.ToString());
-        }
-
-        [Test]
-        public void NestedListsMixedSymbolValues()
-        {
-            var code = @"(1 (""2"" 3x))";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual(@"(1 (""2"" 3x))", list.ToString());
-        }
-
-        [Test]
-        public void QuotedSymbol()
-        {
-            var code = "'a";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual("(quote a)", list.ToString());
-        }
-
-        [Test]
-        public void QuotedInnerSymbols()
-        {
-            var code = "(a 'b ('c d)";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var parser = new Parser();
-            var list = parser.Parse(tokenizer, code);
-            Assert.AreEqual("(a (quote b) ((quote c) d))", list.ToString());
+            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
+            var ctx = new SimpleValues();
+            var binder = new Binder<SimpleValues>();
+            var result = function(ctx, binder);
+            Assert.AreEqual(67, ctx.ValueInteger);
         }
     }
 }

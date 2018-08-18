@@ -20,35 +20,11 @@
  * SOFTWARE.
  */
 
-using System;
-using System.Collections.Generic;
+using lizzie.exceptions;
 
 namespace lizzie.types
 {
-    public abstract class LizzieAtom : LizzieType
+    static class Symbol
     {
-        protected object _value;
-
-        protected LizzieAtom(object value)
-        {
-            _value = value;
-        }
-
-        public override object Value
-        {
-            get { return _value; }
-        }
-
-        public override LizzieFunction<TContext> Compile<TContext>()
-        {
-            return new LizzieFunction<TContext>((ix, binder, arguments) => {
-                return _value;
-            });
-        }
-
-        public override object Evaluate<TContext>(TContext ctx, Binder<TContext> binder)
-        {
-            return _value;
-        }
     }
 }

@@ -20,42 +20,38 @@
  * SOFTWARE.
  */
 
-using System.IO;
-using System.Collections.Generic;
-using lizzie.types;
-
-namespace lizzie
+namespace lizzie.tests.domain_objects
 {
-    public class Parser
+    public class SimpleValues
     {
-        public LizzieBody Parse(Tokenizer tokenizer, Stream stream)
+        public int ValueInteger { get; set; }
+        public string ValueString { get; set; }
+
+        [Bind (Name = "set-value-integer")]
+        object SetValue(Binder<SimpleValues> ctx, Arguments arguments)
         {
-            return Parse(tokenizer.Tokenize(stream));
+            ValueInteger = arguments.Get<int>(0);
+            return null;
         }
 
-        public LizzieBody Parse(Tokenizer tokenizer, IEnumerable<Stream> streams)
+        [Bind(Name = "set-value-string")]
+        object SetValueString(Binder<SimpleValues> ctx, Arguments arguments)
         {
-            return Parse(tokenizer.Tokenize(streams));
+            ValueString = arguments.Get<string>(0);
+            return null;
         }
 
-        public LizzieBody Parse(Tokenizer tokenizer, string snippet)
+        [Bind(Name = "get-constant-integer")]
+        object GetConstant(Binder<SimpleValues> ctx, Arguments arguments)
         {
-            return Parse(tokenizer.Tokenize(snippet));
+            return 57;
         }
 
-        public LizzieBody Parse(Tokenizer tokenizer, IEnumerable<string> snippets)
+        [Bind(Name = "add-integers")]
+        object AddIntegers(Binder<SimpleValues> ctx, Arguments arguments)
         {
-            return Parse(tokenizer.Tokenize(snippets));
-        }
-
-        public LizzieBody Parse(IEnumerable<string> tokens)
-        {
-            var result = new LizzieBody();
-            var en = tokens.GetEnumerator();
-            while (en.MoveNext()) {
-                result.Add(LizzieType.Create(en));
-            }
-            return result;
+            ValueInteger = arguments.Get<int>(0) + arguments.Get<int>(1);
+            return null;
         }
     }
 }

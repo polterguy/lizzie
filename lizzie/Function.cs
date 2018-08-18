@@ -20,30 +20,7 @@
  * SOFTWARE.
  */
 
-using System.Collections.Generic;
-using lizzie.exceptions;
-
-namespace lizzie.types
+namespace lizzie
 {
-    public class LizzieString : LizzieAtom
-    {
-        private LizzieString(string value)
-            : base (value)
-        { }
-
-        public static new LizzieString Create(IEnumerator<string> en)
-        {
-            if (!en.MoveNext())
-                throw new LizzieParsingException("Unexpected EOF while parsing string literal constant.");
-            var result = new LizzieString(en.Current);
-            if (!en.MoveNext())
-                throw new LizzieParsingException("Unexpected EOF while parsing string literal constant.");
-            return result;
-        }
-
-        public override string ToString()
-        {
-            return "\"" + base.ToString().Replace("\"", "\\\"") + "\"";
-        }
-    }
+    public delegate object Function<TContext>(TContext ctx, Binder<TContext> binder, Arguments arguments);
 }
