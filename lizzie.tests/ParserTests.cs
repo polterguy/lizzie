@@ -127,5 +127,32 @@ namespace lizzie.tests
             var result = function(ctx, binder);
             Assert.AreEqual(67, ctx.ValueInteger);
         }
+
+        [Test]
+        public void EvaluatingFunctionBySymbolicReference()
+        {
+            var code = "@foo(57)";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
+            var ctx = new SimpleValues();
+            var binder = new Binder<SimpleValues>();
+            binder["foo"] = "set-value-integer";
+            var result = function(ctx, binder);
+            Assert.AreEqual(57, ctx.ValueInteger);
+        }
+
+        [Test]
+        public void EvaluatingFunctionBySymbolicReferenceRecursively()
+        {
+            var code = "@@foo(57)";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
+            var ctx = new SimpleValues();
+            var binder = new Binder<SimpleValues>();
+            binder["foo"] = "bar";
+            binder["bar"] = "set-value-integer";
+            var result = function(ctx, binder);
+            Assert.AreEqual(57, ctx.ValueInteger);
+        }
     }
 }

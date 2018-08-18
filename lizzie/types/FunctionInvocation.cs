@@ -47,8 +47,15 @@ namespace lizzie.types
             // Returning function invocation to caller.
             return new Function<TContext>((ctx, binder, arguments) => {
 
+                // Checking if this is a function symbolically referenced.
+                string reference = symbol.TrimStart('@');
+                while (symbol.StartsWith("@", StringComparison.InvariantCulture)) {
+                    reference = binder[reference] as string;
+                    symbol = symbol.Substring(1);
+                }
+
                 // Evaluating function invocation hopefully found in binder now, evaluating our lazy arguments.
-                return binder.Get<Function<TContext>>(symbol)(
+                return binder.Get<Function<TContext>>(reference)(
                     ctx, 
                     binder, 
                     new Arguments (lazy.Select(ix => ix(ctx, binder, arguments))));
@@ -120,7 +127,7 @@ namespace lizzie.types
                     return Compile(symbolName, en);
                 }
 
-                // Symbol reference.
+                // Symbolic reference.
                 if (!symbolName.StartsWith("@", StringComparison.InvariantCulture)) {
 
                     // Literally implying the symbol (its name).
