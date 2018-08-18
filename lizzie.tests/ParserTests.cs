@@ -106,7 +106,7 @@ namespace lizzie.tests
         }
 
         [Test]
-        public void NestedFunctionInvocations()
+        public void NestedFunctionGetAndSetInvocations()
         {
             var code = "@set-value-string(@get-constant-integer())";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
@@ -119,7 +119,7 @@ namespace lizzie.tests
         }
 
         [Test]
-        public void MultipleSetFunctionInvocations()
+        public void MultipleSetInvocations()
         {
             var code = @"
 @set-value-integer(57)
@@ -146,6 +146,23 @@ namespace lizzie.tests
             var result = function(ctx, binder);
             Assert.IsNull(result);
             Assert.AreEqual(67, ctx.ValueInteger);
+        }
+
+        [Test]
+        public void ComplexInvocation()
+        {
+            var code = @"
+@set-value-string(""2.57"")
+@set-value-integer(2)
+@add-integers(@get-constant-integer(), 8, @get-value-integer(), 6, @mirror(@get-value-integer()), @get-value-string())
+";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
+            var ctx = new SimpleValues();
+            var binder = new Binder<SimpleValues>();
+            var result = function(ctx, binder);
+            Assert.IsNull(result);
+            Assert.AreEqual(77, ctx.ValueInteger);
         }
     }
 }

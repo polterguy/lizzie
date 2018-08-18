@@ -5,6 +5,8 @@
  * file for details.
  */
 
+using System;
+
 namespace lizzie.tests.domain_objects
 {
     public class SimpleValues
@@ -32,6 +34,12 @@ namespace lizzie.tests.domain_objects
             return null;
         }
 
+        [Bind(Name = "get-value-string")]
+        object GetValueString(Binder<SimpleValues> ctx, Arguments arguments)
+        {
+            return ValueString;
+        }
+
         [Bind(Name = "get-constant-integer")]
         object GetConstantInteger(Binder<SimpleValues> ctx, Arguments arguments)
         {
@@ -41,8 +49,17 @@ namespace lizzie.tests.domain_objects
         [Bind(Name = "add-integers")]
         object AddIntegers(Binder<SimpleValues> ctx, Arguments arguments)
         {
-            ValueInteger = arguments.Get<int>(0) + arguments.Get<int>(1);
+            ValueInteger = 0;
+            foreach (var ix in arguments) {
+                ValueInteger += Convert.ToInt32(ix);
+            }
             return null;
+        }
+
+        [Bind(Name = "mirror")]
+        object Mirror(Binder<SimpleValues> ctx, Arguments arguments)
+        {
+            return arguments.Get(0);
         }
     }
 }
