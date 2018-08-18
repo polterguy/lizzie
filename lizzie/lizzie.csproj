@@ -25,5 +25,6 @@
   <ItemGroup>
     <Compile Remove="types\LizzieConstant.cs" />
     <Compile Remove="types\Body %28copy%29.cs" />
+    <Compile Remove="types\FunctionInvocation.cs" />
   </ItemGroup>
 </Project>

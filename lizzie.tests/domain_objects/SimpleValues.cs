@@ -12,11 +12,17 @@ namespace lizzie.tests.domain_objects
         public int ValueInteger { get; set; }
         public string ValueString { get; set; }
 
-        [Bind (Name = "set-value-integer")]
-        object SetValue(Binder<SimpleValues> ctx, Arguments arguments)
+        [Bind(Name = "set-value-integer")]
+        object SetValueInteger(Binder<SimpleValues> ctx, Arguments arguments)
         {
             ValueInteger = arguments.Get<int>(0);
             return null;
+        }
+
+        [Bind(Name = "get-value-integer")]
+        object GetValueInteger(Binder<SimpleValues> ctx, Arguments arguments)
+        {
+            return ValueInteger;
         }
 
         [Bind(Name = "set-value-string")]
@@ -27,7 +33,7 @@ namespace lizzie.tests.domain_objects
         }
 
         [Bind(Name = "get-constant-integer")]
-        object GetConstant(Binder<SimpleValues> ctx, Arguments arguments)
+        object GetConstantInteger(Binder<SimpleValues> ctx, Arguments arguments)
         {
             return 57;
         }

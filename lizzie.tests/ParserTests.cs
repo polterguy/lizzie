@@ -13,9 +13,90 @@ namespace lizzie.tests
     public class ParserTests
     {
         [Test]
-        public void SetIntegerValueToIntegerConstant()
+        public void InlineIntegerSymbol()
         {
-            var code = "set-value-integer(57)";
+            var code = "57";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<Nothing>(tokenizer, code);
+            var ctx = new Nothing();
+            var binder = new Binder<Nothing>();
+            var result = function(ctx, binder);
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void InlineFloatingPointSymbol()
+        {
+            var code = "57.67";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<Nothing>(tokenizer, code);
+            var ctx = new Nothing();
+            var binder = new Binder<Nothing>();
+            var result = function(ctx, binder);
+            Assert.AreEqual(57.67, result);
+        }
+
+        [Test]
+        public void InlineStringSymbol()
+        {
+            var code = @"""57""";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<Nothing>(tokenizer, code);
+            var ctx = new Nothing();
+            var binder = new Binder<Nothing>();
+            var result = function(ctx, binder);
+            Assert.AreEqual("57", result);
+        }
+
+        [Test]
+        public void SymbolicDeReference()
+        {
+            var code = "@57";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<Nothing>(tokenizer, code);
+            var ctx = new Nothing();
+            var binder = new Binder<Nothing>();
+            binder["57"] = new Function<Nothing>((ctx2, binder2, arguments) => {
+                return 42;
+            });
+            var result = function(ctx, binder);
+            Assert.AreEqual(42, result);
+        }
+
+        [Test]
+        public void SymbolicDoubleDeReference()
+        {
+            var code = "@@57";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<Nothing>(tokenizer, code);
+            var ctx = new Nothing();
+            var binder = new Binder<Nothing>();
+            binder["57"] = new Function<Nothing>((ctx2, binder2, arguments) => {
+                return 42;
+            });
+            binder["42"] = new Function<Nothing>((ctx2, binder2, arguments) => {
+                return 19;
+            });
+            var result = function(ctx, binder);
+            Assert.AreEqual(19, result);
+        }
+
+        [Test]
+        public void SimpleFunctionGetInvocation()
+        {
+            var code = "@get-constant-integer()";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
+            var ctx = new SimpleValues() { ValueInteger = 57 };
+            var binder = new Binder<SimpleValues>();
+            var result = function(ctx, binder);
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void SimpleFunctionSetInvocation()
+        {
+            var code = "@set-value-integer(57)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<SimpleValues>(tokenizer, code);
             var ctx = new SimpleValues();
@@ -25,119 +106,46 @@ namespace lizzie.tests
         }
 
         [Test]
-        public void SetStringValueToStringConstant()
+        public void NestedFunctionInvocations()
         {
-            var code = @"set-value-string(""foo"")";
+            var code = "@set-value-string(@get-constant-integer())";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<SimpleValues>(tokenizer, code);
-            var ctx = new SimpleValues();
+            var ctx = new SimpleValues() { ValueInteger = 57 };
             var binder = new Binder<SimpleValues>();
             var result = function(ctx, binder);
-            Assert.AreEqual("foo", ctx.ValueString);
+            Assert.IsNull(result);
+            Assert.AreEqual("57", ctx.ValueString);
         }
 
         [Test]
-        public void SetStringValueToSymbol()
+        public void MultipleSetFunctionInvocations()
         {
-            var code = "set-value-string(foo)";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
-            var ctx = new SimpleValues();
-            var binder = new Binder<SimpleValues>();
-            binder["foo"] = 57;
-            var result = function(ctx, binder);
-            Assert.AreEqual("foo", ctx.ValueString);
-        }
-
-        [Test]
-        public void SetStringValueToSymbolValue()
-        {
-            var code = "set-value-string(@foo)";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
-            var ctx = new SimpleValues();
-            var binder = new Binder<SimpleValues>();
-            binder["foo"] = "bar";
-            var result = function(ctx, binder);
-            Assert.AreEqual("bar", ctx.ValueString);
-        }
-
-        [Test]
-        public void SetIntegerValueToSymbolValue()
-        {
-            var code = "set-value-integer(@foo)";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
-            var ctx = new SimpleValues();
-            var binder = new Binder<SimpleValues>();
-            binder["foo"] = 57;
-            var result = function(ctx, binder);
-            Assert.AreEqual(57, ctx.ValueInteger);
-        }
-
-        [Test]
-        public void SetIntegerValueToRecursivelyReferencedSymbolValue()
-        {
-            var code = "set-value-integer(@@foo)";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
-            var ctx = new SimpleValues();
-            var binder = new Binder<SimpleValues>();
-            binder["foo"] = "bar";
-            binder["bar"] = 57;
-            var result = function(ctx, binder);
-            Assert.AreEqual(57, ctx.ValueInteger);
-        }
-
-        [Test]
-        public void SetIntegerValueToValueOfFunction()
-        {
-            var code = "set-value-integer(get-constant-integer())";
+            var code = @"
+@set-value-integer(57)
+@set-value-integer(67)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<SimpleValues>(tokenizer, code);
             var ctx = new SimpleValues();
             var binder = new Binder<SimpleValues>();
             var result = function(ctx, binder);
-            Assert.AreEqual(57, ctx.ValueInteger);
-        }
-
-        [Test]
-        public void AddTwoIntegers()
-        {
-            var code = "add-integers(57, 10)";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
-            var ctx = new SimpleValues();
-            var binder = new Binder<SimpleValues>();
-            var result = function(ctx, binder);
+            Assert.IsNull(result);
             Assert.AreEqual(67, ctx.ValueInteger);
         }
 
         [Test]
-        public void EvaluatingFunctionBySymbolicReference()
+        public void TwoNestedFunctionInvocationArguments()
         {
-            var code = "@foo(57)";
+            var code = @"
+@add-integers(@get-constant-integer(), @get-value-integer())
+";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<SimpleValues>(tokenizer, code);
-            var ctx = new SimpleValues();
+            var ctx = new SimpleValues() { ValueInteger = 10 };
             var binder = new Binder<SimpleValues>();
-            binder["foo"] = "set-value-integer";
             var result = function(ctx, binder);
-            Assert.AreEqual(57, ctx.ValueInteger);
-        }
-
-        [Test]
-        public void EvaluatingFunctionBySymbolicReferenceRecursively()
-        {
-            var code = "@@foo(57)";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
-            var ctx = new SimpleValues();
-            var binder = new Binder<SimpleValues>();
-            binder["foo"] = "bar";
-            binder["bar"] = "set-value-integer";
-            var result = function(ctx, binder);
-            Assert.AreEqual(57, ctx.ValueInteger);
+            Assert.IsNull(result);
+            Assert.AreEqual(67, ctx.ValueInteger);
         }
     }
 }
