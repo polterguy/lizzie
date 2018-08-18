@@ -152,9 +152,16 @@ namespace lizzie.tests
         public void ComplexInvocation()
         {
             var code = @"
-@set-value-string(""2.57"")
+@set-value-string(""2"")
 @set-value-integer(2)
-@add-integers(@get-constant-integer(), 8, @get-value-integer(), 6, @mirror(@get-value-integer()), @get-value-string())
+@add-integers(
+  @get-constant-integer(), 
+  8, 
+  @get-value-integer(), 
+  6, 
+  @mirror(
+    @get-value-integer()), 
+  @get-value-string())
 ";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<SimpleValues>(tokenizer, code);
