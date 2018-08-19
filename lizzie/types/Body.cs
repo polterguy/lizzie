@@ -30,9 +30,8 @@ namespace lizzie.types
                 // Compiling currently tokenized symbol.
                 var tuple = Symbol<TContext>.Compile(en);
 
-                // Making sure above process returned something, before we add it to the list of functions we return.
-                if (tuple.Item1 != null)
-                    content.Add(tuple.Item1);
+                // Adding function invocation to list of functions.
+                content.Add(tuple.Item1);
 
                 // Checking if we're done compiling body.
                 eof = tuple.Item2;

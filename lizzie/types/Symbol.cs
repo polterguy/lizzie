@@ -68,6 +68,8 @@ namespace lizzie.types
             // Sanity checking tokenizer's content, since an '@' must reference an actual symbol.
             if (!en.MoveNext())
                 throw new LizzieParsingException("Unexpected EOF after '@'.");
+
+            // Storing symbol's name.
             var symbolName = en.Current;
 
             // Creating a function that evaluates to the constant value of the symbol's name.
@@ -154,10 +156,9 @@ namespace lizzie.types
 
                     // Compiling current argument.
                     var tuple = Compile(en);
-                    if (tuple.Item1 != null)
-                        arguments.Add(tuple.Item1);
+                    arguments.Add(tuple.Item1);
                     if (en.Current == ")")
-                        break;
+                        break; // And we are done parsing arguments.
 
                     // Sanity checking tokenizer's content, and discarding "," token.
                     if (en.Current != ",")
