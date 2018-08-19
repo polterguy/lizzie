@@ -133,11 +133,10 @@ namespace lizzie.types
             // Retrieving symbol's name.
             var symbolName = en.Current;
 
-            // Holds the actual function that we return to caller.
-            Function<TContext> function;
+            // Discarding "(" token and checking if we're at EOF.
+            var eof = !en.MoveNext();
 
             // Checking if this is a function invocation.
-            var eof = !en.MoveNext();
             if (!eof && en.Current == "(") {
 
                 /*
@@ -168,7 +167,7 @@ namespace lizzie.types
                 /*
                  * Creates a function invocation that evaluates its arguments at runtime.
                  */
-                function = new Function<TContext>((ctx, binder, args) => {
+                return new Tuple<Function<TContext>, bool>(new Function<TContext>((ctx, binder, args) => {
 
                     // Applying arguments.
                     var appliedArguments = new Arguments(arguments.Select(ix => ix(ctx, binder, args)));
@@ -184,23 +183,19 @@ namespace lizzie.types
                     if (symbol is Function<TContext> functor)
                         return functor(ctx, binder, appliedArguments); // Success!
                     throw new LizzieRuntimeException($"Symbol '{symbolName}' is not a function, but a '{symbol.GetType().FullName}'");
-                });
-
-                // Moving beyond ")".
-                eof = !en.MoveNext();
+                }), !en.MoveNext());
 
             } else {
 
                 // Referencing value of symbol.
-                function = new Function<TContext>((ctx, binder, arguments) => {
+                return new Tuple<Function<TContext>, bool>(new Function<TContext>((ctx, binder, arguments) => {
 
                     // Sanity checking that symbol actually exists.
                     if (!binder.ContainsKey(symbolName))
                         throw new LizzieRuntimeException($"The '{symbolName}' does not exist.");
                     return binder[symbolName];
-                });
+                }), eof);
             }
-            return new Tuple<Function<TContext>, bool>(function, eof);
         }
 
         /*
