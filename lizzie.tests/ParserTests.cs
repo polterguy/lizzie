@@ -281,5 +281,20 @@ add-integers(
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
         }
+
+        [Test]
+        public void BodyWithMultipleFunctionInvocations()
+        {
+            var code = @"{
+  mirror(67)
+  mirror(57)
+}";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<SimpleValues>(tokenizer, code);
+            var ctx = new SimpleValues();
+            var binder = new Binder<SimpleValues>();
+            var result = function(ctx, binder);
+            Assert.AreEqual(57, result);
+        }
     }
 }
