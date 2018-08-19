@@ -11,8 +11,15 @@ using lizzie.exceptions;
 
 namespace lizzie.types
 {
+    /*
+     * Class responsible for compiling a "body" segment.
+     */
     static class Body<TContext>
     {
+        /*
+         * Compiles a body segment, which might be the root level symbolic
+         * content of a Lizzie lambda object, or the stuff between '{' and '}'.
+         */
         internal static Tuple<List<Function<TContext>>, bool> Compile(IEnumerator<string> en, bool forceClose = true)
         {
             var content = new List<Function<TContext>>();
@@ -34,7 +41,7 @@ namespace lizzie.types
 
             if (forceClose && en.Current != "}")
                 throw new LizzieParsingException("Premature EOF while parsing code.");
-            else if (!forceClose && !eof && en.Current == "}")
+            if (!forceClose && !eof && en.Current == "}")
                 throw new LizzieParsingException("Unexpected closing brace '}' in code.");
             return new Tuple<List<Function<TContext>>, bool>(content, eof);
         }

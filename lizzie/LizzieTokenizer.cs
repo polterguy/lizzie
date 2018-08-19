@@ -11,15 +11,22 @@ using lizzie.exceptions;
 
 namespace lizzie
 {
+    /// <summary>
+    /// The main Lizzie tokenizer, that will tokenize Lizzie code, which you can
+    /// then use as input for the compiler that compiles a lambda object from your
+    /// code.
+    /// </summary>
     public class LizzieTokenizer : ITokenizer
     {
         /*
-         * Occassionally we need to read more than one token ahead, at which point we
-         * store these tokens in this stack.
+         * Occassionally we might need to read more than one token ahead, at which point we
+         * store these tokens in this stack, and returns them once the next token is requested.
          */
-        Stack<string> _cachedTokens = new Stack<string>();
+        readonly Stack<string> _cachedTokens = new Stack<string>();
 
-        public string Next (StreamReader reader)
+        #region [ -- Interface implementation -- ]
+
+        public string Next(StreamReader reader)
         {
             // Checking if we have cached tokens.
             if (_cachedTokens.Count > 0)
@@ -32,11 +39,13 @@ namespace lizzie
 
             // Finding next token from reader.
             string retVal = null;
-            while (!reader.EndOfStream) {
+            while (!reader.EndOfStream)
+            {
 
                 // Peeking next character in stream, and checking its classification.
                 var ch = (char)reader.Peek();
-                switch(ch) {
+                switch (ch)
+                {
 
                     /*
                      * Reserved characters to make it possible to expand syntax in future releases,
@@ -87,12 +96,15 @@ namespace lizzie
                     case '{':
                     case '}':
 
-                        if (retVal == null) {
+                        if (retVal == null)
+                        {
 
                             // This is our token.
                             return ((char)reader.Read()).ToString();
 
-                        } else {
+                        }
+                        else
+                        {
 
                             // This is the end of our token.
                             return retVal;
@@ -124,14 +136,17 @@ namespace lizzie
 
                         reader.Read(); // Discarding first "/".
                         ch = (char)reader.Peek();
-                        if (ch == '/'){
+                        if (ch == '/')
+                        {
 
                             // Single line comment.
                             Tokenizer.EatLine(reader);
                             if (retVal != null)
                                 return retVal;
 
-                        } else if (ch == '*') {
+                        }
+                        else if (ch == '*')
+                        {
 
                             // Multiline comment.
                             Tokenizer.EatUntil(reader, "*/");
@@ -154,5 +169,7 @@ namespace lizzie
             }
             return retVal;
         }
+
+        #endregion
     }
 }

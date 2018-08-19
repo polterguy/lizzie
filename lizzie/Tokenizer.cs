@@ -14,16 +14,33 @@ using lizzie.exceptions;
 
 namespace lizzie
 {
+    /// <summary>
+    /// Main tokenizer instance, used as input to the compilation process.
+    /// 
+    /// If you implement your own tokenizer, you might benefit from taking
+    /// advantage of someof the static methods in this class.
+    /// </summary>
     public class Tokenizer
     {
         readonly ITokenizer _tokenizer;
 
+        /// <summary>
+        /// Creates a new tokenizer instance that is used as input to the compiler.
+        /// </summary>
+        /// <param name="tokenizer">Tokenizer implementation, normally an instance of the LizzieTokenizer class.</param>
         public Tokenizer(ITokenizer tokenizer)
         {
             // Not passing in a tokenizer is a logical runtime error!
             _tokenizer = tokenizer ?? throw new NullReferenceException(nameof(tokenizer));
         }
 
+        /// <summary>
+        /// Main method invoked by the compiler to request tokens from a stream.
+        /// </summary>
+        /// <returns>Each token found in your code.</returns>
+        /// <param name="stream">Stream containing Lizzie code. Notice, this method does not claim ownership over
+        /// your stream, and you are responsible for correctly disposing it yourself</param>
+        /// <typeparam name="TContext">The type of your context object.</typeparam>
         public IEnumerable<string> Tokenize(Stream stream)
         {
             // Notice! We do NOT take ownership over stream!
@@ -37,6 +54,13 @@ namespace lizzie
             yield break;
         }
 
+        /// <summary>
+        /// Main method invoked by the compiler to request tokens from multiple streams.
+        /// </summary>
+        /// <returns>Each token found in your code.</returns>
+        /// <param name="streams">Streams containing Lizzie code. Notice, this method does not claim ownership over
+        /// your streams, and you are responsible for correctly disposing the streams yourself</param>
+        /// <typeparam name="TContext">The type of your context object.</typeparam>
         public IEnumerable<string> Tokenize(IEnumerable<Stream> streams)
         {
             foreach (var ixStream in streams) {
@@ -46,6 +70,11 @@ namespace lizzie
             }
         }
 
+        /// <summary>
+        /// Main method invoked by the compiler to request tokens from a single string.
+        /// </summary>
+        /// <returns>Each token found in your code.</returns>
+        /// <param name="code">Code to tokenize.</param>
         public IEnumerable<string> Tokenize(string code)
         {
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(code))) {
@@ -55,15 +84,28 @@ namespace lizzie
             }
         }
 
-        public IEnumerable<string> Tokenize(IEnumerable<string> code)
+        /// <summary>
+        /// Main method invoked by the compiler to request tokens from multiple strings.
+        /// </summary>
+        /// <returns>Each token found in your code snippets.</returns>
+        /// <param name="snippets">Code snippets to tokenize.</param>
+        public IEnumerable<string> Tokenize(IEnumerable<string> snippets)
         {
-            foreach (var ixCode in code) {
+            foreach (var ixCode in snippets) {
                 foreach (var ixToken in Tokenize(ixCode)) {
                     yield return ixToken;
                 }
             }
         }
 
+        /// <summary>
+        /// Eats and discards all whitespace characters found at the beginning of your reader.
+        /// 
+        /// A white space character is any of the following characters; ' ', '\t',
+        /// '\r' and '\n'.
+        /// </summary>
+        /// <returns><c>true</c>, if space was eaten, <c>false</c> otherwise.</returns>
+        /// <param name="reader">Reader.</param>
         public static bool EatSpace(StreamReader reader)
         {
             var retVal = false;
@@ -79,9 +121,13 @@ namespace lizzie
             return retVal;
         }
 
-        public static bool EatLine(StreamReader reader)
+        /// <summary>
+        /// Eats and discards the rest of the line from your reader.
+        /// </summary>
+        /// <returns><c>true</c>, if line was eaten, <c>false</c> otherwise.</returns>
+        /// <param name="reader">Reader.</param>
+        public static void EatLine(StreamReader reader)
         {
-            var retVal = false;
             while(!reader.EndOfStream) {
                 var ch = (char)reader.Read();
                 if (ch == '\r' || ch == '\n') {
@@ -91,13 +137,15 @@ namespace lizzie
                             reader.Read();
                     }
                     break;
-                } else {
-                    retVal = true;
                 }
             }
-            return retVal;
         }
 
+        /// <summary>
+        /// Eats and discards characters from the reader until the specified sequence is found.
+        /// </summary>
+        /// <param name="reader">Reader to eat from.</param>
+        /// <param name="sequence">Sequence to look for that will end further eating.</param>
         public static void EatUntil(StreamReader reader, string sequence)
         {
             if (string.IsNullOrEmpty(sequence))
@@ -135,6 +183,13 @@ namespace lizzie
             }
         }
 
+        /// <summary>
+        /// Reads a single line string literal from the reader, escaping characters if necessary,
+        /// and also supporting UNICODE hex syntax to reference UNICODE characters.
+        /// </summary>
+        /// <returns>The string.</returns>
+        /// <param name="reader">Reader.</param>
+        /// <param name="stop">Stop.</param>
         public static string ReadString (StreamReader reader, char stop = '"')
         {
             var builder = new StringBuilder ();

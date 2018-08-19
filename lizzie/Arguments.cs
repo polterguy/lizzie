@@ -12,38 +12,74 @@ using System.Globalization;
 
 namespace lizzie
 {
-    public class Arguments<T> : IEnumerable<T>
+    /// <summary>
+    /// Convenience class for passing arguments around to Lizzie function objects.
+    /// </summary>
+    public class Arguments : IEnumerable<object>
     {
-        List<T> _list = new List<T>();
+        List<object> _list = new List<object>();
 
+        /// <summary>
+        /// Creates an empty arguments instance.
+        /// </summary>
         public Arguments()
         { }
 
-        public Arguments(params T[] arguments)
+        /// <summary>
+        /// Initializes the instance with the specified initial arguments.
+        /// </summary>
+        /// <param name="arguments">Arguments to initialize instance with.</param>
+        public Arguments(params object[] arguments)
         {
             _list.AddRange(arguments);
         }
 
-        public Arguments(IEnumerable<T> arguments)
+        /// <summary>
+        /// Initializes the instance with the specified initial arguments.
+        /// </summary>
+        /// <param name="arguments">Arguments to initialize instance with.</param>
+        public Arguments(IEnumerable<object> arguments)
         {
             _list.AddRange(arguments);
         }
 
+        /// <summary>
+        /// Returns the number of arguments in this instance.
+        /// </summary>
+        /// <value>The number of arguments this instance holds.</value>
         public int Count
         {
             get { return _list.Count; }
         }
 
-        public void Add(T value)
+        /// <summary>
+        /// Adds the specified argument to this instance.
+        /// </summary>
+        /// <param name="value">Argument to add.</param>
+        public void Add(object value)
         {
             _list.Add(value);
         }
 
-        public T Get(int index)
+        /// <summary>
+        /// Returns the argument at the specified instance. Will throw if you
+        /// try to retrieve arguments beyond its size.
+        /// </summary>
+        /// <returns>The argument at the specified index.</returns>
+        /// <param name="index">The index of the argument you want to retrieve.</param>
+        public object Get(int index)
         {
             return _list[index];
         }
 
+        /// <summary>
+        /// Returns the argument at the specified instance, and tries to convert
+        /// it the the requested TConvert type. Will throw if you
+        /// try to retrieve arguments beyond its size.
+        /// </summary>
+        /// <returns>The argument at the specified index.</returns>
+        /// <param name="index">The index of the argument you want to retrieve.</param>
+        /// <typeparam name="TConvert">The type you want to convert the argument to.</typeparam>
         public TConvert Get<TConvert>(int index)
         {
             // Retrieving argument and converting it to type specified by caller.
@@ -53,22 +89,9 @@ namespace lizzie
             return (TConvert)Convert.ChangeType(obj, typeof(TConvert), CultureInfo.InvariantCulture);
         }
 
-        public TConvert Get<TConvert>(int index, TConvert def)
-        {
-            // If specified argument doesn't exist, we return the default given by caller.
-            if (index >= Count)
-                return def;
-
-            // Retrieving argument and converting it to type specified by caller.
-            var obj = Get(index);
-            if (obj is TConvert)
-                return (TConvert)(object)obj; // No conversion is necessary.
-            return (TConvert)Convert.ChangeType(obj, typeof(TConvert), CultureInfo.InvariantCulture);
-        }
-
         #region [ -- Interface implementations -- ]
 
-        public IEnumerator<T> GetEnumerator()
+        public IEnumerator<object> GetEnumerator()
         {
             return _list.GetEnumerator();
         }
@@ -79,19 +102,5 @@ namespace lizzie
         }
 
         #endregion
-    }
-
-    public class Arguments : Arguments<object>
-    {
-        public Arguments()
-        { }
-
-        public Arguments(params object[] arguments)
-            : base (arguments)
-        { }
-
-        public Arguments(IEnumerable<object> arguments)
-            : base (arguments)
-        { }
     }
 }

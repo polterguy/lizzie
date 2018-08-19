@@ -13,8 +13,15 @@ using lizzie.exceptions;
 
 namespace lizzie.types
 {
+    /*
+     * Class responsible for compiling a symbol.
+     */
     static class Symbol<TContext>
     {
+        /*
+         * Compiles a single symbol, which might be a constant, a symbol reference,
+         * a body, or the literal name of a symbol.
+         */
         internal static Tuple<Function<TContext>, bool> Compile(IEnumerator<string> en)
         {
             Function<TContext> function = null;
@@ -82,11 +89,28 @@ namespace lizzie.types
                 // Checking if this is a function invocation.
                 if (!eof && en.Current == "(") {
 
-                    // Function invocation.
-                    function = new Function<TContext>((ctx, binder, arguments) => {
-                        return (binder[symbolName] as Function<TContext>)(ctx, binder, arguments);
+                    /*
+                     * Function invocation, making sure we apply arguments such that
+                     * they are evaluated runtime.
+                     */
+                    var arguments = new List<Function<TContext>>();
+                    if (!en.MoveNext())
+                        throw new LizzieParsingException("Unexpected EOF while parsing function invocation.");
+                    if (en.Current != ")") {
+                        while (true) {
+                            var tuple = Compile(en);
+                            if (tuple.Item1 != null)
+                                arguments.Add(tuple.Item1);
+                            if (en.Current == ")")
+                                break;
+                            if (!en.MoveNext())
+                                throw new LizzieParsingException("Unexpected EOF while parsing arguments to function invocation.");
+                        }
+                    }
+                    function = new Function<TContext>((ctx, binder, args) => {
+                        var appliedArguments = new Arguments(arguments.Select(ix => ix(ctx, binder, args)));
+                        return (binder[symbolName] as Function<TContext>)(ctx, binder, appliedArguments);
                     });
-                    function = Apply(function, en);
                     eof = !en.MoveNext();
 
                 } else {
@@ -100,6 +124,10 @@ namespace lizzie.types
             return new Tuple<Function<TContext>, bool>(function, eof);
         }
 
+        /*
+         * Returns true if this is a numeric value, which might be floating point
+         * value, or an integer value.
+         */
         static bool IsNumeric(string symbol)
         {
             foreach (var ix in symbol) {
@@ -107,28 +135,6 @@ namespace lizzie.types
                     return false;
             }
             return true;
-        }
-
-        internal static Function<TContext> Apply(Function<TContext> function, IEnumerator<string> en)
-        {
-            var arguments = new List<Function<TContext>>();
-            if (!en.MoveNext())
-                throw new LizzieParsingException("Unexpected EOF while parsing function invocation.");
-            if (en.Current != ")") {
-                while (true) {
-                    var tuple = Compile(en);
-                    if (tuple.Item1 != null)
-                        arguments.Add(tuple.Item1);
-                    if (en.Current == ")")
-                        break;
-                    if (!en.MoveNext())
-                        throw new LizzieParsingException("Unexpected EOF while parsing arguments to function invocation.");
-                }
-            }
-            return new Function<TContext>((ctx, binder, args) => {
-                var applied = new Arguments(arguments.Select(ix => ix(ctx, binder, args)));
-                return function(ctx, binder, applied);
-            });
         }
     }
 }
