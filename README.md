@@ -16,9 +16,9 @@ foo
 Lizzie is highly influenced and inspired from LISP, but with a much more familiar
 notation, without the weird and unintuitive _"Polish notation"_. In such a way,
 it arguably is LISP for .Net. Its dynamic nature allows you to execute snippets
-of Lizzie code, inline in your C# code, wither by loading the code from a file,
-or fetching the code from some database of some sort. Below is a complete example
-of how this process might happen.
+of Lizzie code, inline in your C# code, by loading your code from files, or by for
+instance fetching the code from some database of some sort. Below is a complete
+example of how this process might look like.
 
 ```csharp
 using System;
