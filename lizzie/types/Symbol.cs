@@ -74,11 +74,13 @@ namespace lizzie.types
                 if (en.Current.Contains('.')) {
 
                     // Notice, all integer numbers are treated as long.
+                    // TODO: Implement support for BigNumbers by doing a TryParse.
                     numericConstant = double.Parse(en.Current, CultureInfo.InvariantCulture);
 
                 } else {
 
                     // Notice, all floating point numbers are treated as double.
+                    // TODO: Implement support for BigNumbers by doing a TryParse.
                     numericConstant = long.Parse(en.Current, CultureInfo.InvariantCulture);
                 }
                 function = new Function<TContext>((ctx, binder, arguments) => {
