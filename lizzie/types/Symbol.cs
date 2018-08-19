@@ -159,7 +159,9 @@ namespace lizzie.types
                     if (en.Current == ")")
                         break;
 
-                    // Skipping ",".
+                    // Sanity checking tokenizer's content, and discarding "," token.
+                    if (en.Current != ",")
+                        throw new LizzieParsingException($"Syntax error in arguments to '{symbolName}', expected ',' separating arguments and found a '{en.Current}'.");
                     if (!en.MoveNext())
                         throw new LizzieParsingException("Unexpected EOF while parsing arguments to function invocation.");
                 }
