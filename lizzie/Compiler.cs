@@ -7,9 +7,9 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using lizzie.types;
-using lizzie.exceptions;
 
 namespace lizzie
 {
@@ -38,7 +38,8 @@ namespace lizzie
         static Func<TContext, Binder<TContext>, object> Compile<TContext>(IEnumerable<string> tokens)
         {
             // Compiling main body of code, not expecting braces ('{}'), since this is the root level.
-            var functions = Body<TContext>.Compile(tokens.GetEnumerator(), false);
+            var tuples = Body<TContext>.Compile(tokens.GetEnumerator(), false);
+            var functions = tuples.Item1;
 
             // Creating a function wrapping evaluation of all of our root level functions in body.
             return new Func<TContext, Binder<TContext>, object>((ctx, binder) => {

@@ -45,10 +45,17 @@ namespace lizzie
 
                     case '[':
                     case ']':
-                    case '*':
                     case '?':
                     case '#':
                     case '$':
+                    case '+':
+                    case '*':
+                    case '>':
+                    case '<':
+                    case '=':
+                    case '!':
+                    case '`':
+                    case '\'':
 
                         throw new LizzieTokenizerException($"'{ch}' is a reserved character for future addons.");
 
@@ -75,9 +82,10 @@ namespace lizzie
 
                     case '@':
                     case ',':
-                    case '\'':
                     case '(':
                     case ')':
+                    case '{':
+                    case '}':
 
                         if (retVal == null) {
 

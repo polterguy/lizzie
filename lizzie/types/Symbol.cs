@@ -19,9 +19,23 @@ namespace lizzie.types
         {
             Function<TContext> function = null;
             var eof = false;
-            if (en.Current == "@") {
+            if (en.Current == "{") {
 
-                // Literally referencing its name.
+                // Body.
+                var tuples = Body<TContext>.Compile(en);
+                var functions = tuples.Item1;
+                function = new Function<TContext>((ctx, binder, arguments) => {
+                    object result = null;
+                    foreach (var ix in functions) {
+                        result = ix(ctx, binder, null);
+                    }
+                    return result;
+                });
+                eof = tuples.Item2 || !en.MoveNext();
+
+            } else if (en.Current == "@") {
+
+                // Literally referencing symbol's name.
                 if (!en.MoveNext())
                     throw new LizzieParsingException("Unexpected EOF after '@'.");
                 var stringConstant = en.Current;
@@ -47,6 +61,8 @@ namespace lizzie.types
 
                 // Numeric constant.
                 object numericConstant = null;
+
+                // Checking if this is a floating point value.
                 if (en.Current.Contains('.')) {
                     numericConstant = double.Parse(en.Current, CultureInfo.InvariantCulture);
                 } else {
@@ -61,17 +77,24 @@ namespace lizzie.types
 
                 // Symbolically referencing values in our binder.
                 var symbolName = en.Current;
-                function = new Function<TContext>((ctx, binder, arguments) => {
-                    var value = binder[symbolName];
-                    if (value is Function<TContext> functor) {
-                        return functor(ctx, binder, arguments);
-                    }
-                    return value;
-                });
                 eof = !en.MoveNext();
+
+                // Checking if this is a function invocation.
                 if (!eof && en.Current == "(") {
+
+                    // Function invocation.
+                    function = new Function<TContext>((ctx, binder, arguments) => {
+                        return (binder[symbolName] as Function<TContext>)(ctx, binder, arguments);
+                    });
                     function = Apply(function, en);
                     eof = !en.MoveNext();
+
+                } else {
+
+                    // Referencing value.
+                    function = new Function<TContext>((ctx, binder, arguments) => {
+                        return binder[symbolName];
+                    });
                 }
             }
             return new Tuple<Function<TContext>, bool>(function, eof);

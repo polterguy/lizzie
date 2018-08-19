@@ -144,6 +144,18 @@ namespace lizzie.tests
         }
 
         [Test]
+        public void BodyReturningConstantInteger()
+        {
+            var code = "{57}";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<Nothing>(tokenizer, code);
+            var ctx = new Nothing();
+            var binder = new Binder<Nothing>();
+            var result = function(ctx, binder);
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
         public void BinderGetFunctionInvocation()
         {
             var code = "get-constant-integer()";
