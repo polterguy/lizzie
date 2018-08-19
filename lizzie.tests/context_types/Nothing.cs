@@ -5,7 +5,7 @@
  * file for details.
  */
 
-namespace lizzie.tests.domain_objects
+namespace lizzie.tests.context_types
 {
     public class Nothing
     {

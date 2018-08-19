@@ -19,7 +19,11 @@ namespace lizzie
     /// </summary>
     public class Binder<TContext>
     {
-        readonly Dictionary<string, object> _values = new Dictionary<string, object>();
+        // Statically bound functions.
+        readonly Dictionary<string, object> _staticValue = new Dictionary<string, object>();
+
+        // Stack of dynamically created variables and functions.
+        readonly Stack<Dictionary<string, object>> _stackValues = new Stack<Dictionary<string, object>>();
 
         /// <summary>
         /// Creates a default binder, binding all bound methods in your context type.
@@ -37,8 +41,40 @@ namespace lizzie
         /// <param name="symbolName">Name or symbol for your value.</param>
         public object this[string symbolName]
         {
-            get => _values[symbolName];
-            set => _values[symbolName] = value;
+            get {
+
+                // Prioritizing the statically compiled symbols.
+                if (_staticValue.ContainsKey(symbolName))
+                    return _staticValue[symbolName];
+
+                // Sanity checking invocation.
+                if (!_stackValues.Peek().ContainsKey(symbolName))
+                    throw new LizzieRuntimeException($"The '{symbolName}' symbol does not exist on your stack.");
+
+                // Defaulting to our stack objects.
+                return _stackValues.Peek()[symbolName];
+            }
+            set {
+
+                // We don't allow Lizzie codeto change statically compiled values or functions.
+                if (_staticValue.ContainsKey(symbolName))
+                    throw new LizzieRuntimeException($"You cannot set the '{symbolName}' since it was previously provided by your CLR code.");
+
+                /*
+                 * Checking if we have actually started executing the Lizzie code,
+                 * or if we are still in "CLR land".
+                 */
+                if (_stackValues.Count == 0) {
+
+                    // Still in "CLR land".
+                    _staticValue[symbolName] = value;
+
+                } else {
+
+                    // Stack has been pushed at least once, and we're in "Lizzie land".
+                    _stackValues.Peek()[symbolName] = value;
+                }
+            }
         }
 
         /// <summary>
@@ -49,7 +85,25 @@ namespace lizzie
         /// <param name="symbolName">Symbol name.</param>
         public bool ContainsKey(string symbolName)
         {
-            return _values.ContainsKey(symbolName);
+            if (_stackValues.Count > 0 && _stackValues.Peek().ContainsKey(symbolName))
+                return true;
+            return _staticValue.ContainsKey(symbolName);
+        }
+
+        /// <summary>
+        /// Creates a new stack and makes it become the current stack.
+        /// </summary>
+        public void PushStack()
+        {
+            _stackValues.Push(new Dictionary<string, object>());
+        }
+
+        /// <summary>
+        /// Pops the top item off the stack, and makes the previous stack the current stack.
+        /// </summary>
+        public void PopStack()
+        {
+            _stackValues.Pop();
         }
 
         /*
@@ -96,7 +150,7 @@ namespace lizzie
              * Success, creating our delegate wrapping our method, and adding it to our dictionary with the specified
              * symbolic function name.
              */
-            _values[functionName] = (Function<TContext>)
+            _staticValue[functionName] = (Function<TContext>)
                 Delegate.CreateDelegate(typeof(Function<TContext>), method);
         }
     }

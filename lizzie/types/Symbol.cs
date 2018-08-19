@@ -51,11 +51,16 @@ namespace lizzie.types
              * returns the result of the last function evaluation to the caller.
              */
             var function = new Function<TContext>((ctx, binder, arguments) => {
-                object result = null;
-                foreach (var ix in functions) {
-                    result = ix(ctx, binder, null);
+                binder.PushStack();
+                try {
+                    object result = null;
+                    foreach (var ix in functions) {
+                        result = ix(ctx, binder, null);
+                    }
+                    return result;
+                } finally {
+                    binder.PopStack();
                 }
-                return result;
             });
             return new Tuple<Function<TContext>, bool>(function, tuples.Item2 || !en.MoveNext());
         }
@@ -177,7 +182,7 @@ namespace lizzie.types
 
                     // Basic sanity checking.
                     if (!binder.ContainsKey(symbolName))
-                        throw new LizzieRuntimeException($"The '{symbolName}' does not exist.");
+                        throw new LizzieRuntimeException($"The '{symbolName}' symbol does not exist.");
 
                     // Retrieving symbol's value and doing some basic sanity checks.
                     var symbol = binder[symbolName];
@@ -195,7 +200,7 @@ namespace lizzie.types
 
                     // Sanity checking that symbol actually exists.
                     if (!binder.ContainsKey(symbolName))
-                        throw new LizzieRuntimeException($"The '{symbolName}' does not exist.");
+                        throw new LizzieRuntimeException($"The '{symbolName}' symbol does not exist.");
                     return binder[symbolName];
                 }), eof);
             }

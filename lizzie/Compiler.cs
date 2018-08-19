@@ -84,11 +84,16 @@ namespace lizzie
              * making sure we always return the result of the last function invocation to caller.
              */
             return new Lambda<TContext>((ctx, binder) => {
-                object result = null;
-                foreach (var ix in functions) {
-                    result = ix(ctx, binder, null);
+                binder.PushStack();
+                try {
+                    object result = null;
+                    foreach (var ix in functions) {
+                        result = ix(ctx, binder, null);
+                    }
+                    return result;
+                } finally {
+                    binder.PopStack();
                 }
-                return result;
             });
         }
     }

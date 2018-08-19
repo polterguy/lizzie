@@ -6,7 +6,7 @@
  */
 
 using NUnit.Framework;
-using lizzie.tests.domain_objects;
+using lizzie.tests.context_types;
 
 namespace lizzie.tests
 {

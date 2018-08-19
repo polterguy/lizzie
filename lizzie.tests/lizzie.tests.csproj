@@ -30,9 +30,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TokenizerTests.cs" />
-    <Compile Include="domain_objects\SimpleValues.cs" />
-    <Compile Include="domain_objects\Nothing.cs" />
+    <Compile Include="context_types\SimpleValues.cs" />
+    <Compile Include="context_types\Nothing.cs" />
     <Compile Include="ParserTests.cs" />
+    <Compile Include="VariableTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lizzie\lizzie.csproj">
@@ -41,7 +42,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="domain_objects\" />
+    <Folder Include="context_types\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
