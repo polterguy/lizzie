@@ -35,7 +35,7 @@ write-line(foo)
             var function = Compiler.Compile<MainClass>(tokenizer, code);
 
             // Creating an instance of our class, which we can bind to our code.
-            var ctx = new MainClass();
+            var context = new MainClass();
 
             // Creating a binder, and adding some keywords to it.
             var binder = new Binder<MainClass>();
@@ -44,7 +44,10 @@ write-line(foo)
             binder["add"] = Functions<MainClass>.Add;
 
             // Evaluates our Lizzie code.
-            function(ctx, binder);
+            function(context, binder);
+
+            // Waiting for user input.
+            Console.Read();
         }
     }
 }
