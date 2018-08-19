@@ -4,14 +4,7 @@
 Lizzie is a dynamic scripting language for .Net based upon the design pattern
 called _"Symbolic Delegates"_. This allows you to execute dynamically created
 scripts, that does neither compile nor are interpreted, but instead translates
-directly down to delegates. Below is some example code.
-
-```javascript
-// This code will return 67 when evaluated.
-var(@foo, 57)
-set(@foo, add(@foo, 10))
-foo
-```
+directly down to delegates.
 
 Lizzie is highly influenced and inspired from LISP, but without the weird and
 unintuitive _"Polish notation"_. In such a way, it arguably is LISP for .Net.
