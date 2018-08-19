@@ -8,15 +8,16 @@
 namespace lizzie.exceptions
 {
     /// <summary>
-    /// Exception thrown if Lizzie for some reasons could not bind to a method.
+    /// Runtime execution exception thrown by Lizzie, when some severe error
+    /// occurs during runtime, from which Lizzie cannot recover from.
     /// </summary>
-    public class LizzieBindingException : LizzieException
+    public class LizzieEvaluationException : LizzieException
     {
         /// <summary>
         /// Creates a new exception with the specified message.
         /// </summary>
         /// <param name="message">Message containing more information about the exception.</param>
-        public LizzieBindingException(string message)
+        public LizzieEvaluationException(string message)
             : base(message)
         { }
     }

@@ -7,8 +7,16 @@
 
 namespace lizzie.exceptions
 {
+    /// <summary>
+    /// Parsing exception thrown when parsing of your Lizzie code could not be
+    /// accomplished for some reasons.
+    /// </summary>
     public class LizzieParsingException : LizzieException
     {
+        /// <summary>
+        /// Creates a new exception with the specified message.
+        /// </summary>
+        /// <param name="message">Message containing more information about the exception.</param>
         public LizzieParsingException(string message)
             : base(message)
         { }

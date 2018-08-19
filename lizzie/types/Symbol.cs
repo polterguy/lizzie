@@ -21,6 +21,7 @@ namespace lizzie.types
         /*
          * Compiles a single symbol, which might be a constant, a symbol reference,
          * a body, or the literal name of a symbol.
+         * TODO: Simplify method, too long and too complex.
          */
         internal static Tuple<Function<TContext>, bool> Compile(IEnumerator<string> en)
         {
@@ -71,8 +72,13 @@ namespace lizzie.types
 
                 // Checking if this is a floating point value.
                 if (en.Current.Contains('.')) {
+
+                    // Notice, all integer numbers are treated as long.
                     numericConstant = double.Parse(en.Current, CultureInfo.InvariantCulture);
+
                 } else {
+
+                    // Notice, all floating point numbers are treated as double.
                     numericConstant = long.Parse(en.Current, CultureInfo.InvariantCulture);
                 }
                 function = new Function<TContext>((ctx, binder, arguments) => {
@@ -108,8 +114,20 @@ namespace lizzie.types
                         }
                     }
                     function = new Function<TContext>((ctx, binder, args) => {
+
+                        // Applying arguments.
                         var appliedArguments = new Arguments(arguments.Select(ix => ix(ctx, binder, args)));
-                        return (binder[symbolName] as Function<TContext>)(ctx, binder, appliedArguments);
+
+                        // Retrieving symbol and doing some basic sanity checks.
+                        var symbol = binder[symbolName];
+                        if (symbol == null)
+                            throw new LizzieEvaluationException($"Symbol '{symbolName}' does not exist.");
+                        if (symbol is Function<TContext> functor) {
+
+                            // Success!
+                            return functor(ctx, binder, appliedArguments);
+                        }
+                        throw new LizzieEvaluationException($"Symbol '{symbolName}' is not a function, but a '{symbol.GetType().FullName}'");
                     });
                     eof = !en.MoveNext();
 

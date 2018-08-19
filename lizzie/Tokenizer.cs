@@ -31,7 +31,7 @@ namespace lizzie
         public Tokenizer(ITokenizer tokenizer)
         {
             // Not passing in a tokenizer is a logical runtime error!
-            _tokenizer = tokenizer ?? throw new NullReferenceException(nameof(tokenizer));
+            _tokenizer = tokenizer ?? throw new LizzieTokenizerException("No tokenizer implementation given to tokenizer.");
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace lizzie
         /// <param name="reader">Reader.</param>
         public static void EatLine(StreamReader reader)
         {
-            while(!reader.EndOfStream) {
+            while (!reader.EndOfStream) {
                 var ch = (char)reader.Read();
                 if (ch == '\r' || ch == '\n') {
                     if (!reader.EndOfStream) {
@@ -149,7 +149,7 @@ namespace lizzie
         public static void EatUntil(StreamReader reader, string sequence)
         {
             if (string.IsNullOrEmpty(sequence))
-                throw new LizzieTokenizerException("Can't read until empty sequence is found");
+                throw new LizzieTokenizerException("No stop sequence specified to EatUntil.");
             var first = sequence[0];
             var buffer = "";
             while (true) {
@@ -190,17 +190,17 @@ namespace lizzie
         /// <returns>The string.</returns>
         /// <param name="reader">Reader.</param>
         /// <param name="stop">Stop.</param>
-        public static string ReadString (StreamReader reader, char stop = '"')
+        public static string ReadString(StreamReader reader, char stop = '"')
         {
-            var builder = new StringBuilder ();
-            for (var c = reader.Read (); c != -1; c = reader.Read ()) {
+            var builder = new StringBuilder();
+            for (var c = reader.Read(); c != -1; c = reader.Read()) {
                 switch (c) {
                     case '\\':
-                        builder.Append (GetEscapedCharacter (reader, stop));
+                        builder.Append(GetEscapedCharacter(reader, stop));
                         break;
                     case '\n':
                     case '\r':
-                        throw new LizzieTokenizerException (string.Format ("String literal contains CR or LF characters."));
+                        throw new LizzieTokenizerException($"String literal contains CR or LF characters close to '{builder.ToString()}'.");
                     default:
                         if (c == stop)
                             return builder.ToString();
@@ -208,7 +208,7 @@ namespace lizzie
                         break;
                 }
             }
-            throw new ApplicationException (string.Format ("Syntax error, string literal not closed before end of input near '{0}'", builder));
+            throw new LizzieTokenizerException($"Syntax error, string literal not closed before EOF near '{builder.ToString()}'");
         }
 
         /*
@@ -237,11 +237,11 @@ namespace lizzie
                 case 'r':
                     return "\r";
                 case 'x':
-                    return HexCharacter (reader);
+                    return HexCharacter(reader);
                 default:
                     if (ch == stop)
                         return stop.ToString();
-                    throw new LizzieTokenizerException ("Invalid escape sequence found in string literal");
+                    throw new LizzieTokenizerException($"Invalid escape sequence character '{Convert.ToInt32(ch)}' found in string literal");
             }
         }
 
