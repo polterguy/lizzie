@@ -135,24 +135,13 @@ namespace lizzie
             }
         }
 
-        public static bool NextIsWhiteSpace(StreamReader reader)
-        {
-            return NextIsOf(reader, ' ', '\t', '\r', '\n');
-        }
-
-        public static bool NextIsOf (StreamReader reader, params char[] characters)
-        {
-            var ch = (char)reader.Peek();
-            return characters.Any((ix) => ix == ch);
-        }
-
         public static string ReadString (StreamReader reader, char stop = '"')
         {
             var builder = new StringBuilder ();
             for (var c = reader.Read (); c != -1; c = reader.Read ()) {
                 switch (c) {
                     case '\\':
-                        builder.Append (GetEscapeCharacter (reader, stop));
+                        builder.Append (GetEscapedCharacter (reader, stop));
                         break;
                     case '\n':
                     case '\r':
@@ -170,7 +159,7 @@ namespace lizzie
         /*
          * Returns escape character.
          */
-        static string GetEscapeCharacter (StreamReader reader, char stop)
+        static string GetEscapedCharacter (StreamReader reader, char stop)
         {
             var ch = reader.Read();
             if (ch == -1)

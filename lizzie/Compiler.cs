@@ -15,34 +15,34 @@ namespace lizzie
 {
     public static class Compiler
     {
-        public static Func<TContext, Binder<TContext>, object> Compile<TContext>(Tokenizer tokenizer, Stream stream)
+        public static Lambda<TContext> Compile<TContext>(Tokenizer tokenizer, Stream stream)
         {
             return Compile<TContext>(tokenizer.Tokenize(stream));
         }
 
-        public static Func<TContext, Binder<TContext>, object> Compile<TContext>(Tokenizer tokenizer, IEnumerable<Stream> streams)
+        public static Lambda<TContext> Compile<TContext>(Tokenizer tokenizer, IEnumerable<Stream> streams)
         {
             return Compile<TContext>(tokenizer.Tokenize(streams));
         }
 
-        public static Func<TContext, Binder<TContext>, object> Compile<TContext>(Tokenizer tokenizer, string snippet)
+        public static Lambda<TContext> Compile<TContext>(Tokenizer tokenizer, string snippet)
         {
             return Compile<TContext>(tokenizer.Tokenize(snippet));
         }
 
-        public static Func<TContext, Binder<TContext>, object> Compile<TContext>(Tokenizer tokenizer, IEnumerable<string> snippets)
+        public static Lambda<TContext> Compile<TContext>(Tokenizer tokenizer, IEnumerable<string> snippets)
         {
             return Compile<TContext>(tokenizer.Tokenize(snippets));
         }
 
-        static Func<TContext, Binder<TContext>, object> Compile<TContext>(IEnumerable<string> tokens)
+        static Lambda<TContext> Compile<TContext>(IEnumerable<string> tokens)
         {
             // Compiling main body of code, not expecting braces ('{}'), since this is the root level.
             var tuples = Body<TContext>.Compile(tokens.GetEnumerator(), false);
             var functions = tuples.Item1;
 
             // Creating a function wrapping evaluation of all of our root level functions in body.
-            return new Func<TContext, Binder<TContext>, object>((ctx, binder) => {
+            return new Lambda<TContext>((ctx, binder) => {
                 object result = null;
                 foreach (var ix in functions) {
                     result = ix(ctx, binder, null);

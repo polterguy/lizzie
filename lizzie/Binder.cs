@@ -14,7 +14,7 @@ namespace lizzie
 {
     public class Binder<TContext>
     {
-        readonly Dictionary<string, object> _functions = new Dictionary<string, object>();
+        readonly Dictionary<string, object> _values = new Dictionary<string, object>();
 
         public Binder()
         {
@@ -24,20 +24,22 @@ namespace lizzie
         public object this[string name]
         {
             get {
-                if (!_functions.ContainsKey(name)) {
+                if (!_values.ContainsKey(name)) {
                     return null;
                 }
-                return _functions[name];
+                return _values[name];
             }
-            set => _functions[name] = value;
+            set => _values[name] = value;
         }
 
         public T Get<T>(string name) where T : class
         {
             var result = this[name];
+            if (result == null)
+                return default(T);
             if (result is T)
                 return result as T;
-            return default(T);
+            return Convert.ChangeType(result, typeof(T)) as T;
         }
 
         void BindTypeMethods()
@@ -71,7 +73,7 @@ namespace lizzie
             if (method.ReturnType != typeof(object))
                 throw new LizzieParsingException($"Can't bind to {method.Name} since it doesn't return '{nameof(Object)}'.");
 
-            _functions[functionName] = (Function<TContext>)
+            _values[functionName] = (Function<TContext>)
                 Delegate.CreateDelegate(typeof(Function<TContext>), method);
         }
     }
