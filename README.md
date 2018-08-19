@@ -13,12 +13,12 @@ set(@foo, add(@foo, 10))
 foo
 ```
 
-Lizzie is highly influenced and inspired from LISP, but with a much more familiar
-notation, without the weird and unintuitive _"Polish notation"_. In such a way,
-it arguably is LISP for .Net. Its dynamic nature allows you to execute snippets
-of Lizzie code, inline in your C# code, by loading your code from files, or by for
-instance fetching the code from some database of some sort. Below is a complete
-example of how this process might look like.
+Lizzie is highly influenced and inspired from LISP, but without the weird and
+unintuitive _"Polish notation"_. In such a way, it arguably is LISP for .Net.
+Its dynamic nature allows you to execute snippets of Lizzie code, inline in
+your C# code, by loading your code from files, or by for instance fetching
+the code from some database of some sort. Below is a complete example of how
+this process might look like.
 
 ```csharp
 using System;
@@ -66,3 +66,6 @@ write-line(foo)
     }
 }
 ```
+
+You can easily create your own _"keywords"_ in Lizzie, which allows you to create
+your own DSL or _"Domain Specific Programming Language"_.
