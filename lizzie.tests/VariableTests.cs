@@ -214,5 +214,22 @@ set(@foo)";
             }
             Assert.IsTrue(success);
         }
+
+        [Test]
+        public void VariableChangedFromDoubleToString()
+        {
+            var code = @"
+var(@foo, 57.67)
+set(@foo, ""bar"")
+foo";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<Nothing>(tokenizer, code);
+            var ctx = new Nothing();
+            var binder = new Binder<Nothing>();
+            binder["var"] = Functions<Nothing>.Var;
+            binder["set"] = Functions<Nothing>.Set;
+            var result = function(ctx, binder);
+            Assert.AreEqual("bar", result);
+        }
     }
 }
