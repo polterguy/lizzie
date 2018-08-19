@@ -25,7 +25,7 @@ class MainClass
         // Some inline Lizzie code
         var code = @"
 
-// Declaring "foo" as a variable and setting its initial value to 57.
+// Declaring "foo" as a variable and setting its initial value to 57
 var(@foo, 57)
 
 // Adding 10 to "foo"
