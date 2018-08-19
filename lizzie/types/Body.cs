@@ -22,23 +22,25 @@ namespace lizzie.types
          */
         internal static Tuple<List<Function<TContext>>, bool> Compile(IEnumerator<string> en, bool forceClose = true)
         {
+            // Creating a list of functions and returning these to caller.
             var content = new List<Function<TContext>>();
-            var eof = false;
-            if (en.MoveNext()) {
-                while (true) {
-                    var tuple = Symbol<TContext>.Compile(en);
-                    if (tuple.Item1 != null)
-                        content.Add(tuple.Item1);
-                    if (tuple.Item2 || en.Current == "}") {
-                        eof = tuple.Item2;
-                        break;
-                    }
-                }
+            var eof = !en.MoveNext();
+            while (!eof) {
 
-            } else {
-                eof = true;
+                // Compiling currently tokenized symbol.
+                var tuple = Symbol<TContext>.Compile(en);
+
+                // Making sure above process returned something, before we add it to the list of functions we return.
+                if (tuple.Item1 != null)
+                    content.Add(tuple.Item1);
+
+                // Checking if we're done compiling body.
+                eof = tuple.Item2;
+                if (eof || en.Current == "}")
+                    break; // Even if we're not at EOF, we might be at '}', ending the current body.
             }
 
+            // Sanity checking tokenizer's content, before returning functions to caller.
             if (forceClose && en.Current != "}")
                 throw new LizzieParsingException("Premature EOF while parsing code.");
             if (!forceClose && !eof && en.Current == "}")

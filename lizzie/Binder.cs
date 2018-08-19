@@ -34,16 +34,22 @@ namespace lizzie
         /// to either a constant or a Lizzie function, at which point you can
         /// retrieve the object by referencing it symbolically in your Lizzie code.
         /// </summary>
-        /// <param name="name">Name or symbol for your value.</param>
-        public object this[string name]
+        /// <param name="symbolName">Name or symbol for your value.</param>
+        public object this[string symbolName]
         {
-            get {
-                if (!_values.ContainsKey(name)) {
-                    return null;
-                }
-                return _values[name];
-            }
-            set => _values[name] = value;
+            get => _values[symbolName];
+            set => _values[symbolName] = value;
+        }
+
+        /// <summary>
+        /// Returns true if the named symbol exists. Notice, the symbol's value might
+        /// still be null, even if the symbol exists.
+        /// </summary>
+        /// <returns><c>true</c>, if symbol exists, <c>false</c> otherwise.</returns>
+        /// <param name="symbolName">Symbol name.</param>
+        public bool ContainsKey(string symbolName)
+        {
+            return _values.ContainsKey(symbolName);
         }
 
         /*
