@@ -66,5 +66,5 @@ by loading your code from files, or by for instance fetching the code from some
 database of some sort.
 
 You can easily create your own _"keywords"_ in Lizzie, which allows you to create
-your own DSL or _"Domain Specific programming Languages"_. Lizzie hence eaily
+your own DSL or _"Domain Specific programming Languages"_. Lizzie hence easily
 lends itself to richer rule based engines, and similar domain specific problems.
