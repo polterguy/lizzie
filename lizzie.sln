@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lizzie", "lizzie\lizzie.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lizzie.tests", "lizzie.tests\lizzie.tests.csproj", "{0CE10381-65C5-4A55-A90C-FB4B1F98CDA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lizzie.console", "lizzie.console\lizzie.console.csproj", "{FD92D0D4-F503-4B3B-8142-FDC60F29C50A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{0CE10381-65C5-4A55-A90C-FB4B1F98CDA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CE10381-65C5-4A55-A90C-FB4B1F98CDA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CE10381-65C5-4A55-A90C-FB4B1F98CDA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD92D0D4-F503-4B3B-8142-FDC60F29C50A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD92D0D4-F503-4B3B-8142-FDC60F29C50A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD92D0D4-F503-4B3B-8142-FDC60F29C50A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD92D0D4-F503-4B3B-8142-FDC60F29C50A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5EFBEB45-DE81-43CD-BCE1-EE49E2C3A9EB} = {5290ED46-2D97-4B6F-B7F4-5B4BF78AAF67}
