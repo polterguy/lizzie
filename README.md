@@ -24,8 +24,14 @@ class MainClass
     {
         // Some inline Lizzie code
         var code = @"
+
+// Setting the "foo" variable to 57.
 var(@foo, 57)
+
+// Adding 10 to "foo".
 set(@foo, add(foo, 10))
+
+// Writing out the value of "foo" on the console.
 write-line(foo)
 ";
 
