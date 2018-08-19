@@ -34,6 +34,7 @@
     <Compile Include="context_types\Nothing.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="VariableTests.cs" />
+    <Compile Include="MathTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lizzie\lizzie.csproj">

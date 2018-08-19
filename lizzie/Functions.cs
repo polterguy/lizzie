@@ -5,6 +5,7 @@
  * file for details.
  */
 
+using System.Linq;
 using lizzie.exceptions;
 
 namespace lizzie
@@ -97,6 +98,34 @@ namespace lizzie
                     // Setting the variable.
                     binder[symbolName] = value;
                     return value;
+                });
+            }
+        }
+
+        /// <summary>
+        /// Adds a bunch of things together. Can be used either for string literals,
+        /// integer numbers or floating point numbers.
+        /// 
+        /// Will return the result of the addition to caller.
+        /// </summary>
+        /// <value>The function wrapping the 'add keyword'.</value>
+        public static Function<TContext> Add
+        {
+            get {
+                return new Function<TContext>((ctx, binder, arguments) => {
+
+                    // Sanity checking code.
+                    if (arguments.Count < 2)
+                        throw new LizzieRuntimeException($"The 'add' keyword requires at least 2 arguments, and you tried to invoke it with fewer.");
+
+                    // Retrieving the first value, making sure we retrieve it as a "dynamic type".
+                    dynamic result = arguments.Get(0);
+                    foreach (dynamic ix in arguments.Skip(1)) {
+                        result += ix;
+                    }
+
+                    // Returning the result of addition operation to caller.
+                    return result;
                 });
             }
         }
