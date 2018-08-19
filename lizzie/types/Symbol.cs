@@ -17,51 +17,64 @@ namespace lizzie.types
     {
         internal static Tuple<Function<TContext>, bool> Compile(IEnumerator<string> en)
         {
+            Function<TContext> function = null;
             var eof = false;
-            Function<TContext> symbol = null;
             if (en.Current == "@") {
 
+                // Literally referencing its name.
                 if (!en.MoveNext())
-                    throw new LizzieParsingException("Unexpected EOF while parsing '@'.");
-
-                var tuple = Compile(en);
-                var innerSymbol = tuple.Item1;
-                symbol = new Function<TContext>((ctx, binder, arguments) => {
-
-                    var symbolValue = Convert.ToString(innerSymbol(ctx, binder, arguments), CultureInfo.InvariantCulture);
-                    var function = binder[symbolValue] as Function<TContext>;
-                    return function(ctx, binder, arguments);
+                    throw new LizzieParsingException("Unexpected EOF after '@'.");
+                var stringConstant = en.Current;
+                function = new Function<TContext>((ctx, binder, arguments) => {
+                    return stringConstant;
                 });
-                if (!eof && en.Current == "(")
-                    symbol = Apply(symbol, en);
+                eof = !en.MoveNext();
+
+            } else if (en.Current == "\"") {
+
+                // String literal constant.
+                if (!en.MoveNext())
+                    throw new LizzieParsingException("Unexpected EOF after '\"'.");
+                var stringConstant = en.Current;
+                if (!en.MoveNext() || en.Current != "\"")
+                    throw new LizzieParsingException($"Unexpected EOF after to '{stringConstant}'");
+                function = new Function<TContext>((ctx, binder, arguments) => {
+                    return stringConstant;
+                });
+                eof = !en.MoveNext();
+
+            } else if (IsNumeric(en.Current)) {
+
+                // Numeric constant.
+                object numericConstant = null;
+                if (en.Current.Contains('.')) {
+                    numericConstant = double.Parse(en.Current, CultureInfo.InvariantCulture);
+                } else {
+                    numericConstant = long.Parse(en.Current, CultureInfo.InvariantCulture);
+                }
+                function = new Function<TContext>((ctx, binder, arguments) => {
+                    return numericConstant;
+                });
+                eof = !en.MoveNext();
 
             } else {
 
-                symbol = Constant(en);
-            }
-
-            return new Tuple<Function<TContext>, bool>(symbol, eof || en.Current == "}" || !en.MoveNext());
-        }
-
-        static Function<TContext> Constant(IEnumerator<string> en)
-        {
-            object constantValue = en.Current;
-            if (en.Current == "\"") {
-                if (!en.MoveNext())
-                    throw new LizzieParsingException("Unexpected EOF after '\"'.");
-                constantValue = en.Current;
-                if (!en.MoveNext() || en.Current != "\"")
-                    throw new LizzieParsingException($"Unexpected EOF after to '{constantValue}'");
-            } else if (IsNumeric(en.Current)) {
-                if (en.Current.Contains('.')) {
-                    constantValue = double.Parse(en.Current, CultureInfo.InvariantCulture);
-                } else {
-                    constantValue = long.Parse(en.Current, CultureInfo.InvariantCulture);
+                // Symbolically referencing values in our binder.
+                var symbolName = en.Current;
+                function = new Function<TContext>((ctx, binder, arguments) => {
+                    var value = binder[symbolName];
+                    if (value is Function<TContext> functor) {
+                        return functor(ctx, binder, arguments);
+                    }
+                    return value;
+                });
+                eof = !en.MoveNext();
+                if (!eof && en.Current == "(") {
+                    function = Apply(function, en);
+                    eof = !en.MoveNext();
                 }
             }
-            return new Function<TContext>((ctx, binder, arguments) => {
-                return constantValue;
-            });
+            return new Tuple<Function<TContext>, bool>(function, eof);
         }
 
         static bool IsNumeric(string symbol)
