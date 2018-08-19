@@ -121,13 +121,13 @@ namespace lizzie.types
                         // Retrieving symbol and doing some basic sanity checks.
                         var symbol = binder[symbolName];
                         if (symbol == null)
-                            throw new LizzieEvaluationException($"Symbol '{symbolName}' does not exist.");
+                            throw new LizzieRuntimeException($"Symbol '{symbolName}' does not exist.");
                         if (symbol is Function<TContext> functor) {
 
                             // Success!
                             return functor(ctx, binder, appliedArguments);
                         }
-                        throw new LizzieEvaluationException($"Symbol '{symbolName}' is not a function, but a '{symbol.GetType().FullName}'");
+                        throw new LizzieRuntimeException($"Symbol '{symbolName}' is not a function, but a '{symbol.GetType().FullName}'");
                     });
                     eof = !en.MoveNext();
 

@@ -11,13 +11,13 @@ namespace lizzie.exceptions
     /// Runtime execution exception thrown by Lizzie, when some severe error
     /// occurs during runtime, from which Lizzie cannot recover from.
     /// </summary>
-    public class LizzieEvaluationException : LizzieException
+    public class LizzieRuntimeException : LizzieException
     {
         /// <summary>
         /// Creates a new exception with the specified message.
         /// </summary>
         /// <param name="message">Message containing more information about the exception.</param>
-        public LizzieEvaluationException(string message)
+        public LizzieRuntimeException(string message)
             : base(message)
         { }
     }
