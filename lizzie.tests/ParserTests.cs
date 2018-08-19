@@ -247,6 +247,18 @@ add-integers(
         }
 
         [Test]
+        public void BodyReturningConstantDouble()
+        {
+            var code = "{57.67}";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<Nothing>(tokenizer, code);
+            var ctx = new Nothing();
+            var binder = new Binder<Nothing>();
+            var result = function(ctx, binder);
+            Assert.AreEqual(57.67, result);
+        }
+
+        [Test]
         public void BodyReturningConstantString()
         {
             var code = @"{""foo""}";
@@ -259,7 +271,7 @@ add-integers(
         }
 
         [Test]
-        public void BodyReturningFunctionInvocation()
+        public void BodyReturningFunctionInvocationResult()
         {
             var code = "{mirror(57)}";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
@@ -268,6 +280,22 @@ add-integers(
             var binder = new Binder<SimpleValues>();
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void BodyReturningFunction()
+        {
+            var code = "{foo}";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<Nothing>(tokenizer, code);
+            var ctx = new Nothing();
+            var binder = new Binder<Nothing>();
+            binder["foo"] = new Function<Nothing>((ctx2, binder2, arguments) => {
+                return 57;
+            });
+            var result = function(ctx, binder);
+            Assert.IsTrue(result is Function<Nothing>);
+            Assert.AreEqual(57, (result as Function<Nothing>)(null, null, null));
         }
 
         [Test]
