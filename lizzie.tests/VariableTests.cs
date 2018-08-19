@@ -164,5 +164,26 @@ foo";
             var result = function(ctx, binder);
             Assert.IsNull(result);
         }
+
+        [Test]
+        public void ReAssigningStaticallyCompiledValueThrows()
+        {
+            var code = @"
+set(@foo)";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<Nothing>(tokenizer, code);
+            var ctx = new Nothing();
+            var binder = new Binder<Nothing>();
+            binder["var"] = Functions<Nothing>.Var;
+            binder["set"] = Functions<Nothing>.Set;
+            binder["foo"] = 57;
+            var success = false;
+            try {
+                function(ctx, binder);
+            } catch (LizzieRuntimeException) {
+                success = true;
+            }
+            Assert.IsTrue(success);
+        }
     }
 }
