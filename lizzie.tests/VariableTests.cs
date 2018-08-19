@@ -14,7 +14,7 @@ namespace lizzie.tests
     public class VariableTests
     {
         [Test]
-        public void VariableAssignment()
+        public void VariableAssignedToIntegerValue()
         {
             var code = @"
 var(@foo, 57)";
@@ -25,6 +25,35 @@ var(@foo, 57)";
             binder["var"] = Functions<Nothing>.Var;
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void VariableAssignedToFloatingPointValue()
+        {
+            var code = @"
+var(@foo, 57.67)";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<Nothing>(tokenizer, code);
+            var ctx = new Nothing();
+            var binder = new Binder<Nothing>();
+            binder["var"] = Functions<Nothing>.Var;
+            var result = function(ctx, binder);
+            Assert.AreEqual(57.67, result);
+        }
+
+        [Test]
+        public void VariableAssignedToStringLiteralValue()
+        {
+            var code = @"
+var(@foo, ""bar"")
+foo";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<Nothing>(tokenizer, code);
+            var ctx = new Nothing();
+            var binder = new Binder<Nothing>();
+            binder["var"] = Functions<Nothing>.Var;
+            var result = function(ctx, binder);
+            Assert.AreEqual("bar", result);
         }
 
         [Test]
