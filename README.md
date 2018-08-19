@@ -1,5 +1,5 @@
 
-# Lizze a dynamic scripting language for.Net
+# Lizze a dynamic scripting language for .Net
 
 Lizzie is a dynamic scripting language for .Net based upon the design pattern
 called _"Symbolic Delegates"_. This allows you to execute dynamically created
