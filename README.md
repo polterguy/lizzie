@@ -71,7 +71,7 @@ lends itself to richer rule based engines, and similar domain specific problems.
 ## What is a "Symbolic Delegate"?
 
 A Symbolic Delegate is a .Net delegate that is dynamically looked up during runtime,
-from a dictionary of delegates with the same signature, where the key is a string.
+from a dictionary of delegates with the same signature.
 This allows you to dynamically wire together delegates to an _"execution tree"_
 during runtime, based upon whatever delegate happens to be the value for your
 key. Hence; _"Symbolic Delegates"_. In the above code for instance, we create
