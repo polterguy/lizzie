@@ -74,6 +74,16 @@ A Symbolic Delegate is a .Net delegate that is dynamically looked up during runt
 from a dictionary of delegates with the same signature, where the key is a string.
 This allows you to dynamically wire together delegates to an _"execution tree"_
 during runtime, based upon whatever delegate happens to be the value for your
-key. Hence; _"Symbolic Delegates"_.
+key. Hence; _"Symbolic Delegates"_. In the above code for instance, we create
+4 such symbolic delagates.
+
+* write-line
+* var
+* set
+* add
+
+The first as added since it's a part of the type we bind our Lizzie code towards,
+while the 3 last ones are added directly on the binder by referencing pre-existing
+_"keywords"_ that exists in the `Functions` class.
 
 Lizzie is still not finished, but will probably be released in the near future.
