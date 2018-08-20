@@ -77,13 +77,64 @@ during runtime, based upon whatever delegate happens to be the value for your
 key. Hence; _"Symbolic Delegates"_. In the above code for instance, we create
 4 such symbolic delagates.
 
-* write-line
-* var
-* set
-* add
+* __var__
+* __set__
+* __add__
+* __write-line__
 
-The first is added since it's a part of the type we bind our Lizzie code towards,
-while the 3 last ones are added directly on the binder by referencing pre-existing
-_"keywords"_ that exists in the `Functions` class.
+The first 3 above are added directly to the binder by referencing pre-existing
+_"keywords"_ that exists in the `Functions` class, while the last _'keyword'_
+above is bound to the lambda object because it's a method found on the context
+object that are marked with the `Bind` attribute.
+
+## Convenience classes and methods
+
+For slightly more simplified usage, you can use the `LambdaCompiler` class, to
+reduce the amount of boiler plate C# code necessary to create a lambda function.
+This class have two static methods, one allowing you to provide your own code
+and your own context, and the other one allowing you to simply ignore the context,
+at which point your Lizzie code won't be bound to any particular context instance
+at all. Below is an example of the latter.
+
+```csharp
+using System;
+using lizzie;
+
+class MainClass
+{
+    public static void Main(string[] args)
+    {
+        // Some inline Lizzie code
+        var code = @"
+var(@foo, 57)
+var(@bar, add(foo, multiply(10,2)))
+bar";
+
+        /*
+         * Creating a lambda object not even caring about anything but the
+         * result of our code.
+         */
+        var lambda = LambdaCompiler.Compile(code);
+        var result = lambda();
+
+        // Writing the result of the above evaluation to the console.
+        Console.WriteLine("Result was: " + result);
+
+        // Waiting for user input.
+        Console.Read();
+    }
+}
+```
+
+## Installation
 
 Lizzie is still not finished, but will probably be released in the near future.
+However, if you're determined on trying it out, you can clone the repository.
+The release found in the releases is completely irrelevant for its current code.
+
+Documentation is work in progress. Feel free to view the unit tests for examples
+of how Lizzie works. However, evaluation of a _"body"_ will always return the
+result of the Symbolic Delegate that was last evaluated. This is why the above
+code will return _"77"_, because the value of the `bar` symbol is 77 after we
+have added the the value of `foo` to the result of `multiply(10,2)` and assigned
+the result to `bar`.

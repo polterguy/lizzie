@@ -140,6 +140,9 @@ namespace lizzie.types
             // Retrieving symbol's name.
             var symbolName = en.Current;
 
+            // Sanity checking symbol's name
+            SanityCheckSymbolName(symbolName);
+
             // Discarding "(" token and checking if we're at EOF.
             var eof = !en.MoveNext();
 
@@ -217,6 +220,21 @@ namespace lizzie.types
                     return false;
             }
             return true;
+        }
+
+        /*
+         * Sanity checks the name of a symbol.
+         */
+        static void SanityCheckSymbolName(string symbolName)
+        {
+            if ("abcdefghijklmnopqrstuvwxyz".IndexOf(char.ToLower(symbolName[0])) == -1)
+                throw new LizzieRuntimeException($"A symbol must start with the characters [a-z], symbol '{symbolName}' is not a valid symbol name.");
+            foreach (var ix in symbolName) {
+                if ("abcdefghijklmnopqrstuvwxyz0123456789*_-".IndexOf(char.ToLower(ix)) == -1)
+                    throw new LizzieRuntimeException($"A symbol can only contain the characters [a-z] and [0-9], or '-', '_' and '*', symbol '{symbolName}' is not a valid symbol name.");
+            }
+            if (symbolName == "*" || symbolName == "_" || symbolName == "*")
+                throw new LizzieRuntimeException($"A symbol cannot only contain the character '*', '_' or '-', symbol '{symbolName}' is not a valid symbol name.");
         }
     }
 }
