@@ -68,4 +68,12 @@ You can easily create your own _"keywords"_ in Lizzie, which allows you to creat
 your own DSL or _"Domain Specific programming Languages"_. Lizzie hence easily
 lends itself to richer rule based engines, and similar domain specific problems.
 
+## What is a "Symbolic Delegate"?
+
+A Symbolic Delegate is a .Net delegate that is dynamically looked up during runtime,
+from a dictionary of delegates with the same signature, where the key is a string.
+This allows you to dynamically wire together delegates to an _"execution tree"_
+during runtime, based upon whatever delegate happens to be the value for your
+key. Hence; _"Symbolic Delegates"_.
+
 Lizzie is still not finished, but will probably be released in the near future.
