@@ -7,19 +7,16 @@ class MainClass
     {
         // Some inline Lizzie code
         var code = @"
-var(@foo, 57)
-var(@bar, add(foo, multiply(10,2)))
-bar";
+function(@foo, @{
+  57
+})
+";
 
-        /*
-         * Creating a lambda object not even caring about anything but the
-         * result of our code.
-         */
-        var lambda = LambdaCompiler.Compile(code);
-        var result = lambda();
+        // Creating a lambda function from our code.
+        var function = LambdaCompiler.Compile(new Tokenizer(new LizzieTokenizer()), code);
 
-        // Writing the result of the above evaluation to the console.
-        Console.WriteLine("Result was: " + result);
+        // Evaluates our Lizzie code making sure we bind it to our instance.
+        var result = function();
 
         // Waiting for user input.
         Console.Read();

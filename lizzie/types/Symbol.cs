@@ -74,14 +74,59 @@ namespace lizzie.types
             if (!en.MoveNext())
                 throw new LizzieParsingException("Unexpected EOF after '@'.");
 
-            // Storing symbol's name.
+            // Storing symbol's name and sanity checking its name.
             var symbolName = en.Current;
 
-            // Creating a function that evaluates to the constant value of the symbol's name.
-            var function = new Function<TContext>((ctx, binder, arguments) => {
-                return symbolName;
-            });
-            return new Tuple<Function<TContext>, bool>(function, !en.MoveNext());
+            // Checking if this is a body symbolically referenced.
+            if (en.Current == "{") {
+
+                // A body used as a literal reference.
+                var tuple = CompileBody(en);
+                var body = tuple.Item1;
+                return new Tuple<Function<TContext>, bool>((ctx, binder, arguments) => {
+
+                    /*
+                     * Since all functions are evaluated when passed around, we
+                     * wrap the body in a double function, which returns the 
+                     * inner function when the main symbol is evaluated, instead
+                     * of returning the results of the evaluation of the body.
+                     */
+                    return new Function<TContext>((ctx2, binder2, arguments2) => {
+                        return body;
+                    });
+
+                }, tuple.Item2);
+
+            }
+
+            // Sanity checking symbol name.
+            SanityCheckSymbolName(symbolName);
+
+            // Discarding "(" token and checking if we're at EOF.
+            var eof = !en.MoveNext();
+
+            // Checking if this is a function invocation.
+            if (!eof && en.Current == "(") {
+
+                /*
+                 * Notice, since this is a literally referenced function invocation, we
+                 * don't want to apply its arguments if the function is being passed around,
+                 * but rather return the function as a function, which once evaluated, applies
+                 * its arguments.
+                 */
+                var tuple = ApplyArguments(symbolName, en);
+                var functor = tuple.Item1;
+                return new Tuple<Function<TContext>, bool>(new Function<TContext>((ctx, binder, arguments) => {
+                    return functor;
+                }), tuple.Item2);
+
+            }  else {
+
+                // Creating a function that evaluates to the constant value of the symbol's name.
+                return new Tuple<Function<TContext>, bool>(new Function<TContext>((ctx, binder, arguments) => {
+                    return symbolName;
+                }), eof);
+            }
         }
 
         /*
@@ -137,10 +182,8 @@ namespace lizzie.types
          */
         static Tuple<Function<TContext>, bool> CompileSymbol(IEnumerator<string> en)
         {
-            // Retrieving symbol's name.
+            // Retrieving symbol's name and sanity checking its name.
             var symbolName = en.Current;
-
-            // Sanity checking symbol's name
             SanityCheckSymbolName(symbolName);
 
             // Discarding "(" token and checking if we're at EOF.
@@ -149,52 +192,8 @@ namespace lizzie.types
             // Checking if this is a function invocation.
             if (!eof && en.Current == "(") {
 
-                /*
-                 * Function invocation, making sure we apply arguments such that
-                 * they are evaluated at runtime.
-                 */
-                var arguments = new List<Function<TContext>>();
-
-                // Sanity checking tokenizer's content.
-                if (!en.MoveNext())
-                    throw new LizzieParsingException("Unexpected EOF while parsing function invocation.");
-
-                // Looping through all arguments, if there are any.
-                while (en.Current != ")") {
-
-                    // Compiling current argument.
-                    var tuple = Compile(en);
-                    arguments.Add(tuple.Item1);
-                    if (en.Current == ")")
-                        break; // And we are done parsing arguments.
-
-                    // Sanity checking tokenizer's content, and discarding "," token.
-                    if (en.Current != ",")
-                        throw new LizzieParsingException($"Syntax error in arguments to '{symbolName}', expected ',' separating arguments and found a '{en.Current}'.");
-                    if (!en.MoveNext())
-                        throw new LizzieParsingException("Unexpected EOF while parsing arguments to function invocation.");
-                }
-
-                /*
-                 * Creates a function invocation that evaluates its arguments at runtime.
-                 */
-                return new Tuple<Function<TContext>, bool>(new Function<TContext>((ctx, binder, args) => {
-
-                    // Applying arguments.
-                    var appliedArguments = new Arguments(arguments.Select(ix => ix(ctx, binder, args)));
-
-                    // Basic sanity checking.
-                    if (!binder.ContainsKey(symbolName))
-                        throw new LizzieRuntimeException($"The '{symbolName}' symbol does not exist.");
-
-                    // Retrieving symbol's value and doing some basic sanity checks.
-                    var symbol = binder[symbolName];
-                    if (symbol == null)
-                        throw new LizzieRuntimeException($"Symbol '{symbolName}' is null.");
-                    if (symbol is Function<TContext> functor)
-                        return functor(ctx, binder, appliedArguments); // Success!
-                    throw new LizzieRuntimeException($"Symbol '{symbolName}' is not a function, but a '{symbol.GetType().FullName}'");
-                }), !en.MoveNext());
+                // Function invocation, making sure we apply arguments,
+                return ApplyArguments(symbolName, en);
 
             } else {
 
@@ -207,6 +206,57 @@ namespace lizzie.types
                     return binder[symbolName];
                 }), eof);
             }
+        }
+
+        /*
+         * Applies arguments to a function invoction, such that they're evaluated at runtime.
+         */
+        static Tuple<Function<TContext>, bool> ApplyArguments(string symbolName, IEnumerator<string> en)
+        {
+            // Used to hold arguments before they're being applied inside of function evaluation.
+            var arguments = new List<Function<TContext>>();
+
+            // Sanity checking tokenizer's content.
+            if (!en.MoveNext())
+                throw new LizzieParsingException("Unexpected EOF while parsing function invocation.");
+
+            // Looping through all arguments, if there are any.
+            while (en.Current != ")")
+            {
+
+                // Compiling current argument.
+                var tuple = Compile(en);
+                arguments.Add(tuple.Item1);
+                if (en.Current == ")")
+                    break; // And we are done parsing arguments.
+
+                // Sanity checking tokenizer's content, and discarding "," token.
+                if (en.Current != ",")
+                    throw new LizzieParsingException($"Syntax error in arguments to '{symbolName}', expected ',' separating arguments and found a '{en.Current}'.");
+                if (!en.MoveNext())
+                    throw new LizzieParsingException("Unexpected EOF while parsing arguments to function invocation.");
+            }
+
+            /*
+             * Creates a function invocation that evaluates its arguments at runtime.
+             */
+            return new Tuple<Function<TContext>, bool>(new Function<TContext>((ctx, binder, args) => {
+
+                // Applying arguments.
+                var appliedArguments = new Arguments(arguments.Select(ix => ix(ctx, binder, args)));
+
+                // Basic sanity checking.
+                if (!binder.ContainsKey(symbolName))
+                    throw new LizzieRuntimeException($"The '{symbolName}' symbol does not exist.");
+
+                // Retrieving symbol's value and doing some basic sanity checks.
+                var symbol = binder[symbolName];
+                if (symbol == null)
+                    throw new LizzieRuntimeException($"Symbol '{symbolName}' is null.");
+                if (symbol is Function<TContext> functor)
+                    return functor(ctx, binder, appliedArguments); // Success!
+                throw new LizzieRuntimeException($"Symbol '{symbolName}' is not a function, but a '{symbol.GetType().FullName}'");
+            }), !en.MoveNext());
         }
 
         /*

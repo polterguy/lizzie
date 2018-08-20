@@ -17,12 +17,12 @@ namespace lizzie.tests
         public void VariableAssignedToIntegerValue()
         {
             var code = @"
-var(@foo, 57)";
+set(@foo, 57)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            binder["set"] = Functions<Nothing>.Set;
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
         }
@@ -31,12 +31,12 @@ var(@foo, 57)";
         public void VariableAssignedToFloatingPointValue()
         {
             var code = @"
-var(@foo, 57.67)";
+set(@foo, 57.67)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            binder["set"] = Functions<Nothing>.Set;
             var result = function(ctx, binder);
             Assert.AreEqual(57.67, result);
         }
@@ -45,13 +45,13 @@ var(@foo, 57.67)";
         public void VariableAssignedToStringLiteralValue()
         {
             var code = @"
-var(@foo, ""bar"")
+set(@foo, ""bar"")
 foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            binder["set"] = Functions<Nothing>.Set;
             var result = function(ctx, binder);
             Assert.AreEqual("bar", result);
         }
@@ -60,13 +60,13 @@ foo";
         public void VariableDeReferenced()
         {
             var code = @"
-var(@foo, 57)
+set(@foo, 57)
 foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            binder["set"] = Functions<Nothing>.Set;
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
         }
@@ -92,14 +92,14 @@ foo";
         public void VariableDeReferencedInsideBody()
         {
             var code = @"{
-  var(@foo, 57)
+  set(@foo, 57)
   foo
 }";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            binder["set"] = Functions<Nothing>.Set;
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
         }
@@ -108,14 +108,14 @@ foo";
         public void VariableDeReferencedOutsideOfScopeThrows()
         {
             var code = @"{
-  var(@foo, 57)
+  set(@foo, 57)
 }
 foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            binder["set"] = Functions<Nothing>.Set;
             var success = false;
             try {
                 function(ctx, binder);
@@ -135,7 +135,7 @@ var(@foo, 57)";
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            binder["set"] = Functions<Nothing>.Set;
             var success = false;
             try {
                 function(ctx, binder);
@@ -149,13 +149,13 @@ var(@foo, 57)";
         public void VariableDeclarationWithoutInitialAssignment()
         {
             var code = @"
-var(@foo)
+set(@foo)
 foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            binder["set"] = Functions<Nothing>.Set;
             var result = function(ctx, binder);
             Assert.IsNull(result);
         }
@@ -164,14 +164,13 @@ foo";
         public void VariableReAssignment()
         {
             var code = @"
-var(@foo, 57)
+set(@foo, 57)
 set(@foo, 67)
 foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
             binder["set"] = Functions<Nothing>.Set;
             var result = function(ctx, binder);
             Assert.AreEqual(67, result);
@@ -181,14 +180,13 @@ foo";
         public void VariableReAssignedToNull()
         {
             var code = @"
-var(@foo, 57)
+set(@foo, 57)
 set(@foo)
 foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
             binder["set"] = Functions<Nothing>.Set;
             var result = function(ctx, binder);
             Assert.IsNull(result);
@@ -203,7 +201,6 @@ set(@foo)";
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
             binder["set"] = Functions<Nothing>.Set;
             binder["foo"] = 57;
             var success = false;
@@ -219,14 +216,13 @@ set(@foo)";
         public void VariableChangedFromDoubleToString()
         {
             var code = @"
-var(@foo, 57.67)
+set(@foo, 57.67)
 set(@foo, ""bar"")
 foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
             binder["set"] = Functions<Nothing>.Set;
             var result = function(ctx, binder);
             Assert.AreEqual("bar", result);

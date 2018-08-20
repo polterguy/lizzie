@@ -6,6 +6,7 @@
  */
 
 using NUnit.Framework;
+using lizzie.exceptions;
 using lizzie.tests.context_types;
 
 namespace lizzie.tests
@@ -40,12 +41,58 @@ namespace lizzie.tests
         public void VariableTest()
         {
             var code = @"
-var(@foo, 57)
+set(@foo, 57)
 set(@bar, add(foo, multiply(10,2)))
 bar";
             var lambda = LambdaCompiler.Compile(code);
             var result = lambda();
             Assert.AreEqual(77, result);
+        }
+
+        [Test]
+        public void SettingVariableToResultOfFunctionInvocation()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+set(@foo, set(@bar, 67))
+bar");
+            var result = lambda();
+            Assert.AreEqual(67, result);
+        }
+
+        [Test]
+        public void SettingVariableToFunctionInvocation_01()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+set(@foo, @set(@bar, 67))
+foo");
+            var result = lambda();
+            Assert.IsTrue(result is Function<LambdaCompiler.Nothing>);
+        }
+
+        [Test]
+        public void SettingVariableToFunctionInvocation_02()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+set(@foo, @set(@bar, 67))
+bar");
+            var success = false;
+            try {
+                lambda();
+            } catch (LizzieRuntimeException) {
+                success = true;
+            }
+            Assert.IsTrue(success);
+        }
+
+        [Test]
+        public void SettingVariableToFunctionInvocation_03()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+set(@foo, @set(@bar, 67))
+foo()
+bar");
+            var result = lambda();
+            Assert.AreEqual(67, result);
         }
     }
 }

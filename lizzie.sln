@@ -13,6 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lizzie.tests", "lizzie.test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lizzie.console", "lizzie.console\lizzie.console.csproj", "{FD92D0D4-F503-4B3B-8142-FDC60F29C50A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{AD7396D8-767F-4EBC-A9FD-4034AFD5B3F2}"
+	ProjectSection(SolutionItems) = preProject
+		docs\introduction.md = docs\introduction.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,5 +39,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5EFBEB45-DE81-43CD-BCE1-EE49E2C3A9EB} = {5290ED46-2D97-4B6F-B7F4-5B4BF78AAF67}
+		{AD7396D8-767F-4EBC-A9FD-4034AFD5B3F2} = {5290ED46-2D97-4B6F-B7F4-5B4BF78AAF67}
 	EndGlobalSection
 EndGlobal

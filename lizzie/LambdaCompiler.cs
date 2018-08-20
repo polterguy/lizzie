@@ -62,8 +62,8 @@ namespace lizzie
          */
         static void BindFunctions<TContext>(Binder<TContext> binder)
         {
-            binder["var"] = Functions<TContext>.Var;
             binder["set"] = Functions<TContext>.Set;
+            binder["function"] = Functions<TContext>.Function;
             binder["add"] = Functions<TContext>.Add;
             binder["subtract"] = Functions<TContext>.Subtract;
             binder["multiply"] = Functions<TContext>.Multiply;
@@ -76,6 +76,6 @@ namespace lizzie
          * bind to some specific type, but rather simply evaluate Lizzie code,
          * without having bound it to anything in particular.
          */
-        class Nothing { };
+        public class Nothing { };
     }
 }

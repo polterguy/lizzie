@@ -138,3 +138,7 @@ result of the Symbolic Delegate that was last evaluated. This is why the above
 code will return _"77"_, because the value of the `bar` symbol is 77 after we
 have added the the value of `foo` to the result of `multiply(10,2)` and assigned
 the result to `bar`.
+
+## Introduction to Lizzie
+
+* [Here you can find the documentation for Lizze](/docs/introduction.md)
