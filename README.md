@@ -82,7 +82,7 @@ key. Hence; _"Symbolic Delegates"_. In the above code for instance, we create
 * set
 * add
 
-The first as added since it's a part of the type we bind our Lizzie code towards,
+The first is added since it's a part of the type we bind our Lizzie code towards,
 while the 3 last ones are added directly on the binder by referencing pre-existing
 _"keywords"_ that exists in the `Functions` class.
 
