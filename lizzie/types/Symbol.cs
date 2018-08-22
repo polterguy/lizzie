@@ -50,19 +50,19 @@ namespace lizzie.types
              * Creating a function that evaluates every function sequentially, and
              * returns the result of the last function evaluation to the caller.
              */
-            var function = new Function<TContext>((ctx, binder, arguments) => {
-                binder.PushStack();
-                try {
-                    object result = null;
-                    foreach (var ix in functions) {
-                        result = ix(ctx, binder, null);
-                    }
-                    return result;
-                } finally {
-                    binder.PopStack();
+            Function<TContext> function = new Function<TContext>((ctx, binder, arguments) => {
+                object result = null;
+                foreach (var ix in functions) {
+                    result = ix(ctx, binder, null);
                 }
+                return result;
             });
-            return new Tuple<Function<TContext>, bool>(function, tuples.Item2 || !en.MoveNext());
+
+            // Making sure the body becomes evaluated lazy.
+            var lazyFunction = new Function<TContext>((ctx2, binder2, arguments2) => {
+                return function;
+            });
+            return new Tuple<Function<TContext>, bool>(lazyFunction, tuples.Item2 || !en.MoveNext());
         }
 
         /*
@@ -77,28 +77,6 @@ namespace lizzie.types
             // Storing symbol's name and sanity checking its name.
             var symbolName = en.Current;
 
-            // Checking if this is a body symbolically referenced.
-            if (en.Current == "{") {
-
-                // A body used as a literal reference.
-                var tuple = CompileBody(en);
-                var body = tuple.Item1;
-                return new Tuple<Function<TContext>, bool>((ctx, binder, arguments) => {
-
-                    /*
-                     * Since all functions are evaluated when passed around, we
-                     * wrap the body in a double function, which returns the 
-                     * inner function when the main symbol is evaluated, instead
-                     * of returning the results of the evaluation of the body.
-                     */
-                    return new Function<TContext>((ctx2, binder2, arguments2) => {
-                        return body;
-                    });
-
-                }, tuple.Item2);
-
-            }
-
             // Sanity checking symbol name.
             SanityCheckSymbolName(symbolName);
 
@@ -112,7 +90,9 @@ namespace lizzie.types
                  * Notice, since this is a literally referenced function invocation, we
                  * don't want to apply its arguments if the function is being passed around,
                  * but rather return the function as a function, which once evaluated, applies
-                 * its arguments.
+                 * its arguments. Hence, this becomes a lazy function evaluation, allowing us
+                 * to pass in function evaluations that are not evaluated before the receiver
+                 * invokes them.
                  */
                 var tuple = ApplyArguments(symbolName, en);
                 var functor = tuple.Item1;
@@ -275,7 +255,7 @@ namespace lizzie.types
         /*
          * Sanity checks the name of a symbol.
          */
-        static void SanityCheckSymbolName(string symbolName)
+        public static void SanityCheckSymbolName(string symbolName)
         {
             if ("abcdefghijklmnopqrstuvwxyz".IndexOf(char.ToLower(symbolName[0])) == -1)
                 throw new LizzieRuntimeException($"A symbol must start with the characters [a-z], symbol '{symbolName}' is not a valid symbol name.");

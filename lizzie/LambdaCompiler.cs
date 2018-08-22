@@ -62,7 +62,9 @@ namespace lizzie
          */
         static void BindFunctions<TContext>(Binder<TContext> binder)
         {
+            binder["var"] = Functions<TContext>.Var;
             binder["set"] = Functions<TContext>.Set;
+            binder["if"] = Functions<TContext>.If;
             binder["function"] = Functions<TContext>.Function;
             binder["add"] = Functions<TContext>.Add;
             binder["subtract"] = Functions<TContext>.Subtract;

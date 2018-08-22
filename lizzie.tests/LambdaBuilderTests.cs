@@ -41,8 +41,8 @@ namespace lizzie.tests
         public void VariableTest()
         {
             var code = @"
-set(@foo, 57)
-set(@bar, add(foo, multiply(10,2)))
+var(@foo, 57)
+var(@bar, add(foo, multiply(10,2)))
 bar";
             var lambda = LambdaCompiler.Compile(code);
             var result = lambda();
@@ -53,7 +53,7 @@ bar";
         public void SettingVariableToResultOfFunctionInvocation()
         {
             var lambda = LambdaCompiler.Compile(@"
-set(@foo, set(@bar, 67))
+var(@foo, var(@bar, 67))
 bar");
             var result = lambda();
             Assert.AreEqual(67, result);
@@ -63,7 +63,7 @@ bar");
         public void SettingVariableToFunctionInvocation_01()
         {
             var lambda = LambdaCompiler.Compile(@"
-set(@foo, @set(@bar, 67))
+var(@foo, @var(@bar, 67))
 foo");
             var result = lambda();
             Assert.IsTrue(result is Function<LambdaCompiler.Nothing>);
@@ -73,7 +73,7 @@ foo");
         public void SettingVariableToFunctionInvocation_02()
         {
             var lambda = LambdaCompiler.Compile(@"
-set(@foo, @set(@bar, 67))
+var(@foo, @var(@bar, 57))
 bar");
             var success = false;
             try {
@@ -88,11 +88,11 @@ bar");
         public void SettingVariableToFunctionInvocation_03()
         {
             var lambda = LambdaCompiler.Compile(@"
-set(@foo, @set(@bar, 67))
+var(@foo, @var(@bar, 57))
 foo()
 bar");
             var result = lambda();
-            Assert.AreEqual(67, result);
+            Assert.AreEqual(57, result);
         }
     }
 }

@@ -36,6 +36,8 @@
     <Compile Include="VariableTests.cs" />
     <Compile Include="MathTests.cs" />
     <Compile Include="LambdaBuilderTests.cs" />
+    <Compile Include="FunctionTests.cs" />
+    <Compile Include="BranchingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lizzie\lizzie.csproj">

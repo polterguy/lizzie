@@ -25,7 +25,7 @@ namespace lizzie.types
             // Creating a list of functions and returning these to caller.
             var content = new List<Function<TContext>>();
             var eof = !en.MoveNext();
-            while (!eof) {
+            while (!eof && en.Current != "}") {
 
                 // Compiling currently tokenized symbol.
                 var tuple = Symbol<TContext>.Compile(en);
