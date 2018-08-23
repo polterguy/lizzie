@@ -65,6 +65,8 @@ namespace lizzie
             binder["var"] = Functions<TContext>.Var;
             binder["set"] = Functions<TContext>.Set;
             binder["if"] = Functions<TContext>.If;
+            binder["eq"] = Functions<TContext>.Eq;
+            binder["not"] = Functions<TContext>.Not;
             binder["function"] = Functions<TContext>.Function;
             binder["add"] = Functions<TContext>.Add;
             binder["subtract"] = Functions<TContext>.Subtract;

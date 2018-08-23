@@ -290,5 +290,35 @@ namespace lizzie
             }
             return null;
         });
+
+        /// <summary>
+        /// Creates an equals function, checking two objects for equality, and
+        /// returns a value to caller accordingly.
+        /// </summary>
+        /// <value>The function created.</value>
+        public static Function<TContext> Eq => new Function<TContext>((ctx, binder, arguments) =>
+        {
+            if (arguments.Count != 1 && arguments.Count != 2)
+                throw new LizzieRuntimeException("The 'eq' function must be given either 1 or 2 arguments.");
+            var arg1 = arguments.Get(0);
+            var arg2 = arguments.Count == 1 ? null : arguments.Get(1);
+            if (arg1 == null && arg2 != null || arg1 != null && arg2 == null)
+                return null;
+            if (arg1 == null && arg2 == null)
+                return true;
+            return arg1.Equals(arg2) == true ? (object)true : null;
+        });
+
+        /// <summary>
+        /// Negates the given value, whatever it previously was.
+        /// </summary>
+        /// <value>The function created.</value>
+        public static Function<TContext> Not => new Function<TContext>((ctx, binder, arguments) =>
+        {
+            if (arguments.Count != 1)
+                throw new LizzieRuntimeException("The 'not' function must be given exactly 1 argument.");
+            var arg = arguments.Get(0);
+            return arg == null ? (object)true : null;
+        });
     }
 }

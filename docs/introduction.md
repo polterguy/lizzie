@@ -1,5 +1,5 @@
 
-# Lizzie introduction
+# Lizzie reference guide
 
 Lizzie is a programming language based upon the (good) ideas from Lisp, but
 without the _"funny syntax"_. Although this arguably eliminates most of the
@@ -12,8 +12,8 @@ However, let's start with the basics.
 
 ## Binding your Lizzie code to your domain types
 
-The first really cool feature of Lizzie is that you can bind it with a CLR class.
-Imagine the following.
+The first really cool feature of Lizzie is that you can bind Lizzie code with a
+CLR class. Imagine the following.
 
 ```csharp
 using System;
@@ -47,8 +47,8 @@ As you execute the above C# console program, you will see that clearly your Lizz
 code is able to execute your `Foo` C# method, as if it was a Lizzie function. This
 is because of that the type of `MainClass` is the type argument to the
 `LambdaCompiler.Compile` line. Internally, the Lizzie compiler will create a
-delegate for each method that you have marked with the Bind attribute, and make
-it available as a _"function"_ to your Lizzie code.
+_"Symbolic Delegate"_ for each method that you have marked with the Bind attribute,
+and make that method available as a _"function"_ to your Lizzie code.
 
 This allows you to extend Lizzie as you see fit, with your own _"keywords"_
 created in C#, to create your own _"Domain Specific Language"_, while
@@ -107,8 +107,8 @@ delegate object Function<TContext>(TContext ctx, Binder<TContext> binder, Argume
 TContext above in our second example above is our `MainClass`.
 
 Every Lizzie function has the exact same signature. This is what makes it possible for
-us to handle delegates symbolically, since we know that every method/function/delegate
-will have the same signature, we can treat them as interchangeable objects. This
+us to handle delegates _"symbolically"_. Since we know that every method/function/delegate
+will have the same signature, we can treat them as function objects. This
 creates many advantages, and some disadvantages. The disadvantage is that you
 loose type safety while passing arguments around, since the `Arguments` class
 is simply a wrapper around `List<object>`. This means you are responsible yourself
@@ -126,13 +126,17 @@ had type safety, it wouldn't have much practical use in fact, since the
 whole idea is to create an extremely loosely coupling, allowing you to create
 configurations and rule based engines, which can be dynamically stored any place,
 and chained together to allow for complex rule based engines, through a
-dynamically compiled script language.
+dynamically compiled script language. Notice also that this implies that the
+same piece of Lizzie code, might in theory perform two distinct different tasks,
+depending upon which class you are binding it towards. So you can completely
+chabge what your code does, by simply choosing to bind it to something else,
+which of course is extremely cool once you realize its powers.
 
 ## Pre-defined Lizzie functions
 
 Lizzie contains many pre-defined functions for different use cases, which you
 can choose to use, or choose to not use if you want to. In fact, if you want to
-have complete controlover what _"keywords"_ your Lizzie code has access to, you
+have complete control over which _"keywords"_ your Lizzie code has access to, you
 can control this, through a slightly more manual process, resembling the example
 below.
 
@@ -178,13 +182,17 @@ instance evaluate _"insecure"_ code in a highly restricted context, which does
 not have access to negatively modify the state of your server/client in any
 ways. The `Functions` class contains several pre-defined functions you might
 want to use though, ranging from math functions, to declaring variables, changing
-values of variables, creating functions in your Lizzie code, etc, etc, etc.
+values of variables, creating functions in your Lizzie code, etc, etc, etc. Due
+to the way these functions are loaded into the Lizzie binder, you can also choose
+to translate the entire language's syntax to for instance Japaneese or Greek if
+you wish. Simply change the _"add"_ to _"foo"_, and there's no `add` function,
+but rather a `foo` function, that does what `add` previously did.
 
 In such a way, Lizzie is arguably a programming language checmically cleansed
 for _"keywords"_, besides the ones you explicitly choose to load into its
 binder. However, when you use the `LambdaCompiler` to compile your code, all
 default _"functions"_ or _"keywords"_ are automatically loaded for you. Further
-down on this page you can find the complete listof pre-defined functions, and
+down on this page you can find the complete list of pre-defined functions, and
 what they do for you.
 
 ### Declaring variables
@@ -254,7 +262,7 @@ This seems a little bit weird in the beginning, but also have a lot of advantage
 such as the ability to declare an entire function invocation, which might be an
 entire code tree for that matter, and pass that into another function, without
 evaluating it. Below is an example of this. Notice, from now on, we will only
-write out the Lizzie code, to reduce the size of our sample.
+write out the Lizzie code, to reduce the size of our samples.
 
 ```javascript
 var(@foo, function({
@@ -285,7 +293,7 @@ entirely built upon _"Symbolic Delegates"_, which are kind of like s-expressions
 from Lisp, which implies that everything related to a _"keyword"_ must always
 be within the paranthesis of the invocation to that keyword.
 
-We will dive closer into functions later down in this chapter,so just relax if
+We will dive closer into functions later down in this chapter, so just relax if
 it doesn't make sense to you yet ...
 
 ### Changing a variable's value
@@ -386,3 +394,188 @@ The above program of course produces the following result.
 howdy
 John Doe
 ```
+
+### So what is a Symbolic Delegate anyway?
+
+A _"Symbolic Delegate"_ is exactly what it sounds like. It's a delegate, associated
+with a _"symbol"_. The symbol is basically just a string, which serves as a key
+into a dictionary, where the values are delegates. Below is how these are more
+or less implemented in Lizzie.
+
+```csharp
+// The delegate type.
+delegate object Function<TContext>(TContext ctx, Binder<TContext> binder, Arguments arguments);
+
+// Dictionary containing our symbolix delegates.
+Dictionary<string, Function<TContext>>
+```
+
+This allows us to lookup functions from a dictionary using the symbol as a key.
+Since a dictionary lookup is an O(1) operation, this creates little overhead
+for us compared to native CLR code, while also allowing us to dynamically
+parse Lizzie's syntax, to dynamically build and modify our delegate dictionary.
+And since every _"function"_ has the exact same signature, we can treat all
+functions exactly the same way.
+
+This allows us to create a programming language (Lizzie), that is Turing complete,
+without neither any compilation nor any interpretation being necessary to
+_"execute"_ our end result. Which results in a **blistering fast** process for
+dynamically parsing Lizzie code, and creating a _"lambda object"_ out of it
+during runtime. Compiling C# code often requires seconds, in addition to often
+also _"reloading"_ the process such that it can execute our CLR code. Interpreting
+script code is often a process too expensive to be able to adequately implement
+in a managed language such as C#. However, parsing a bunch of _"Symbolic Delegates"_
+and create a lambda object out of it, is not only blistering fast, but the end
+result is also rarely significantly slower to executing compiled C# code for all
+practical concerns. Even though there is one additional layer of indirection to
+lookup the delegates from your dictionary, this rarely have any practical concerns
+for most apps, unless you require insane amounts of speed, at which point you
+probably wouldn't choose a managed environment in the first place anyway.
+
+### Branching
+
+To branch in Lizzie you can use the `if` function. Below is an example.
+
+```javascript
+var(@foo, "Value of foo")
+if(foo,{
+  write("Foo has a value")
+})
+```
+
+Since the `foo` variable has a value, the _"body"_ which is the second argument
+to our `if` invocation will be evaluated. If you remove the above initial value
+to `foo` it won't evaluate the parts in between `{` and `}` above. If you supply
+an additional body as the third argument, this will become the `if` statement's
+associated `else` body, that is evaluated if the condition of your `if` returns
+a null value of some sort.
+
+```javascript
+var(@foo)
+if(foo,{
+  write("Foo has a value")
+},{
+  write("Foo is not defined")
+})
+```
+
+#### The definition of truth in Lizzie
+
+Lizzie does not have any explicit _"true"_ or _"false"_ boolean types or values.
+The definition of something that is _"true"_ in Lizzie, is anything returning
+something that is not null. So basically, every object that is not null, has an
+implicit conversion to _"true"_ in Lizzie. Let's illustrate with an example.
+
+```javascript
+// Creating a function that returns 57
+var(@foo, function({
+  57
+}))
+
+// Evaluating the above function, and checking if it returned anything.
+if(foo(),{
+  write("Foo returned something")
+})
+```
+
+If you remove the `57` parts in the above code, the `if` will evaluate to false.
+
+#### Wait, where's the return keyword?
+
+Well, it doesn't exist! This is because inside of a _"body"_, whatever is
+evaluated last, before the body returns, will be implicitly returned as the
+_"value"_ of the body. Let's illustrate this with an example.
+
+```javascript
+/*
+ * Creating a function named 'foo', that takes one argument.
+ */
+var(@foo, function({
+
+  /*
+   * Checking value of input argument, and returning 57 if it has
+   * a value, otherwise we return 67.
+   */
+  if(input, {
+    57
+  }, {
+    67
+  })
+
+}, @input))
+
+/*
+ * Evaluating the above function twice, with and without an argument,
+ * and writing out what it returns on the console.
+ */
+var(@tmp1, foo("some value"))
+write(add("Foo returned ", tmp1))
+
+// Notice! No value passed in to foo here ...
+var(@tmp2, foo())
+write(add("Foo returned ", tmp2))
+```
+
+In our first function invocation above, `input` has a value, hence it will
+evaluate the line `57`, which of course simply _"returns"_ the constant value
+of 57 to caller. In the second invocation, `input` does **not** have a value,
+and hence the else parts of our `if` invocation will be evaluated, which returns
+67. Hence, by intelligently structuring your code, there is no need for an
+explicit `return` keyword in Lizzie.
+
+#### Testing for equality
+
+Sometimes you need to check if a variable has a specific value, and not only
+if it is defined. For those cases there's the `eq` function.
+
+```javascript
+// Creating a function.
+var(@foo, function({
+
+  /*
+   * Checking value of input argument, and returning 57 if it has
+   * a value, otherwise we return 67.
+   */
+  if(eq(input, "Thomas"), {
+    "Welcome home boss!!"
+  }, {
+    "Welcome stranger"
+  })
+
+}, @input))
+
+// Evaluating the above function.
+var(@tmp1, foo("Thomas"))
+write(add("Foo returned ", tmp1))
+```
+
+The above code of course writes _"Welcome home boss"_ on the console. If you
+change the value you invoke `foo` with above to e.g. _"John Doe"_, it will
+write _"Welcome stranger"_ instead. If you wish to _"negate"_ the check,
+implying _"not equals"_, you can simply wrap your `eq` invocation inside of
+a `not` function invocation, which will negate the value of `eq`, or any other
+values for that matter. Below is an example, that logically is the same as our
+previous example, but where the return value of our `eq` is negated using a `not`
+invocation.
+
+```javascript
+// Creating a function.
+var(@foo, function({
+
+  /*
+   * Checking value of input argument, and returning 57 if it has
+   * a value, otherwise we return 67.
+   */
+  if(not(eq(input, "Thomas")), {
+    "Welcome stranger"
+  }, {
+    "Welcome home boss!!"
+  })
+
+}, @input))
+
+// Evaluating the above function.
+var(@tmp1, foo("Thomas"))
+write(add("Foo returned ", tmp1))
+```
+
