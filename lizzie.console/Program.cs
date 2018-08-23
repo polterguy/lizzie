@@ -14,24 +14,9 @@ class MainClass
     {
         // Some inline Lizzie code
         var code = @"
-// Creating a function.
-var(@foo, function({
-
-  /*
-   * Checking value of input argument, and returning 57 if it has
-   * a value, otherwise we return 67.
-   */
-  if(not(eq(input, ""Thomas"")), {
-    ""Welcome stranger""
-  }, {
-    ""Welcome home boss!!""
-  })
-
-}, @input))
-
-// Evaluating the above function.
-var(@tmp1, foo(""Thomas""))
-write(add(""Foo returned "", tmp1))
+each({
+  write(ix)
+}, @ix, 57, 67, 77)
 ";
 
         // Creating a lambda function from our code.

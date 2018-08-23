@@ -320,5 +320,97 @@ namespace lizzie
             var arg = arguments.Get(0);
             return arg == null ? (object)true : null;
         });
+
+        /// <summary>
+        /// Returns true if any of its given values yields true.
+        /// </summary>
+        /// <value>The function created.</value>
+        public static Function<TContext> Any => new Function<TContext>((ctx, binder, arguments) =>
+        {
+            if (arguments.Count < 2)
+                throw new LizzieRuntimeException("The 'any' function must be given at least 2 arguments.");
+            foreach (var arg in arguments) {
+                if (arg != null) {
+
+                    /*
+                     * Checking if this is a function, at which point we evaluate it,
+                     * to make sure we support "delayed function invocations".
+                     */
+                    if (arg is Function<TContext> functor) {
+                        var value = functor(ctx, binder, arguments);
+                        if (value != null)
+                            return value; // No reasons to continue ...
+                    } else {
+
+                        // Returning arg as is.
+                        return arg;
+                    }
+                }
+            }
+            return null;
+        });
+
+        /// <summary>
+        /// Returns true if all of its given values yields true.
+        /// </summary>
+        /// <value>The function created.</value>
+        public static Function<TContext> All => new Function<TContext>((ctx, binder, arguments) =>
+        {
+            if (arguments.Count < 2)
+                throw new LizzieRuntimeException("The 'all' function must be given at least 2 arguments.");
+            foreach (var arg in arguments) {
+                if (arg == null) {
+
+                    // No reasons to continue.
+                    return null;
+
+                } else {
+
+                    /*
+                     * Checking if this is a function, at which point we evaluate it,
+                     * to make sure we support "delayed function invocations".
+                     */
+                    if (arg is Function<TContext> functor) {
+                        if (functor(ctx, binder, arguments) == null)
+                            return null; // No reasons to continue ...
+                    }
+                }
+            }
+            return true;
+        });
+
+        /// <summary>
+        /// Evaluates the specified body once for each value given.
+        /// </summary>
+        /// <value>The function created.</value>
+        public static Function<TContext> Each => new Function<TContext>((ctx, binder, arguments) =>
+        {
+            // Sanity checking invocation.
+            if (arguments.Count < 3)
+                throw new LizzieRuntimeException("The 'each' function must be given at least 3 arguments.");
+
+            // Retrieving body.
+            var bodyObject = arguments.Get(0);
+            if (bodyObject is Function<TContext> lambda) {
+
+                // Evaluating body once for each argument beyond the first.
+                var argName = arguments.Get<string>(1);
+                foreach (var ix in arguments.Skip(2)) {
+                    binder.PushStack();
+                    try {
+                        binder[argName] = ix;
+                        lambda(ctx, binder, arguments);
+                    } finally {
+                        binder.PopStack();
+                    }
+                }
+                return true;
+
+            } else {
+
+                // Oops ...!!
+                throw new LizzieRuntimeException("The 'each' function requires a body as its first argument.");
+            }
+        });
     }
 }

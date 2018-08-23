@@ -126,5 +126,133 @@ if(foo, {
             var result = lambda();
             Assert.AreEqual(67, result);
         }
+
+        [Test]
+        public void IfEqualsTrue()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, 7)
+if(eq(foo, 7), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void IfEqualsFalse()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, 5)
+if(eq(foo, 7), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(67, result);
+        }
+
+        [Test]
+        public void IfNotEqualsTrue()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, 7)
+if(not(eq(foo, 7)), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(67, result);
+        }
+
+        [Test]
+        public void IfNotEqualsFalse()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, 5)
+if(not(eq(foo, 7)), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void IfAnyTrue()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo1)
+var(@foo2, 1)
+var(@foo3)
+if(any(foo1, foo2, foo3), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void IfAnyFalse()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo1)
+var(@foo2)
+var(@foo3)
+if(any(foo1, foo2, foo3), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(67, result);
+        }
+
+        [Test]
+        public void IfAllTrue()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo1, 1)
+var(@foo2, 2)
+var(@foo3, 3)
+if(all(foo1, foo2, foo3), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void IfAllFalse()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo1, 1)
+var(@foo2, 2)
+var(@foo3)
+if(all(foo1, foo2, foo3), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(67, result);
+        }
     }
 }

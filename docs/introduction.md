@@ -579,3 +579,143 @@ var(@tmp1, foo("Thomas"))
 write(add("Foo returned ", tmp1))
 ```
 
+#### OR and AND
+
+Since Lizzie doesn't have operators, neither the OR nor the AND keywords exists
+in Lizzie. However, you can accomplish the same result by using the `any` and the
+`all` functions. The `any` is the equivalent of OR in a traditional programming
+language, while `all` is the equivalent of AND. The `any` function will return
+true if any of its arguments evaluates to true, while `all` will only return
+true if all of its arguments yields true. This allows you to combine `any` and
+`all` to accomplish the same as OR and AND would do for you normally. Consider
+the following.
+
+```javascript
+var(@foo1)
+var(@foo2)
+
+// Remove this value to have the if below yield false.
+var(@foo3, 57)
+
+/*
+ * Yields true since foo3 contains a non-null value.
+ */
+if(any(foo1, foo1, foo3), {
+  write(""Any yields true"")
+})
+```
+
+If you exchange the above `any` with an `all`, it will not yield true, since not
+all of the arguments it needs to test will evaluate to true.
+
+**Notice** - This creates a dilemma for us, where the previously mentioned `@`
+becomes crucially important due to something that is called _"boolean conditional
+shortcut"_, which implies that both the OR and the AND operator does not need to
+check its arguments, if the first argument returns true for `any`, or the first
+argument returns null for `all`. This is because when we test for any, and the
+first argument yields true, we don't need to check anymore arguments to know
+that our `if` will evaluate to true. While for `and`, if the first argument
+yields null, we know that `any` as a whole will not yield true. This implies
+that for costy functions, that have a significant cost to evaluate, we can
+use the `@` symbol to avoid evaluating the condition, before we know for a fact
+that we need to. And since the value of the n-1 argument always decides if we
+need to evaluate the n argument, we can significantly conserve resources by
+postponing the evaluation of the condition in both `any` and `all` invocations.
+
+Consider the following entire console program.
+
+```csharp
+using System;
+using lizzie;
+
+class MainClass
+{
+    [Bind(Name = "write")]
+    object WriteLine(Binder<MainClass> binder, Arguments arguments)
+    {
+        Console.WriteLine(arguments.Get(0));
+        return null;
+    }
+
+    [Bind(Name = "expensive")]
+    object Expensive(Binder<MainClass> binder, Arguments arguments)
+    {
+        System.Threading.Thread.Sleep(1000);
+        if (arguments.Count > 0)
+            return arguments.Get(0);
+        return null;
+    }
+
+    public static void Main(string[] args)
+    {
+        // Some inline Lizzie code
+        var code = @"
+if(all(expensive(), expensive(), expensive(), expensive(), expensive(5)), {
+  write(""And we're done with TRUE!"")
+}, {
+  write(""And we're done with FALSE!"")
+})
+";
+
+        // Creating a lambda function from our code.
+        var function = LambdaCompiler.Compile<MainClass>(new MainClass(), code);
+
+        // Evaluates our Lizzie code making sure we bind it to our instance.
+        var result = function();
+
+        // Waiting for user input.
+        Console.Read();
+    }
+}
+```
+
+In the above program it will take 5 seconds before our `all` invocation is
+finished evaluating, because each of our `expensive` functions will take 1
+second to evaluate. If we change its Lizzie code to the following, it will
+only require 1 second, because only the first argument needs to be evaluated,
+before we know that `all` will for a fact evaluate to null.
+
+```javascript
+if(all(@expensive(), @expensive(), @expensive(), @expensive(), @expensive(5)), {
+  write("And we're done with TRUE!")
+}, {
+  write("And we're done with FALSE!")
+})
+```
+
+This is because in the first example all of our invocations to `expensive` are
+evaluated before we even invoke our `any` function. While in our second example,
+we delay evaluation by passing in our function invocations by reference to our
+`any` function, which will inspect the values of its arguments, and if it finds
+that these are function invocations, evaluate these functions before it determines
+whether or not it's a null value or a true value. You can (and _should_) also apply
+the same trick for `any` invocations if you know they will be expensive to evaluate.
+
+### Loops
+
+The `each` function allows you to evaluate a body once for each value you provide
+to it beyond the 2nd argument. The first argument is expected to be a body, the
+second argument its internal iterator variable name through which you can
+reference the currently iterated value as from within the body, and any more
+arguments you supply to it will be considered your values to evaluate the body
+for, once for each value. Below is an example.
+
+```javascript
+each({
+  write(ix)
+}, @ix, 57, 67, 77)
+```
+
+If you evaluate the above Lizzie code, it will write the following to the console.
+
+```bash
+57
+67
+77
+```
+
+This is because it will evaluate the body, once for every argument supplied,
+except the 1st and the second argument. The first argument must always be its
+body. The second argument must always be the variable name you can access your
+currently iterated value as from within the body, and the rest of the arguments
+are considered your _"list of values"_.
