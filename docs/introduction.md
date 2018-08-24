@@ -287,7 +287,10 @@ If you evaluate the Lizzie code above, you might be surprised to see that the
 `@write` invocation that we pass into our `foo` function is in fact not evaluated
 as we pass it into our `foo` function. This allows you to decorate a function
 invocation, and _"delay"_ its evaluation, to the point in time where you are
-sure of that you actually want to evaluate it. 
+sure of that you actually want to evaluate it. Internally in Lizzie, this is
+actually done by creating a wrapper function invocation, that decorates our
+inner function invocation, and returns that decorated function invocation when
+referencing the symbol.
 
 For expensive functions, that might perform expensive IO operations for instance,
 this little trick can significantly improve performance. For the record, if the
