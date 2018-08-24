@@ -709,7 +709,8 @@ if(all(expensive(), expensive(), expensive(), expensive(), expensive(5)), {
 
 In the above program it will take 5 seconds before our `all` invocation is
 finished evaluating, because each of our `expensive` functions will take 1
-second to evaluate. If we change its Lizzie code to the following, it will
+second to evaluate, and all of our invocations are evaluated before we invoke
+our `all` function. If we change its Lizzie code to the following, it will
 only require 1 second, because only the first argument needs to be evaluated,
 before we know that `all` will for a fact evaluate to null.
 
