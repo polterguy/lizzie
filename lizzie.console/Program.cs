@@ -3,26 +3,38 @@ using lizzie;
 
 class MainClass
 {
+    [Bind(Name = "write")]
+    object Write(Binder<MainClass> binder, Arguments arguments)
+    {
+        Console.WriteLine(arguments.Get(0));
+        return null;
+    }
+
     public static void Main(string[] args)
     {
         // Some inline Lizzie code
-        var code = "foo()";
+        var code = @"
+var(@foo, 
+  function({
+    write(""Hello "")
+    write(name)
+    write(""you are "")
+    write(age)
+    write(""years old ..."")
+  },
 
-        // Creating a lambda function from our code.
-        var function = Compiler.Compile<MainClass>(new Tokenizer(new LizzieTokenizer()), code);
+  // These are arguments our function can handle.
+  @name,
+  @age)
+)
 
-        // Creating an instance of our class, which we can bind to our code.
-        var context = new MainClass();
+// Invoking our function.
+foo(""Thomas"", 44)
+";
 
-        // Creating a binder, and adding some keywords to it.
-        var binder = new Binder<MainClass>();
-        binder["foo"] = new Function<MainClass>((ctx, binder2, arguments) => {
-            Console.WriteLine("Hello World");
-            return null;
-        });
-
-        // Evaluates our Lizzie code making sure we bind it to our instance.
-        function(context, binder);
+        // Compiling the above code, 'binding' to our MainClass instance.
+        var lambda = LambdaCompiler.Compile<MainClass>(new MainClass(), code);
+        var result = lambda();
 
         // Waiting for user input.
         Console.Read();

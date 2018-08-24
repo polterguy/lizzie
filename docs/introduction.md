@@ -380,7 +380,11 @@ to the `function` function. Below is an example.
 ```javascript
 var(@foo, 
   function({
-    write(add("Hello ", name, " you are ", age, " years"))
+    write("Hello ")
+    write(name)
+    write("you are ")
+    write(age)
+    write("years old ...")
   },
 
   // These are arguments our function can handle.
@@ -391,13 +395,6 @@ var(@foo,
 // Invoking our function.
 foo("Thomas", 44)
 ```
-
-**Notice** how we perform string concatenating above, by using the `add` function.
-Most functions in Lizzie will just as happily accept any object type as input,
-and try its best to intelligently use that input, to perform what it believes
-the caller wants to do. Adding two strings together is hence one of those things
-you can use the `add` function to, even though it's probably more useful for adding
-numbers together.
 
 Yet again, when you declare a function, all arguments you want to handle inside
 of your functions, you must always declare with an `@` sign in front of the argument's
