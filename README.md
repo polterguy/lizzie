@@ -141,4 +141,4 @@ the result to `bar`.
 
 ## Introduction to Lizzie
 
-* [Here you can find the documentation for Lizze](/docs/introduction.md)
+* [Reference documentation for Lizze](/docs/introduction.md)
