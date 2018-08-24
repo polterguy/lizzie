@@ -326,8 +326,9 @@ set(@foo, 67)
 write(foo)
 ```
 
-The above code first set the `foo` variable to 57, for then to change its value
-to 67. The `set` keyword or function is what we use to change a variable's value.
+The above code first declares the `foo` variable and assigns its initial value
+to 57, for then to change its value to 67. The `set` keyword or function is what
+we use to change a variable's value.
 
 #### Functions are 1st class objects
 
