@@ -450,7 +450,7 @@ dynamically parsing Lizzie code, and creating a _"lambda object"_ out of it
 during runtime. Compiling C# code often requires seconds, in addition to often
 also _"reloading"_ the process such that it can execute our CLR code. Interpreting
 script code is often a process too expensive to be able to adequately implement
-in a managed language such as C#. However, parsing a bunch of _"Symbolic Delegates"_
+in a managed language such as C#. However, parsing a bunch of _"Symbolic Delegates"_,
 and create a lambda object out of it, is not only blistering fast, but the end
 result is also rarely significantly slower to executing compiled C# code for all
 practical concerns. Even though there is one additional layer of indirection to
@@ -505,6 +505,9 @@ if(foo(),{
 ```
 
 If you remove the `57` parts in the above code, the `if` will evaluate to false.
+This is called _"implicit conversion to boolean"_, and everything in Lizzie,
+including the boolean value of _"false"_, will in fact evaluate to true internally.
+The only thing that evaluates to _"false"_ is a _"null"_ reference.
 
 #### Wait, where's the return keyword?
 
