@@ -330,13 +330,17 @@ The above code first declares the `foo` variable and assigns its initial value
 to 57, for then to change its value to 67. The `set` keyword or function is what
 we use to change a variable's value.
 
-#### Functions are 1st class objects
+#### Functions are 1st class objects in Lizzie
 
-For the record, in Lizzie, as you might have realized already, a function is a
-first class object, and can be assigned to a variable, allowing you to pass it
-around to other parts of your code, as you see fit. There are logically no
-difference between the number _"57"_, the string _"hello world"_ or a function
-in Lizzie. In fact, internally they are also treated exactly the same way.
+For the record, in Lizzie, a function is a _"first class object"_, and can be
+assigned to a variable, allowing you to pass it around to other parts of your
+code, as you see fit. There are logically no differences between the number
+_"57"_, the string _"hello world"_ or a function in Lizzie. In fact, internally
+they are also treated exactly the same way. This is what allows us to handle
+all Lizzie code the same way, since literally everything becomes a delegate
+internally in Lizzie. Even constant values, such as the above 57 value, is in
+fact wrapped inside a delegate, that returns that constant value back to the
+caller.
 
 ### Functions
 
