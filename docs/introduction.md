@@ -257,12 +257,13 @@ interested in evaluating it, but rather that we literally mean the symbol's name
 Hence, when you refer to the actual symbol, instead of its value, we prefix
 the symbol with an `@`. If you remove the '@' above, your code will throw an
 exception, because it will try to evaluate the symbol `foo`, which at that point
-is not declared, and hence throw an exception.
+is not declared, and your code will throw an exception.
 
 If you know Lisp from before, realize that the `@` character in Lizzie equals
 the `'` character in Lisp, or the `(quote foo)` in Lisp. Internally, it simply
-return the string _"foo"_ instead of trying to evaluate _"foo"_ as a function,
-to retrieve its value.
+returns the string _"foo"_ instead of trying to evaluate _"foo"_ as a function,
+to retrieve its value. This is a necessary level of indirection, since there are
+no _"operators"_ or _"keywords"_ in Lizzie, and Lisp for that matter.
 
 This seems a little bit weird in the beginning, but also have a lot of advantages,
 such as the ability to declare an entire function invocation, which might be an
