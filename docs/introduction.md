@@ -678,9 +678,10 @@ class MainClass
     [Bind(Name = "expensive")]
     object Expensive(Binder<MainClass> binder, Arguments arguments)
     {
-
         // Faking an expensive process by sleeping for 1 second.
         System.Threading.Thread.Sleep(1000);
+
+        // Returning the 1st argument, if given.
         if (arguments.Count > 0)
             return arguments.Get(0);
         return null;
