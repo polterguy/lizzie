@@ -303,26 +303,25 @@ evaluate `bar` internally in our `foo` function, which is what we do the above
 code after we first write _"foo is invoked"_ to the console.
 
 The above syntax might seem a little bit weird, but realize that Lizzie is
-entirely built upon _"Symbolic Delegates"_, which are kind of like s-expressions
+entirely built upon _"Symbolic Delegates"_, which are kind of like S-Expressions
 from Lisp, which implies that everything related to a _"keyword"_ must always
-be within the paranthesis of the invocation to that keyword.
-
-We will dive closer into functions later down in this chapter, so just relax if
-it doesn't make sense to you yet ...
+be within the paranthesis of the invocation to that keyword. We will dive closer
+into functions later down in this chapter, so just relax if it doesn't make sense
+to you yet ...
 
 ### Changing a variable's value
 
-To declare a value,you always use the `var` function. This allocates space for
+To declare a value, you always use the `var` function. This allocates space for
 your variable on the stack, which allows you to reference its value later. If
 you for some reasons want to change the variable later, you can use the `set`
 keyword. Below is an example.
 
 ```javascript
-// Assigning the value of 57 to our variable.
+// Declaring 'foo' and giving it an initial value of 57.
 var(@foo, 57)
-write(foo) // Writing the variable out
+write(foo)
 
-// Changing our variable's value, and writing out its new value.
+// Changing foo's value.
 set(@foo, 67)
 write(foo)
 ```
