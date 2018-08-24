@@ -69,7 +69,7 @@ class MainClass
 {
     public static void Main(string[] args)
     {
-        // Some inline Lizzie code
+        // Some inline Lizzie code.
         var code = "foo()";
 
         // Creating a lambda function from our code.
@@ -78,7 +78,7 @@ class MainClass
         // Creating an instance of our class, which we can bind to our code.
         var context = new MainClass();
 
-        // Creating a binder, and adding some keywords to it.
+        // Creating a binder, and adding the 'foo' function to it.
         var binder = new Binder<MainClass>();
         binder["foo"] = new Function<MainClass>((ctx, binder2, arguments) => {
             Console.WriteLine("Hello World");
@@ -94,14 +94,13 @@ class MainClass
 }
 ```
 
-Although to gain access to the binder, you must currently do a slightly more
-manual job, and can't use the `LambdaBuilder` convenience methods at the moment.
-But from a functional point of view, the above two examples are identical,
-except that in the first example the `this` reference is implicitly passed into
-your method, since this is a member instance method of the `MainClass` - While
-in the second example, the reference to your context is passed explicitly as the
-`ctx` argument. The signature of the functions are still the same, and can be
-found below.
+The last example from above is a slightly more manual job, and can't use
+the `LambdaBuilder` convenience methods at the moment. But from a functional
+point of view, the above two examples are identical, except that in the first
+example the `this` reference is implicitly passed into your method, since this
+is a member instance method of the `MainClass` - While in the second example,
+the reference to your context is passed explicitly as the `ctx` argument.
+The signature of the functions are still the same, and can be found below.
 
 ```csharp
 delegate object Function<TContext>(TContext ctx, Binder<TContext> binder, Arguments arguments);
