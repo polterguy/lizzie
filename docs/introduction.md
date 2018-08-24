@@ -354,12 +354,15 @@ function({
 })
 ```
 
-The above function can actually never be invoked, simply because we do not have
+The above function can never be invoked, simply because we do not have
 a reference to it, once we have passed beyond the line of code that creates it.
 So we must assign it to a variable, or pass it into another function somehow,
 to be able to actually use it. Below is a slightly more useful example.
 
 ```javascript
+/*
+ * Declaring a variable named 'foo' and assigning a function to its value.
+ */
 var(@foo, 
   function({
     write("This function can be invoked!")
