@@ -296,10 +296,11 @@ For expensive functions, that might perform expensive IO operations for instance
 this little trick can significantly improve performance. For the record, if the
 above code is all Greek to you, it simply declares a variable named `foo`, and
 assigns the _"anonymous function"_ returned from the `function` invocation to
-the value of `foo`. Our function again can take one parameter, and internally
-within our function we can de-reference this argument's value as `bar`. Since
-`bar` happens to be a function, we can evaluate it, which we do in the `bar()`
-line above.
+the value of `foo`. Our `foo` function can take one parameter, and internally
+within our `foo` function we can de-reference this argument's value as `bar`.
+Since `bar` happens to be a function, that internally invokes `write`, we can
+evaluate `bar` internally in our `foo` function, which is what we do the above
+code after we first write _"foo is invoked"_ to the console.
 
 The above syntax might seem a little bit weird, but realize that Lizzie is
 entirely built upon _"Symbolic Delegates"_, which are kind of like s-expressions
