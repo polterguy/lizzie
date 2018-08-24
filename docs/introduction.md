@@ -119,28 +119,27 @@ your C# code. However, internally in Lizzie type safety doesn't really matter,
 since it will just as happily accept anything, and convert back and forth from
 almost anything to anything, as long as there exists a legal conversion somehow.
 Although in your C# code, you must be slightly more careful. You can use the
-`Get<T>(int index)` method though on your `Arguments` instance to perform
-automatic conversion, if you know what types your method is expecting.
+`Get<T>(int index)` method on your `Arguments` instance to perform automatic
+conversion, if you know what types your method is expecting.
 
-**Notice! Lizzie does not include type safety**, but after a while, you will
+**Notice!** Lizzie is not type safe, but after a while, you will
 realize that _is the whole point_, and its _main advantage_ in fact! If Lizzie
 had type safety, it wouldn't have much practical use in fact, since the
 whole idea is to create an extremely loosely coupling, allowing you to create
 configurations and rule based engines, which can be dynamically stored any place,
 and chained together to allow for complex rule based engines, through a
-dynamically compiled script language. Notice also that this implies that the
-same piece of Lizzie code, might in theory perform two distinct different tasks,
-depending upon which class you are binding it towards. So you can completely
-chabge what your code does, by simply choosing to bind it to something else,
-which of course is extremely cool once you realize its powers.
+dynamically compiled script language. This also implies that the same piece of
+Lizzie code, might in theory perform two distinct different tasks, depending
+upon which class you are binding it towards. So you can completely change what
+your code does, by simply choosing to bind it to something else, which of
+course is extremely powerful once you realize its advantages.
 
 ## Pre-defined Lizzie functions
 
 Lizzie contains many pre-defined functions for different use cases, which you
-can choose to use, or choose to not use if you want to. In fact, if you want to
-have complete control over which _"keywords"_ your Lizzie code has access to, you
-can control this, through a slightly more manual process, resembling the example
-below.
+can choose to use. In fact, if you want to have complete control over which
+_"keywords"_ your Lizzie code has access to, you can control this, through a
+slightly more manual process, resembling the example below.
 
 ```csharp
 using System;
@@ -178,22 +177,22 @@ class MainClass
 In our above example, we have created a Binder with only one single function
 available for Lizzie, which of course is our `add` function. Anything you try
 to do besides invoking `add` will throw an exception, because it doesn't contain
-any other functions but the add function. This gives you complete control over
+any other functions besides `add`. This gives you complete control over
 what a piece of Lizzie code is legally allowed to do, and allows you to for
 instance evaluate _"insecure"_ code in a highly restricted context, which does
 not have access to negatively modify the state of your server/client in any
 ways. The `Functions` class contains several pre-defined functions you might
-want to use though, ranging from math functions, to declaring variables, changing
+want to use, ranging from math functions, to declaring variables, changing
 values of variables, creating functions in your Lizzie code, etc, etc, etc. Due
 to the way these functions are loaded into the Lizzie binder, you can also choose
 to translate the entire language's syntax to for instance Japaneese or Greek if
 you wish. Simply change the _"add"_ to _"foo"_, and there's no `add` function,
 but rather a `foo` function, that does what `add` previously did.
 
-In such a way, Lizzie is arguably a programming language checmically cleansed
+In such a way, Lizzie is arguably a programming language chemically cleansed
 for _"keywords"_, besides the ones you explicitly choose to load into its
 binder. However, when you use the `LambdaCompiler` to compile your code, all
-default _"functions"_ or _"keywords"_ are automatically loaded for you. Further
+default _"functions"_ or _"keywords"_ are automatically added for you. Further
 down on this page you can find the complete list of pre-defined functions, and
 what they do for you.
 
@@ -239,6 +238,11 @@ write(foo)
 In the above Lizzie code we create a _"variable"_ named `foo`, and set its initial
 value to _"57"_, before we write out its content to the console by invoking our
 WriteLine method, which is bound to our Lizzie code, using the `[Bind]` attribute.
+The `var` function must be given at least on _"variable name"_, in addition to
+optionally an initial value for that variable. The value can be anything ranging
+from a function, to a string, or a number of some sort - Or the return value from
+a bound C# method, allowing you to create complex objects and handle these within
+your Lizzie code.
 
 #### What's with the funny '@' symbol?
 
