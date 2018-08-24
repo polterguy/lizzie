@@ -645,19 +645,20 @@ is called _"boolean conditional shortcut"_, which implies that both the OR and
 the AND operator does not need to check its arguments, if the first argument
 returns true for `any`, or the first argument returns null for `all`. This is
 because when we test for `any`, and the first argument yields true, we don't need
-to check anymore arguments to `any` to know that our function will evaluate to true.
+to check anymore arguments to `any` to know that our `any` function will evaluate to true.
 While for `all`, if the first argument yields null, we know that `all` as a
 whole will not yield true. This implies that for expensive functions, that have
 a significant cost to evaluate, we can use the `@` symbol to avoid evaluating
 the condition, before we know for a fact that we need to. And since the value
 of the n-1 argument always decides if we need to evaluate the n argument, we
 can significantly conserve resources by postponing the evaluation of the
-condition in both our `any` functions and our `all` functions. This is possible
-because internally inside of `any` and `all`, Lizzie will check to see if the
-argument it should check is a function, and if it is a function, it will evaluate
-that function to see if it yields something, and only if that function yields
-something, it will return null to caller, or continue checking the rest of
-its arguments.
+condition in both our `any` functions and our `all` functions.
+
+This is possible because internally inside of `any` and `all`, Lizzie will check
+to see if the argument it should check is a function, and if it is a function,
+it will evaluate that function to see if it yields something, and only if that
+function yields something, it will return null or _"something"_ to caller - Or
+continue checking the rest of its arguments.
 
 Consider the following entire console program.
 
