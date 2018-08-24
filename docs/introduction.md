@@ -506,7 +506,7 @@ if(foo(),{
 
 If you remove the `57` parts in the above code, the `if` will evaluate to false.
 This is called _"implicit conversion to boolean"_, and everything in Lizzie,
-including the boolean value of _"false"_, will in fact evaluate to true internally.
+including the boolean value of _"false"_, will in fact evaluate to true.
 The only thing that evaluates to _"false"_ is a _"null"_ reference.
 
 #### Wait, where's the return keyword?
@@ -623,14 +623,14 @@ the following.
 var(@foo1)
 var(@foo2)
 
-// Remove this value to have the if below yield false.
+// Remove the 57 value to have the if below yield false.
 var(@foo3, 57)
 
 /*
  * Yields true since foo3 contains a non-null value.
  */
 if(any(foo1, foo1, foo3), {
-  write(""Any yields true"")
+  write("Any yields true")
 })
 ```
 
