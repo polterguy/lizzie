@@ -332,7 +332,7 @@ we use to change a variable's value.
 
 #### Functions are 1st class objects in Lizzie
 
-For the record, in Lizzie, a function is a _"first class object"_, and can be
+For the record, in Lizzie a function is a _"first class object"_, and can be
 assigned to a variable, allowing you to pass it around to other parts of your
 code, as you see fit. There are logically no differences between the number
 _"57"_, the string _"hello world"_ or a function in Lizzie. In fact, internally
@@ -349,7 +349,9 @@ of how to declare one. First of all, the following code will only create a funct
 and actually not make it available for us in any ways.
 
 ```javascript
-function({write("This function can never be invoked!")})
+function({
+  write("This function can never be invoked!")
+})
 ```
 
 The above function can actually never be invoked, simply because we do not have
