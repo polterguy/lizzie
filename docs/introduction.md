@@ -644,9 +644,9 @@ the previously mentioned `@` becomes crucially important due to something that
 is called _"boolean conditional shortcut"_, which implies that both the OR and
 the AND operator does not need to check its arguments, if the first argument
 returns true for `any`, or the first argument returns null for `all`. This is
-because when we test for any, and the first argument yields true, we don't need
-to check anymore arguments to know that our function will evaluate to true.
-While for `all`, if the first argument yields null, we know that `any` as a
+because when we test for `any`, and the first argument yields true, we don't need
+to check anymore arguments to `any` to know that our function will evaluate to true.
+While for `all`, if the first argument yields null, we know that `all` as a
 whole will not yield true. This implies that for expensive functions, that have
 a significant cost to evaluate, we can use the `@` symbol to avoid evaluating
 the condition, before we know for a fact that we need to. And since the value
