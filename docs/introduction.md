@@ -263,7 +263,7 @@ If you know Lisp from before, realize that the `@` character in Lizzie equals
 the `'` character in Lisp, or the `(quote foo)` in Lisp. Internally, it simply
 returns the string _"foo"_ instead of trying to evaluate _"foo"_ as a function,
 to retrieve its value. This is a necessary level of indirection, since there are
-no _"operators"_ or _"keywords"_ in Lizzie, and Lisp for that matter.
+no _"operators"_ or _"keywords"_ in Lizzie, or Lisp for that matter.
 
 This seems a little bit weird in the beginning, but also have a lot of advantages,
 such as the ability to declare an entire function invocation, which might be an
@@ -276,7 +276,12 @@ var(@foo, function({
   write("foo is invoked ...")
   bar()
 }, @bar))
-foo(@write("This will be evaluated last ,,,"))
+
+/*
+ * Notice, this function is passed into our function without
+ * being evaluated!
+ */
+foo(@write("This will be evaluated last ..."))
 ```
 
 If you evaluate the Lizzie code above, you might be surprised to see that the
