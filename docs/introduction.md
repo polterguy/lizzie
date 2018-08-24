@@ -361,7 +361,9 @@ to be able to actually use it. Below is a slightly more useful example.
 
 ```javascript
 var(@foo, 
-  function({write("This function can be invoked!")})
+  function({
+    write("This function can be invoked!")
+  })
 )
 
 // Invoking our function.
