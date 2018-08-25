@@ -256,9 +256,8 @@ is evaluated. In fact, even constants you include in your code, are wrapped insi
 of functions, which we refer to as _"Symbolic Delegates"_, and when these constants
 are de-referenced we simply evaluate the function wrapping our constants.
 
-This creates a problem, which is that if we instead of wanting to evaluate a variable,
-or more accurately a _"symbol"_, we need to inform Lizzie about that we're not
-interested in evaluating it, but rather that we literally mean the symbol's name.
+This creates a problem, which is that if we want to refer to a symbol by name,
+instead of evaluating it, we need an additional layer of indirection.
 Hence, when you refer to the actual symbol, instead of its value, we prefix
 the symbol with an `@`. If you remove the '@' above, your code will throw an
 exception, because it will try to evaluate the symbol `foo`, which at that point
@@ -268,12 +267,12 @@ If you know Lisp from before, realize that the `@` character in Lizzie equals
 the `'` character in Lisp, or the `(quote foo)` in Lisp. Internally it simply
 returns the string _"foo"_ instead of trying to evaluate _"foo"_ as a function
 to retrieve its value. This is a necessary level of indirection since there are
-no _"operators"_ or _"keywords"_ in Lizzie.
+no _"operators"_ or _"keywords"_ in Lizzie, and everything is a _"Symbolic Delegate"_.
 
 This might seem a little bit weird in the beginning, but also have a lot of advantages,
 such as the ability to declare an entire function invocation, which might be an
-entire code tree for that matter, and pass that into another function, without
-evaluating it. Below is an example of this.
+entire code tree for that matter, and pass that invocation into another function,
+without actually evaluating it. Below is an example of this.
 
 ```javascript
 var(@foo, function({
@@ -290,22 +289,21 @@ foo(@write("This will be evaluated last ..."))
 
 If you evaluate the Lizzie code above, you might be surprised to see that the
 `@write(...)` invocation that we pass into our `foo` function is in fact not evaluated
-as we pass it into our `foo` function. This allows you to decorate a function
+before we pass it into our `foo` function. This allows you to decorate a function
 invocation, and _"delay"_ its evaluation, to the point in time where you are
 sure of that you actually want to evaluate it. Internally in Lizzie, this is
 actually done by creating a wrapper function invocation, that decorates our
 inner function invocation, and returns that decorated function invocation when
-referencing the symbol. For expensive functions, that might perform expensive
-IO operations for instance, this little trick can significantly improve
-your performance.
+referencing the symbol.
 
-**FYI** - If the above code is all Greek to you, it simply declares a variable
+If the above code is all Greek to you, it simply declares a variable
 named `foo`, and assigns the _"anonymous function"_ returned from the `function`
 invocation to the value of `foo`. Our `foo` function can take one parameter,
 and within our `foo` function we can de-reference this argument's value as `bar`.
-Since `bar` happens to be a function, that internally invokes `write`, we can
-evaluate `bar` in our `foo` function, which is what we do in the above code
-_after_ we first write _"foo is invoked"_ to the console. For this reason the
+Since `bar` happens to be a function, that internally invokes `write`, with an
+argument that it has already been decorated with - We can evaluate `bar` in our
+`foo` function without arguments - Which is what we do in the above code
+_after_ we first write _"foo is invoked"_ to the console. For this reasons the
 evaluation of our `bar` function actually occurs _after_ we have written
 _"foo is invoked"_ to the console, even though we have created our function
 invocation as an argument to our `foo` function.
@@ -313,14 +311,11 @@ invocation as an argument to our `foo` function.
 An easy way to visualize this, is by realizing that the statement
 `@write(...)` does not invoke `write`, but rather creates an anonymous function,
 that once evaluated will invoke `write` with the arguments you have already
-declared that you want to use for your `write` invocation.
+declared that you want to use for your `write` invocation. Think of this in
+such a way that in Lizzie function invocations are also objects.
 
-The above syntax might seem a little bit weird, but realize that Lizzie is
-entirely built upon _"Symbolic Delegates"_, which are kind of like S-Expressions
-from Lisp, which implies that everything related to a _"keyword"_ must always
-be within the paranthesis of the invocation to that keyword. We will dive closer
-into functions later down in this chapter, so just relax if it doesn't make sense
-to you yet ...
+If you don't understand what the above code does, relax and keep on reading,
+we will dive deep into functions further down in this document.
 
 **FYI** - The `{...}` parts above simply creates a _"lambda object"_, that is
 basically a delegate, that internally contains a list of other delegates, that
