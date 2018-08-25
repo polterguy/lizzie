@@ -253,7 +253,7 @@ as fast as the equivalent C# code, due to its dynamic nature.
 
 <p align="center">
 <a href="https://www.youtube.com/watch?v=hgRaTRJ2nUc">
-<img alt="A 5 minutes introduction video to Lizzie" title="A 5 minutes introduction video to Lizzie" src="https://phosphorusfive.files.wordpress.com/2018/08/lizzie-logo.png" />
+<img alt="A 5 minutes introduction video to Lizzie" title="A 5 minutes introduction video to Lizzie" src="https://phosphorusfive.files.wordpress.com/2018/08/intro-to-lizzie-video-screenshot.png" />
 </a>
 </p>
 
