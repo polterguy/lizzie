@@ -189,9 +189,11 @@ class MainClass
 
 On my computer, which is a MacBook Air from 2016, the above code compiles 10,000
 times in roughly 2,100 milliseconds. Since Lizzie is a dynamic scripting language,
-intended to frequently retrieve snippets of dynamic code, compile these, before
-it evaluates these snippet - The compilation speed is hence arguably equally
-important as its execution speed.
+intended to frequently retrieve snippets of dynamic code, and compile these, before
+it executes the result - The compilation speed is hence arguably equally
+important as its execution speed. On my computer, compiling Lizzie itself, and
+its unit tests, **once**, requires 4.62 seconds! Compiling the above Lizzie code
+10,000 times took me only 2 seconds.
 
 ## Installation
 
