@@ -1,5 +1,5 @@
 
-# Lizze a dynamic scripting language for .Net
+# Lizze, the world's smallest script language for .Net and the CLR
 
 Lizzie is a dynamic scripting language for .Net based upon the design pattern
 called _"Symbolic Delegates"_. This allows you to execute dynamically created
