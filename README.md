@@ -126,8 +126,12 @@ language on the planet, if you ignore languages such as _"brainfuck"_, arguably
 created more or less as a joke.
 
 The Lizzie tokenizer also contains only 7 different tokens. There are no operators
-in the language, and only one type of statements, which are _"functions"_, that
-all have the same signature.
+in the language, no keywords, and only one type of statement, which are all _"functions"_,
+that all have the same signature. Compare this to the 500+ keywords, and 50+
+operators of C#, and the 1,000+ pages of reference documentation for C#, and
+hopefully you understand the advantage.
+
+* [The entire language and its syntax explained in 10 pages](/docs/introduction.md)
 
 ## How fast is Lizzie
 
