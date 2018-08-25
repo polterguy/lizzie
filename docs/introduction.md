@@ -747,7 +747,7 @@ class MainClass
     {
         // Some inline Lizzie code
         var code = @"
-if(all(expensive(), expensive(), expensive(), expensive(), expensive(5)), {
+if(all(expensive(), expensive(), expensive(), expensive(), expensive()), {
   write(""And we're done with TRUE!"")
 }, {
   write(""And we're done with FALSE!"")
@@ -758,7 +758,7 @@ if(all(expensive(), expensive(), expensive(), expensive(), expensive(5)), {
         var function = LambdaCompiler.Compile<MainClass>(new MainClass(), code);
         var result = function();
 
-        // Waiting for user input.
+        // Waiting for user input
         Console.Read();
     }
 }
@@ -767,7 +767,8 @@ if(all(expensive(), expensive(), expensive(), expensive(), expensive(5)), {
 In the above program it will take 5 seconds before our `all` invocation starts
 evaluating, because each of our `expensive` functions will take 1
 second to evaluate, and all of our invocations are evaluated before we invoke
-our `all` function. If we change its Lizzie code to the following, it will
+our `all` function. When `all` finally starts evaluating, it will immediately
+throw an exception though. If we change its Lizzie code to the following, it will
 only require 1 second, and not throw an exception, because only the first
 argument needs to be evaluated, before we know that `all` will for a fact
 evaluate to null.
