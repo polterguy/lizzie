@@ -18,6 +18,7 @@ namespace lizzie
     {
         /// <summary>
         /// The Lizzie function name for your method.
+        ///
         /// If you don't supply a name, the method's name will be used by default.
         /// </summary>
         /// <value>The function name you want to reference your method by in your Lizzie code.</value>

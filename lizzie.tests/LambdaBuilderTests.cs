@@ -32,7 +32,7 @@ namespace lizzie.tests
         [Test]
         public void MathTest()
         {
-            var lambda = LambdaCompiler.Compile("modulo(divide(add(5, multiply(5,subtract(20,15))),3),7)");
+            var lambda = LambdaCompiler.Compile("%(/(+(5, *(5,-(20,15))),3),7)");
             var result = lambda();
             Assert.AreEqual(3, result);
         }
@@ -42,7 +42,7 @@ namespace lizzie.tests
         {
             var code = @"
 var(@foo, 57)
-var(@bar, add(foo, multiply(10,2)))
+var(@bar, +(foo, *(10,2)))
 bar";
             var lambda = LambdaCompiler.Compile(code);
             var result = lambda();

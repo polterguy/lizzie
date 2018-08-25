@@ -20,10 +20,10 @@ namespace lizzie
     public class Binder<TContext>
     {
         // Statically bound functions.
-        readonly Dictionary<string, object> _staticValue = new Dictionary<string, object>();
+        readonly Dictionary<string, object> _staticBinder = new Dictionary<string, object>();
 
         // Stack of dynamically created variables and functions.
-        readonly Stack<Dictionary<string, object>> _stackValues = new Stack<Dictionary<string, object>>();
+        readonly Stack<Dictionary<string, object>> _stackBinder = new Stack<Dictionary<string, object>>();
 
         /// <summary>
         /// Creates a default binder, binding all bound methods in your context type.
@@ -43,36 +43,32 @@ namespace lizzie
         {
             get {
 
-                // Prioritizing the statically compiled symbols.
-                if (_staticValue.ContainsKey(symbolName))
-                    return _staticValue[symbolName];
+                // Prioritizing the stack, to allow for stack value to "override" global values.
+                if (_stackBinder.Count > 0 && _stackBinder.Peek().ContainsKey(symbolName))
+                    return _stackBinder.Peek()[symbolName];
 
-                // Sanity checking invocation.
-                if (!_stackValues.Peek().ContainsKey(symbolName))
-                    throw new LizzieRuntimeException($"The '{symbolName}' symbol does not exist on your stack.");
+                // Defaulting to static binder.
+                if (_staticBinder.ContainsKey(symbolName))
+                    return _staticBinder[symbolName];
 
-                // Defaulting to our stack objects.
-                return _stackValues.Peek()[symbolName];
+                // Oops, no such reference!
+                throw new LizzieRuntimeException($"The '{symbolName}' symbol has not been declared.");
             }
             set {
-
-                // We don't allow Lizzie codeto change statically compiled values or functions.
-                if (_staticValue.ContainsKey(symbolName))
-                    throw new LizzieRuntimeException($"You cannot set the '{symbolName}' since it was previously provided by your CLR code.");
 
                 /*
                  * Checking if we have actually started executing the Lizzie code,
                  * or if we are still in "CLR land".
                  */
-                if (_stackValues.Count == 0) {
+                if (_stackBinder.Count == 0) {
 
                     // Still in "CLR land".
-                    _staticValue[symbolName] = value;
+                    _staticBinder[symbolName] = value;
 
                 } else {
 
                     // Stack has been pushed at least once, and we're in "Lizzie land".
-                    _stackValues.Peek()[symbolName] = value;
+                    _stackBinder.Peek()[symbolName] = value;
                 }
             }
         }
@@ -85,9 +81,42 @@ namespace lizzie
         /// <param name="symbolName">Symbol name.</param>
         public bool ContainsKey(string symbolName)
         {
-            if (_stackValues.Count > 0 && _stackValues.Peek().ContainsKey(symbolName))
+            if (_stackBinder.Count > 0 && _stackBinder.Peek().ContainsKey(symbolName))
                 return true;
-            return _staticValue.ContainsKey(symbolName);
+            return _staticBinder.ContainsKey(symbolName);
+        }
+
+        /// <summary>
+        /// Returns true if the named symbol exists. Notice, the symbol's value might
+        /// still be null, even if the symbol exists.
+        /// </summary>
+        /// <returns><c>true</c>, if symbol exists, <c>false</c> otherwise.</returns>
+        /// <param name="symbolName">Symbol name.</param>
+        public bool ContainsDynamicKey(string symbolName)
+        {
+            if (_stackBinder.Count > 0 && _stackBinder.Peek().ContainsKey(symbolName))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Returns true if the named symbol exists. Notice, the symbol's value might
+        /// still be null, even if the symbol exists.
+        /// </summary>
+        /// <returns><c>true</c>, if symbol exists, <c>false</c> otherwise.</returns>
+        /// <param name="symbolName">Symbol name.</param>
+        public bool ContainsStaticKey(string symbolName)
+        {
+            return _staticBinder.ContainsKey(symbolName);
+        }
+
+        /// <summary>
+        /// Removes the specified key from the stack.
+        /// </summary>
+        /// <param name="symbolName">Symbol name of item to remove.</param>
+        public void RemoveKey(string symbolName)
+        {
+            _stackBinder.Peek().Remove(symbolName);
         }
 
         /// <summary>
@@ -95,7 +124,7 @@ namespace lizzie
         /// </summary>
         public void PushStack()
         {
-            _stackValues.Push(new Dictionary<string, object>());
+            _stackBinder.Push(new Dictionary<string, object>());
         }
 
         /// <summary>
@@ -103,7 +132,7 @@ namespace lizzie
         /// </summary>
         public void PopStack()
         {
-            _stackValues.Pop();
+            _stackBinder.Pop();
         }
 
         /*
@@ -150,7 +179,7 @@ namespace lizzie
              * Success, creating our delegate wrapping our method, and adding it to our dictionary with the specified
              * symbolic function name.
              */
-            _staticValue[functionName] = (Function<TContext>)
+            _staticBinder[functionName] = (Function<TContext>)
                 Delegate.CreateDelegate(typeof(Function<TContext>), method);
         }
     }

@@ -39,35 +39,11 @@ namespace lizzie
 
             // Finding next token from reader.
             string retVal = null;
-            while (!reader.EndOfStream)
-            {
+            while (!reader.EndOfStream) {
 
                 // Peeking next character in stream, and checking its classification.
                 var ch = (char)reader.Peek();
-                switch (ch)
-                {
-
-                    /*
-                     * Reserved characters to make it possible to expand syntax in future releases,
-                     * without making old code incompatible.
-                     */
-
-                    case '[':
-                    case ']':
-                    case '?':
-                    case '#':
-                    case '$':
-                    case '+':
-                    case '*':
-                    case '>':
-                    case '<':
-                    case '=':
-                    case '!':
-                    case '`':
-                    case '\'':
-
-                        throw new LizzieTokenizerException($"'{ch}' is a reserved character for future addons.");
-
+                switch (ch) {
                     /*
                      * End of token characters.
                      */
@@ -96,15 +72,12 @@ namespace lizzie
                     case '{':
                     case '}':
 
-                        if (retVal == null)
-                        {
+                        if (retVal == null) {
 
                             // This is our token.
                             return ((char)reader.Read()).ToString();
 
-                        }
-                        else
-                        {
+                        } else {
 
                             // This is the end of our token.
                             return retVal;
@@ -134,26 +107,37 @@ namespace lizzie
 
                     case '/':
 
-                        reader.Read(); // Discarding first "/".
+                        reader.Read(); // Discarding "/" first.
                         ch = (char)reader.Peek();
-                        if (ch == '/')
-                        {
+                        if (ch == '/') {
 
                             // Single line comment.
                             Tokenizer.EatLine(reader);
+
+                            // There might be some spaces at the front of our stream now ...
+                            Tokenizer.EatSpace(reader);
+
+                            // Checking if we currently have a token.
                             if (retVal != null)
                                 return retVal;
 
-                        }
-                        else if (ch == '*')
-                        {
+                        } else if (ch == '*') {
 
                             // Multiline comment.
                             Tokenizer.EatUntil(reader, "*/");
-                        }
 
-                        // There might be some spaces at the front of our stream now ...
-                        Tokenizer.EatSpace(reader);
+                            // There might be some spaces at the front of our stream now ...
+                            Tokenizer.EatSpace(reader);
+
+                            // Checking if we currently have a token.
+                            if (!string.IsNullOrEmpty(retVal))
+                                return retVal;
+
+                        } else {
+
+                            // Returning '/' as a token.
+                            return "/";
+                        }
                         break;
 
                     /*

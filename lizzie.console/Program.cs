@@ -14,22 +14,11 @@ class MainClass
     {
         // Some inline Lizzie code
         var code = @"
-var(@foo, 
-  function({
-    write(""Hello "")
-    write(name)
-    write(""you are "")
-    write(age)
-    write(""years old ..."")
-  },
-
-  // These are arguments our function can handle.
-  @name,
-  @age)
-)
-
-// Invoking our function.
-foo(""Thomas"", 44)
+write(+(5, 2, 50))
+write(-(100, 30, 3))
+write(*(5, 3, 2))
+write(/(100, 4))
+write(%(18, 4))
 ";
 
         // Compiling the above code, 'binding' to our MainClass instance.

@@ -55,34 +55,6 @@ if(@foo(), {
         }
 
         [Test]
-        public void LazyIfConditionYieldsFalse()
-        {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
-var(@foo,function({}))
-if(@foo(), {
-  57
-})
-");
-            var result = lambda();
-            Assert.IsNull(result);
-        }
-
-        [Test]
-        public void DeclaredArgumentNotPassedIn()
-        {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
-var(@foo,function({
-  input
-}, @input))
-if(@foo(), {
-  57
-})
-");
-            var result = lambda();
-            Assert.IsNull(result);
-        }
-
-        [Test]
         public void DeclaredArgumentPassedIn()
         {
             var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
@@ -185,6 +157,126 @@ if(not(eq(foo, 7)), {
 ");
             var result = lambda();
             Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void IfMoreThanTrue()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, 7)
+if(mt(foo, 5), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void IfMoreThanFalse()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, 5)
+if(mt(foo, 7), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(67, result);
+        }
+
+        [Test]
+        public void IfLessThanTrue()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, 7)
+if(lt(foo, 9), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void IfLessThanFalse()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, 5)
+if(lt(foo, 3), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(67, result);
+        }
+
+        [Test]
+        public void IfMoreThanEqualsTrue()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, 7)
+if(mte(foo, 7), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void IfMoreThanEqualsFalse()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, 5)
+if(mte(foo, 7), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(67, result);
+        }
+
+        [Test]
+        public void IfLessThanEqualsTrue()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, 7)
+if(lte(foo, 9), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void IfLessThanEqualsFalse()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, 5)
+if(lte(foo, 3), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(67, result);
         }
 
         [Test]

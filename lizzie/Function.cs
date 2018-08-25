@@ -7,9 +7,13 @@
 
 namespace lizzie
 {
-    // Delegate for all function invocations evaluated by Lizzie in its lambda.
+    /// <summary>
+    /// Delegate for all function invocations evaluated by Lizzie in its lambda delegate.
+    /// </summary>
     public delegate object Function<TContext>(TContext ctx, Binder<TContext> binder, Arguments arguments);
 
-    // Delegate for a lambda object created by Lizzie.
+    /// <summary>
+    /// Delegate for a lambda object created by Lizzie.
+    /// </summary>
     public delegate object Lambda<TContext>(TContext ctx, Binder<TContext> binder);
 }

@@ -158,7 +158,7 @@ foo";
         }
 
         [Test]
-        public void ReAssigningStaticallyCompiledValueThrows()
+        public void ReAssigningStaticallyCompiledValue()
         {
             var code = @"
 var(@foo)";
@@ -168,13 +168,7 @@ var(@foo)";
             var binder = new Binder<Nothing>();
             binder["var"] = Functions<Nothing>.Var;
             binder["foo"] = 57;
-            var success = false;
-            try {
-                function(ctx, binder);
-            } catch (LizzieRuntimeException) {
-                success = true;
-            }
-            Assert.IsTrue(success);
+            function(ctx, binder);
         }
 
         [Test]

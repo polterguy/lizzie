@@ -42,7 +42,7 @@ foo()");
         {
             var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
 var(@foo, function({
-  add(""Hello "", input)
+  +(""Hello "", input)
 }, @input))
 foo(""Thomas"")");
             var result = lambda();
@@ -54,7 +54,7 @@ foo(""Thomas"")");
         {
             var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
 var(@foo, function({
-  add(""Hello "", name, "" it seems you are "", old, "" years old"")
+  +(""Hello "", name, "" it seems you are "", old, "" years old"")
 }, @name, @old))
 foo(""Thomas"", 44)");
             var result = lambda();

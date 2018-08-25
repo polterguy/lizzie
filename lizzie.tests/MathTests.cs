@@ -16,12 +16,12 @@ namespace lizzie.tests
         [Test]
         public void AddTwoIntegers()
         {
-            var code = "add(10, 57)";
+            var code = "+(10, 57)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["add"] = Functions<Nothing>.Add;
+            binder["+"] = Functions<Nothing>.Add;
             var result = function(ctx, binder);
             Assert.AreEqual(67, result);
         }
@@ -29,12 +29,12 @@ namespace lizzie.tests
         [Test]
         public void AddMultipleIntegers()
         {
-            var code = "add(7, 30, 5, 15)";
+            var code = "+(7, 30, 5, 15)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["add"] = Functions<Nothing>.Add;
+            binder["+"] = Functions<Nothing>.Add;
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
         }
@@ -42,12 +42,12 @@ namespace lizzie.tests
         [Test]
         public void AddMultipleFloatingPointValues()
         {
-            var code = "add(7.0, 30.0, 5.47, 15.10)";
+            var code = "+(7.0, 30.0, 5.47, 15.10)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["add"] = Functions<Nothing>.Add;
+            binder["+"] = Functions<Nothing>.Add;
             var result = function(ctx, binder);
             Assert.AreEqual(57.57, result);
         }
@@ -55,12 +55,12 @@ namespace lizzie.tests
         [Test]
         public void ConcatenateStrings()
         {
-            var code = @"add(""hello"", "" "", ""worl"",""d"")";
+            var code = @"+(""hello"", "" "", ""worl"",""d"")";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["add"] = Functions<Nothing>.Add;
+            binder["+"] = Functions<Nothing>.Add;
             var result = function(ctx, binder);
             Assert.AreEqual("hello world", result);
         }
@@ -68,12 +68,12 @@ namespace lizzie.tests
         [Test]
         public void SubtractTwoIntegers()
         {
-            var code = "subtract(67, 10)";
+            var code = "-(67, 10)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["subtract"] = Functions<Nothing>.Subtract;
+            binder["-"] = Functions<Nothing>.Subtract;
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
         }
@@ -81,12 +81,12 @@ namespace lizzie.tests
         [Test]
         public void SubtractMultipleIntegers()
         {
-            var code = "subtract(77, 10, 5, 5)";
+            var code = "-(77, 10, 5, 5)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["subtract"] = Functions<Nothing>.Subtract;
+            binder["-"] = Functions<Nothing>.Subtract;
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
         }
@@ -94,12 +94,12 @@ namespace lizzie.tests
         [Test]
         public void MultiplyTwoIntegers()
         {
-            var code = "multiply(5, 7)";
+            var code = "*(5, 7)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["multiply"] = Functions<Nothing>.Multiply;
+            binder["*"] = Functions<Nothing>.Multiply;
             var result = function(ctx, binder);
             Assert.AreEqual(35, result);
         }
@@ -107,12 +107,12 @@ namespace lizzie.tests
         [Test]
         public void MultiplyMultipleIntegers()
         {
-            var code = "multiply(5, 7, 2)";
+            var code = "*(5, 7, 2)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["multiply"] = Functions<Nothing>.Multiply;
+            binder["*"] = Functions<Nothing>.Multiply;
             var result = function(ctx, binder);
             Assert.AreEqual(70, result);
         }
@@ -120,12 +120,12 @@ namespace lizzie.tests
         [Test]
         public void DivideTwoFloatingPointNumbers()
         {
-            var code = "divide(24.8, 8)";
+            var code = "/(24.8, 8)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["divide"] = Functions<Nothing>.Divide;
+            binder["/"] = Functions<Nothing>.Divide;
             var result = function(ctx, binder);
             Assert.AreEqual(3.1, result);
         }
@@ -133,12 +133,12 @@ namespace lizzie.tests
         [Test]
         public void DivideMultipleFloatingPointNumbers()
         {
-            var code = "divide(100.1, 5, 2)";
+            var code = "/(100.1, 5, 2)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["divide"] = Functions<Nothing>.Divide;
+            binder["/"] = Functions<Nothing>.Divide;
             var result = function(ctx, binder);
             Assert.AreEqual(10.01, result);
         }
@@ -146,12 +146,12 @@ namespace lizzie.tests
         [Test]
         public void ModuloTwoIntegerNumbers()
         {
-            var code = "modulo(7, 5)";
+            var code = "%(7, 5)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["modulo"] = Functions<Nothing>.Modulo;
+            binder["%"] = Functions<Nothing>.Modulo;
             var result = function(ctx, binder);
             Assert.AreEqual(2, result);
         }
@@ -159,12 +159,12 @@ namespace lizzie.tests
         [Test]
         public void ModuloMultipleIntegerNumbers()
         {
-            var code = "modulo(13, 10, 2)";
+            var code = "%(13, 10, 2)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var ctx = new Nothing();
             var binder = new Binder<Nothing>();
-            binder["modulo"] = Functions<Nothing>.Modulo;
+            binder["%"] = Functions<Nothing>.Modulo;
             var result = function(ctx, binder);
             Assert.AreEqual(1, result);
         }

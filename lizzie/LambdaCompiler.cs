@@ -62,24 +62,49 @@ namespace lizzie
          */
         static void BindFunctions<TContext>(Binder<TContext> binder)
         {
+            // Variables.
             binder["var"] = Functions<TContext>.Var;
             binder["set"] = Functions<TContext>.Set;
+
+            // Branching and comparison functions.
             binder["if"] = Functions<TContext>.If;
             binder["eq"] = Functions<TContext>.Eq;
+            binder["mt"] = Functions<TContext>.Mt;
+            binder["lt"] = Functions<TContext>.Lt;
+            binder["mte"] = Functions<TContext>.Mte;
+            binder["lte"] = Functions<TContext>.Lte;
             binder["not"] = Functions<TContext>.Not;
             binder["any"] = Functions<TContext>.Any;
             binder["all"] = Functions<TContext>.All;
-            binder["each"] = Functions<TContext>.Each;
+
+            // Creates a function.
             binder["function"] = Functions<TContext>.Function;
-            binder["add"] = Functions<TContext>.Add;
-            binder["subtract"] = Functions<TContext>.Subtract;
-            binder["multiply"] = Functions<TContext>.Multiply;
-            binder["divide"] = Functions<TContext>.Divide;
-            binder["modulo"] = Functions<TContext>.Modulo;
+
+            // List functions,
+            binder["list"] = Functions<TContext>.List;
+            binder["count"] = Functions<TContext>.Count;
+            binder["get"] = Functions<TContext>.Get;
+            binder["add"] = Functions<TContext>.AddList;
+            binder["slice"] = Functions<TContext>.Slice;
+            binder["each"] = Functions<TContext>.Each;
+
+            // Conversion functions.
+            binder["string"] = Functions<TContext>.String;
+            binder["number"] = Functions<TContext>.Number;
+
+            // Math functions.
+            binder["+"] = Functions<TContext>.Add;
+            binder["-"] = Functions<TContext>.Subtract;
+            binder["*"] = Functions<TContext>.Multiply;
+            binder["/"] = Functions<TContext>.Divide;
+            binder["%"] = Functions<TContext>.Modulo;
+
+            // Null is simply a constant yielding null.
+            binder["null"] = null;
         }
 
         /*
-         * Empty class to help create a Lambda function without wanting to
+         * Empty class to help create a Lambda function without needing to
          * bind to some specific type, but rather simply evaluate Lizzie code,
          * without having bound it to anything in particular.
          */

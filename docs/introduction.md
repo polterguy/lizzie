@@ -150,7 +150,7 @@ class MainClass
     public static void Main(string[] args)
     {
         // Some inline Lizzie code.
-        var code = "add(10, 57)";
+        var code = "+(10, 57)";
 
         // Creating a tokenizer and compiling our Lizzie code.
         var tokenizer = new Tokenizer(new LizzieTokenizer());
@@ -162,7 +162,7 @@ class MainClass
          */
         var ctx = new MainClass();
         var binder = new Binder<MainClass>();
-        binder["add"] = Functions<MainClass>.Add;
+        binder["+"] = Functions<MainClass>.Add;
 
         // Evaluating our Lizzie function.
         var result = function(ctx, binder);
@@ -175,9 +175,9 @@ class MainClass
 ```
 
 In our above example, we have created a Binder with only one single function
-available for Lizzie, which of course is our `add` function. Anything you try
-to do besides invoking `add` will throw an exception, because it doesn't contain
-any other functions besides `add`. This gives you complete control over
+available for Lizzie, which of course is our `+` function. Anything you try
+to do besides invoking `+` will throw an exception, because it doesn't contain
+any other functions besides `+`. This gives you complete control over
 what a piece of Lizzie code is legally allowed to do, and allows you to for
 instance evaluate _"insecure"_ code in a highly restricted context, which does
 not have access to negatively modify the state of your server/client in any
@@ -186,8 +186,8 @@ want to use, ranging from math functions, to declaring variables, changing
 values of variables, creating functions in your Lizzie code, etc, etc, etc. Due
 to the way these functions are loaded into the Lizzie binder, you can also choose
 to translate the entire language's syntax to for instance Japaneese or Greek if
-you wish. Simply change the _"add"_ to _"foo"_, and there's no `add` function,
-but rather a `foo` function, that does what `add` previously did.
+you wish. Simply change the _"+"_ to _"foo"_, and there's no `+` function,
+but rather a `foo` function, that does what `+` previously did.
 
 In such a way, Lizzie is arguably a programming language chemically cleansed
 for _"keywords"_, besides the ones you explicitly choose to load into its
@@ -469,11 +469,11 @@ if(foo,{
 })
 ```
 
-Since the `foo` variable has a value, the _"body"_ which is the second argument
+Since the `foo` variable has a value, the lambda which is the second argument
 to our `if` invocation will be evaluated. If you remove the above initial value
 to `foo` it won't evaluate the parts in between `{` and `}` above. If you supply
-an additional body as the third argument, this will become the `if` statement's
-associated `else` body, that is evaluated if the condition of your `if` returns
+an additional lambda as the third argument, this will become the `if` statement's
+associated `else` lambda, that is evaluated if the condition of your `if` returns
 a null value of some sort.
 
 ```javascript
@@ -511,9 +511,9 @@ The only thing that evaluates to _"false"_ is a _"null"_ reference.
 
 #### Wait, where's the return keyword?
 
-Well, it doesn't exist! This is because inside of a _"body"_, whatever is
-evaluated last, before the body returns, will be implicitly returned as the
-_"value"_ of the body. Let's illustrate this with an example.
+Well, it doesn't exist! This is because inside of a lambda, whatever is
+evaluated last, before the lambda returns, will be implicitly returned as the
+_"value"_ of the lambda. Let's illustrate this with an example.
 
 ```javascript
 /*
@@ -538,11 +538,11 @@ var(@foo, function({
  * and writing out what it returns on the console.
  */
 var(@tmp1, foo("some value"))
-write(add("Foo returned ", tmp1))
+write(+("Foo returned ", tmp1))
 
 // Notice! No value passed in to foo here ...
 var(@tmp2, foo())
-write(add("Foo returned ", tmp2))
+write(+("Foo returned ", tmp2))
 ```
 
 In our first function invocation above, `input` has a value, hence it will
@@ -551,6 +551,16 @@ of 57 to caller. In the second invocation, `input` does **not** have a value,
 and hence the else parts of our `if` invocation will be evaluated, which returns
 67. Hence, by intelligently structuring your code, there is no need for an
 explicit `return` keyword in Lizzie.
+
+**Notice** - If you for some reasons wants to explicitly use null for some reasons,
+you can do so with the null constant. Below is an example.
+
+```javascript
+var(@foo)
+if(eq(null, foo), {
+  write("Yup,it's null!")
+})
+```
 
 #### Testing for equality
 
@@ -575,7 +585,7 @@ var(@foo, function({
 
 // Evaluating the above function.
 var(@tmp1, foo("Thomas"))
-write(add("Foo returned ", tmp1))
+write(+("Foo returned ", tmp1))
 ```
 
 The above code of course writes _"Welcome home boss"_ on the console. If you
@@ -605,8 +615,18 @@ var(@foo, function({
 
 // Evaluating the above function.
 var(@tmp1, foo("Thomas"))
-write(add("Foo returned ", tmp1))
+write(+("Foo returned ", tmp1))
 ```
+
+In addition to `eq` and `not` you also have the following comparison functions.
+
+* `mt` implying _"more than"_
+* `lt` implying _"less than"_
+* `mte` implying _"more than or equal to"_
+* `lte` implying _"less than or equal to"_
+
+The above 4 functions can only be used for types that have overloaded the
+equivalent operators for these types of comparisons.
 
 #### OR and AND
 
@@ -733,31 +753,77 @@ that these are function invocations, evaluate these functions before it determin
 whether or not it's a null value or a true value. You can (and _should_) also apply
 the same trick for `any` invocations if you know they will be expensive to evaluate.
 
-### Loops
+### Lists
 
-The `each` function allows you to evaluate a body once for each value you provide
-to it beyond the 2nd argument. The first argument is expected to be a body, the
-second argument its internal iterator variable name through which you can
-reference the currently iterated value as from within the body, and any more
-arguments you supply to it will be considered your values to evaluate the body
-for, once for each value. Below is an example.
+Lizzie has good support for handling lists of objects. To create a list you can
+use the `list` function. To add to a list you can use `add`. To get an item you
+can use `get`. To count items in a list you can use `count`, and to slice a list
+you can use `slice`, which will return a sub list of your original list.
 
 ```javascript
-each({
+// Declare a list.
+var(@foo, list(57, 67, 77))
+write(+("list count ", count(foo)))
+
+// Returns the 3rd item.
+write(+("list 3rd item ", get(foo, 2)))
+
+// Adds two new items to the list.
+add(foo, 88, 99)
+write(+("list count ", count(foo)))
+
+// Slice the list, and puts the new list into 'bar'.
+var(@bar, slice(foo, 1, 3))
+write(+("bar list count ", count(bar)))
+```
+
+#### Iterating lists
+
+The `each` function allows you to evaluate a lambda once for each value in a list.
+The first argument is expected to be a symbol prefixed with an `@` character,
+which will be used to de-reference the currently iterated value inside of your
+lambda. The second argument is expected to be the list to iterate. The third argument
+must be a lambda block, which will be evaluated once for each item in your list.
+
+```javascript
+var(@foo, list(57, 67, 77, 88.88, 97))
+each(@ix, foo, {
   write(ix)
-}, @ix, 57, 67, 77)
+})
 ```
 
-If you evaluate the above Lizzie code, it will write the following to the console.
+### Conversion
 
-```bash
-57
-67
-77
+Sometimes you need to convert an object from its string representatio to a number,
+or vice versa. For such cases you have the `number` and `string` functions. Below
+is an example.
+
+```javascript
+write(+(number("55"), 2))
+write(+(string(55), 5))
 ```
 
-This is because it will evaluate the body, once for every argument supplied,
-except the 1st and the second argument. The first argument must always be its
-body. The second argument must always be the variable name you can access your
-currently iterated value as from within the body, and the rest of the arguments
-are considered your _"list of values"_.
+### Math
+
+Lizzie contains all the basic math functions, these are as follows.
+
+* `+` adds two or more _"things"_ together.
+* `-` subtracts one or more _"things"_ from its first argument.
+* `/` divides one or more _"things"_ from its first argument.
+* `*` multiplies one or more _"things"_ to each other.
+* `%` calculate the modulo (remainder) after division.
+
+Notice, we say _"things"_ above, because these functions works with all types
+that have somehow overloaded the equivalent operators. This allows you to use
+the `+` function to concatenate strings for instance, in addition to that you
+can use the other operators for all types that have an operator overload for
+that particular operator. All of the above functions can handle multiple
+parameters, and will act accordingly.
+
+```javascript
+write(+(5, 2, 50))
+write(-(100, 30, 3))
+write(*(5, 3, 2))
+write(/(100, 4))
+write(%(18, 4))
+```

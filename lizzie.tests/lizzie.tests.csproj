@@ -38,6 +38,8 @@
     <Compile Include="LambdaBuilderTests.cs" />
     <Compile Include="FunctionTests.cs" />
     <Compile Include="BranchingTests.cs" />
+    <Compile Include="ListTests.cs" />
+    <Compile Include="NullTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lizzie\lizzie.csproj">
