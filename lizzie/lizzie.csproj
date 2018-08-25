@@ -20,6 +20,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" version="4.5.0" Version="4.5.0">
       <PrivateAssets>all</PrivateAssets>
+      <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
