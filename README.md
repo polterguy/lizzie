@@ -253,4 +253,4 @@ as fast as the equivalent C# code, due to its dynamic nature.
 PM > Install-Package lizzie
 ```
 
-Or visit the [download page to get its source code](releases)
+Or visit the [download page to get its source code](https://github.com/polterguy/lizzie/releases)
