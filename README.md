@@ -51,7 +51,8 @@ you to through C#, VB.NET or F#.
 A Symbolic Delegate is a CLR delegate that is dynamically looked up during runtime
 from a dictionary of delegates with the same signature. This allows you to dynamically
 wire together delegates to an _"execution tree"_ during runtime, based upon whatever
-delegate happens to be the value for your key.
+delegate happens to be the value for your _"symbol"_. Lizzie is literally a
+dictionary of delegates, where the key to lookup your delegates are of type string.
 
 ## Binding Lizzie to your own types
 
