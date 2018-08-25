@@ -138,10 +138,60 @@ of code, and all _"keywords"_ are less than 800 lines of code in total. The proj
 as a whole has roughly 2000 lines of code, but 50% of these are comments. When built,
 the dll is roughly 40KB on disc. There are 7 public classes in the project, one
 attribute, and one interface. There are less than 30 methods in total, and you don't
-have to use more than a handful of these to start adding dynamica scripting abilities
+have to use more than a handful of these to start adding dynamic scripting abilities
 to your CLR code. This arguably makes Lizzie the smallest (useful) programming
 language on the planet, if you ignore languages such as _"brainfuck"_, arguably
 created more or less as a joke.
+
+## How fast is Lizzie
+
+When profiling a language such as Lizzie, there are two important things to
+measure.
+
+* Compilation speed
+* Execution speed
+
+Compilation speed is _"blistering fast"_, something we can illustrate with the
+following C# code, where we compile a snippet of Lizzie code, 10,000 times.
+
+```csharp
+using System;
+using System.Diagnostics;
+using lizzie;
+
+class MainClass
+{
+    public static void Main(string[] args)
+    {
+        // Some inline Lizzie code.
+        var code = @"
++(5, 2, 50)
+-(100, 30, 3)
+*(5, 3, 2)
+/(100, 4)
+%(18, 4)
+";
+
+        // Compiling the above code 10,000 times!
+        Console.WriteLine("Compiling some Lizzie code 10,000 times, please wait ...");
+        Stopwatch sw = Stopwatch.StartNew();
+        for (var idx = 0; idx < 10000; idx++) {
+            var lambda = LambdaCompiler.Compile(code);
+        }
+        sw.Stop();
+        Console.WriteLine($"We compiled the above Lizzie code 10,000 times in {sw.ElapsedMilliseconds} milliseconds!");
+
+        // Waiting for user input.
+        Console.Read();
+    }
+}
+```
+
+On my computer, which is a MacBook Air from 2016, the above code compiles 10,000
+times in roughly 2,100 milliseconds. Since Lizzie is a dynamic scripting language,
+intended to frequently retrieve snippets of dynamic code, compile these, before
+it evaluates these snippet - The compilation speed is hence arguably equally
+important as its execution speed.
 
 ## Installation
 
