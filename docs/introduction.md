@@ -4,7 +4,7 @@
 Lizzie is a programming language based upon the _"good"_ ideas from Lisp, but
 without the _"funny syntax"_. Although this arguably eliminates most of the
 peculiarities from Lisp, it still keeps some of these around. The same way that
-Lisp is based upon Symbolix Expressions, or S-Expressions, Lizzie is based upon
+Lisp is based upon Symbolic Expressions, or S-Expressions, Lizzie is based upon
 a similar construct which we refer to as _"Symbolic Delegates"_ in this documentation.
 This arguably makes the ideas of Lisp, dynamically available to developers on
 the CLR stack, without forcing an entirely new way of thinking down their throats.
@@ -12,7 +12,7 @@ However, let's start with the basics.
 
 ## Binding your Lizzie code to your domain types
 
-The first really cool feature of Lizzie is that you can bind Lizzie code with a
+The first really cool feature of Lizzie is that you can bind Lizzie code to a
 CLR class. Imagine the following.
 
 ```csharp
@@ -109,7 +109,7 @@ delegate object Function<TContext>(TContext ctx, Binder<TContext> binder, Argume
 
 Every Lizzie function has the exact same signature. This is what makes it possible for
 us to handle delegates _"symbolically"_. Since we know that every method/function/delegate
-will have the same signature, we can treat them as function objects. This
+will have the same signature, we can treat them as interchangeable function objects. This
 creates many advantages, and some disadvantages. The _"disadvantage"_ is that you
 loose type safety while passing arguments around, since the `Arguments` class
 is simply a wrapper around `List<object>`. This means you are responsible yourself
