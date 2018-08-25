@@ -340,7 +340,7 @@ keyword. Below is an example.
 var(@foo, 57)
 write(foo)
 
-// Changing foo's value.
+// Changing foo's value
 set(@foo, 67)
 write(foo)
 ```
@@ -348,18 +348,6 @@ write(foo)
 The above code first declares the `foo` variable and assigns its initial value
 to 57, for then to change its value to 67. The `set` keyword or function is what
 we use to change a variable's value.
-
-#### Functions are 1st class objects in Lizzie
-
-For the record, in Lizzie a function is a _"first class object"_, and can be
-assigned to a variable, allowing you to pass it around to other parts of your
-code, as you see fit. There are logically no differences between the number
-_"57"_, the string _"hello world"_ or a function in Lizzie. In fact, internally
-they are also treated exactly the same way. This is what allows us to handle
-all Lizzie code the same way, since literally everything becomes a delegate
-internally in Lizzie. Even constant values, such as the above 57 value, is in
-fact wrapped inside a delegate, that returns that constant value back to the
-caller.
 
 ### Functions
 
@@ -380,7 +368,7 @@ to be able to actually use it. Below is a slightly more useful example.
 
 ```javascript
 /*
- * Declaring a variable named 'foo' and assigning a function to its value.
+ * Declaring a variable named 'foo' and assigning a function to its value
  */
 var(@foo, 
   function({
@@ -392,11 +380,12 @@ var(@foo,
 foo()
 ```
 
-To pass arguments into your function, simply declare the symbols you wish to
-use for your arguments, internally in your function, as additional arguments
+To pass arguments into your functions, simply declare the symbols you wish to
+use for your arguments internally within your function, as additional arguments
 to the `function` function. Below is an example.
 
 ```javascript
+// Declaring 'foo' to be a function
 var(@foo, 
   function({
     write("Hello ")
@@ -406,17 +395,17 @@ var(@foo,
     write("years old ...")
   },
 
-  // These are arguments our function can handle.
+  // These are arguments our function can handle
   @name,
   @age)
 )
 
-// Invoking our function.
+// Invoking our function
 foo("Thomas", 44)
 ```
 
-Yet again, when you declare a function, all arguments you want to handle inside
-of your functions, you must always declare with an `@` sign in front of the argument's
+When you declare a function, you must declare all arguments you want
+to handle inside your function with an `@` sign in front of the argument's
 name. Otherwise you're not actually declaring the argument, but rather evaluating
 the symbol with the name of the argument you are trying to declare.
 
@@ -448,10 +437,10 @@ into a dictionary, where the values are delegates. Below is how these are more
 or less implemented in Lizzie.
 
 ```csharp
-// The delegate type.
+// The delegate type
 delegate object Function<TContext>(TContext ctx, Binder<TContext> binder, Arguments arguments);
 
-// Dictionary containing our symbolix delegates.
+// Dictionary containing our symbolic delegates
 Dictionary<string, Function<TContext>>
 ```
 
@@ -460,7 +449,7 @@ Since a dictionary lookup is an O(1) operation, this creates little overhead
 for us compared to native CLR code, while also allowing us to dynamically
 parse Lizzie's syntax, to dynamically build and modify our delegate dictionary.
 And since every _"function"_ has the exact same signature, we can treat all
-functions exactly the same way.
+functions interchangeable.
 
 This allows us to create a programming language (Lizzie), that is Turing complete,
 without neither any compilation nor any interpretation being necessary to
@@ -493,7 +482,7 @@ to our `if` invocation will be evaluated. If you remove the above initial value
 to `foo` it won't evaluate the parts in between `{` and `}` above. If you supply
 an additional lambda as the third argument, this will become the `if` statement's
 associated `else` lambda, that is evaluated if the condition of your `if` returns
-a null value of some sort.
+null.
 
 ```javascript
 var(@foo)
@@ -517,7 +506,7 @@ var(@foo, function({
   57
 }))
 
-// Evaluating the above function, and checking if it returned anything.
+// Evaluating the above function, and checking if it returned anything
 if(foo(),{
   write("Foo returned something")
 })
@@ -526,23 +515,23 @@ if(foo(),{
 If you remove the `57` parts in the above code, the `if` will evaluate to false.
 This is called _"implicit conversion to boolean"_, and everything in Lizzie,
 including the boolean value of _"false"_, will in fact evaluate to true.
-The only thing that evaluates to _"false"_ is a _"null"_ reference.
+The only thing that evaluates to _"false"_ is null.
 
 #### Wait, where's the return keyword?
 
-Well, it doesn't exist! This is because inside of a lambda, whatever is
+Well, it doesn't exist! This is because inside of a lambda object, whatever is
 evaluated last, before the lambda returns, will be implicitly returned as the
 _"value"_ of the lambda. Let's illustrate this with an example.
 
 ```javascript
 /*
- * Creating a function named 'foo', that takes one argument.
+ * Creating a function named 'foo', that takes one argument
  */
 var(@foo, function({
 
   /*
    * Checking value of input argument, and returning 57 if it has
-   * a value, otherwise we return 67.
+   * a value, otherwise we return 67
    */
   if(input, {
     57
@@ -554,7 +543,7 @@ var(@foo, function({
 
 /*
  * Evaluating the above function twice, with and without an argument,
- * and writing out what it returns on the console.
+ * and writing out what it returns on the console
  */
 var(@tmp1, foo("some value"))
 write(+("Foo returned ", tmp1))
@@ -565,8 +554,8 @@ write(+("Foo returned ", tmp2))
 ```
 
 In our first function invocation above, `input` has a value, hence it will
-evaluate the line `57`, which of course simply _"returns"_ the constant value
-of 57 to caller. In the second invocation, `input` does **not** have a value,
+evaluate the line `57`, which of course simply _"returns"_ the constant numeric
+value of 57 to caller. In the second invocation, `input` does **not** have a value,
 and hence the else parts of our `if` invocation will be evaluated, which returns
 67. Hence, by intelligently structuring your code, there is no need for an
 explicit `return` keyword in Lizzie.
@@ -592,7 +581,7 @@ var(@foo, function({
 
   /*
    * Checking value of input argument, and returning 57 if it has
-   * a value, otherwise we return 67.
+   * a value, otherwise we return 67
    */
   if(eq(input, "Thomas"), {
     "Welcome home boss!!"
@@ -602,7 +591,7 @@ var(@foo, function({
 
 }, @input))
 
-// Evaluating the above function.
+// Evaluating the above function
 var(@tmp1, foo("Thomas"))
 write(+("Foo returned ", tmp1))
 ```
@@ -622,7 +611,7 @@ var(@foo, function({
 
   /*
    * Checking value of input argument, and returning 57 if it has
-   * a value, otherwise we return 67.
+   * a value, otherwise we return 67
    */
   if(not(eq(input, "Thomas")), {
     "Welcome stranger"
@@ -632,7 +621,7 @@ var(@foo, function({
 
 }, @input))
 
-// Evaluating the above function.
+// Evaluating the above function
 var(@tmp1, foo("Thomas"))
 write(+("Foo returned ", tmp1))
 ```
@@ -653,8 +642,8 @@ Since Lizzie doesn't have operators, neither the OR nor the AND keywords exists
 in Lizzie. However, you can accomplish the same result by using the `any` and the
 `all` functions. The `any` is the equivalent of OR in a traditional programming
 language, while `all` is the equivalent of AND. The `any` function will return
-true if any of its arguments evaluates to true, while `all` will only return
-true if all of its arguments yields true. This allows you to combine `any` and
+non-null if any of its arguments evaluates to non-null, while `all` will only return
+non-null if all of its arguments yields non-null. This allows you to combine `any` and
 `all` to accomplish the same as OR and AND would do for you normally. Consider
 the following.
 
@@ -662,19 +651,21 @@ the following.
 var(@foo1)
 var(@foo2)
 
-// Remove the 57 value to have the if below yield false.
+// Remove the 57 value to have the if below yield false
 var(@foo3, 57)
 
 /*
- * Yields true since foo3 contains a non-null value.
+ * Yields true since foo3 contains a non-null value
  */
 if(any(foo1, foo1, foo3), {
   write("Any yields true")
 })
 ```
 
-If you exchange the above `any` with an `all`, it will not yield true, since not
-all of the arguments it needs to test will evaluate to true.
+If you exchange the above `any` with an `all`, it will yield null, since some of
+its arguments are null. For the record, the `any` function will in fact return
+the first non-null value from its arguments, allowing you to easily use it also
+for finding the first non-null value in a list of arguments.
 
 #### Boolean shortcutting your code
 
