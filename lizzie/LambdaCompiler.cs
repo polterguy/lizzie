@@ -99,6 +99,11 @@ namespace lizzie
             binder["/"] = Functions<TContext>.Divide;
             binder["%"] = Functions<TContext>.Modulo;
 
+            // String functions.
+            binder["substr"] = Functions<TContext>.Substr;
+            binder["length"] = Functions<TContext>.Length;
+            binder["replace"] = Functions<TContext>.Replace;
+
             // Null is simply a constant yielding null.
             binder["null"] = null;
         }

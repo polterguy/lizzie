@@ -743,5 +743,71 @@ namespace lizzie
                 return double.Parse(tmpString);
             return long.Parse(tmpString);
         });
+
+        /// <summary>
+        /// Returns a substring of the given string value.
+        ///
+        /// This function will return a substring of the specified string. It
+        /// expects at least two arguments, the first being a string, the second
+        /// an offset of where to start the returned string from. You can also
+        /// optionally supply a third argument
+        /// </summary>
+        /// <value>The function wrapping the 'string keyword'.</value>
+        public static Function<TContext> Substr => new Function<TContext>((ctx, binder, arguments) =>
+        {
+            // Sanity checking.
+            if (arguments.Count < 2)
+                throw new LizzieRuntimeException("The 'substr' function must be given at least 2 arguments.");
+
+            // Retrieving string to manipulate.
+            var arg1 = arguments.Get<string>(0);
+
+            // Retrieving start position.
+            var arg2 = arguments.Get<int>(1);
+
+            // Checking if we have an end position.
+            if (arguments.Count > 2) {
+                return arg1.Substring(arg2, arguments.Get<int>(2));
+            }
+            return arg1.Substring(arg2);
+        });
+
+        /// <summary>
+        /// Returns the length of the given string value.
+        ///
+        /// This function will return the length of the given string value.
+        /// </summary>
+        /// <value>The function wrapping the 'string keyword'.</value>
+        public static Function<TContext> Length => new Function<TContext>((ctx, binder, arguments) =>
+        {
+            // Sanity checking.
+            if (arguments.Count != 1)
+                throw new LizzieRuntimeException("The 'length' function must be given exactly 1 argument.");
+
+            // Retrieving string's length.
+            var arg1 = arguments.Get<string>(0);
+            return arg1.Length;
+        });
+
+        /// <summary>
+        /// Replace occurrencies of one string in a string with another value and
+        /// returns a new string with the replacing having occurred.
+        ///
+        /// This function will replace all occurrencies of the 2nd argument with the
+        /// value of the 3rd argument, and return a new string to the caller.
+        /// </summary>
+        /// <value>The function wrapping the 'string keyword'.</value>
+        public static Function<TContext> Replace => new Function<TContext>((ctx, binder, arguments) =>
+        {
+            // Sanity checking.
+            if (arguments.Count != 3)
+                throw new LizzieRuntimeException("The 'replace' function must be given exactly 3 arguments.");
+
+            // Retrieving string's length.
+            var arg1 = arguments.Get<string>(0);
+            var arg2 = arguments.Get<string>(1);
+            var arg3 = arguments.Get<string>(2);
+            return arg1.Replace(arg2, arg3);
+        });
     }
 }

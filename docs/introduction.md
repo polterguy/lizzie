@@ -866,6 +866,11 @@ write(%(18, 4))
 
 ### String manipulation
 
+Lizzie contains the following functions for manipulating strings.
+
+* __substr__ returns a substring of the specified string, arguments are string, start, and (optional) count
+* __length__ returns the length of the string
+* __replace__ replaces all occurrencies of the specified 1st arg value with the 2nd arg value
 
 [Does perfect software exist?](perfect-software.md)
 
