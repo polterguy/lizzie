@@ -250,7 +250,7 @@ as fast as the equivalent C# code, due to its dynamic nature.
 ## Installation
 
 ```bash
-Install-Package lizzie
+PM > Install-Package lizzie
 ```
 
 Or visit the [download page to get its source code](/releases)
