@@ -246,6 +246,11 @@ following examples.
 
 #### What's with the funny '@' symbol?
 
+**Warning** - Advanced concept coming up. If you don't understand the contents
+of this sub-title, simply skip it, and come back to it later, at which point
+it will make more sense to you. Understanding this part is not required to
+understand the rest of this documentation.
+
 Lizzie is based upon the ideas of Lisp. In Lisp, and hence in Lizzie, everything
 is evaluated. In fact, even constants you include in your code, are wrapped inside
 of functions, which we refer to as _"Symbolic Delegates"_, and when these constants
@@ -319,7 +324,7 @@ to you yet ...
 
 **FYI** - The `{...}` parts above simply creates a _"lambda object"_, that is
 basically a delegate, that internally contains a list of other delegates, that
-it sequentially evaluates once the _"lambda"_ is evaluated. `{}` simply creates
+it sequentially evaluated once the _"lambda"_ is evaluated. `{}` simply creates
 an object, that happens to be a function, which you can execute when needed.
 
 ### Changing a variable's value
