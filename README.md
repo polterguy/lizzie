@@ -138,10 +138,10 @@ hopefully you understand the advantage.
 When profiling a language such as Lizzie, there are two important things to
 measure.
 
-* Compilation speed
-* Execution speed
+* __Compilation speed__
+* __Execution speed__
 
-Compilation speed is _"blistering fast"_, something we can illustrate with the
+Compilation is **blistering fast**, something we can illustrate with the
 following C# code, where we compile a snippet of Lizzie code 10,000 times.
 
 ```csharp
@@ -169,7 +169,7 @@ class MainClass
             var lambda = LambdaCompiler.Compile(code);
         }
         sw.Stop();
-        Console.WriteLine($"We compiled the above Lizzie code 10,000 times in {sw.ElapsedMilliseconds} milliseconds!");
+        Console.WriteLine($"We compiled the above code 10,000x in {sw.ElapsedMilliseconds} milliseconds!");
 
         // Waiting for user input.
         Console.Read();
