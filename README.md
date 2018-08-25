@@ -113,9 +113,9 @@ write(foo)";
 ## How small is Lizzie
 
 The [entire reference documentation for Lizze](/docs/introduction.md) is roughly
-10 pages if you choose to print it. _This is the entire reference documentation
+12 pages if you choose to print it. _This is the entire reference documentation
 for the language_. This allows you to learn the entire programming language
-literally in 10 minutes. The _"compiler"_ for the language is less than 500 lines
+literally in 20 minutes. The _"compiler"_ for the language is less than 500 lines
 of code, and all _"keywords"_ are less than 800 lines of code in total. The project
 as a whole has roughly 2000 lines of code, but 50% of these are comments. When built,
 the dll is roughly 40KB on disc. There are 7 public classes in the project, one
@@ -131,7 +131,7 @@ that all have the same signature. Compare this to the 500+ keywords, and 50+
 operators of C#, and the 1,000+ pages of reference documentation for C#, and
 hopefully you understand the advantage.
 
-* [The entire language and its syntax explained in 10 pages](/docs/introduction.md)
+* [The entire language and its syntax explained in 12 pages](/docs/introduction.md)
 
 ## How fast is Lizzie
 
@@ -247,7 +247,7 @@ as fast as the equivalent C# code, due to its dynamic nature.
 
 ## Reference documentation
 
-* [Reference documentation for Lizze (10 pages, 20 minute read)](/docs/introduction.md)
+* [Reference documentation for Lizze (12 pages, 20 minute read)](/docs/introduction.md)
 
 ## Installation
 
