@@ -1,33 +1,43 @@
 ﻿using System;
-using System.Diagnostics;
 using lizzie;
 
 class MainClass
 {
-    public static int Foo(int input)
+    [Bind(Name = "write")]
+    object WriteLine(Binder<MainClass> binder, Arguments arguments)
     {
-        return input + 1;
+        Console.WriteLine(arguments.Get(0));
+        return null;
+    }
+
+    [Bind(Name = "expensive")]
+    object Expensive(Binder<MainClass> binder, Arguments arguments)
+    {
+        // Faking an expensive process by sleeping for 1 second.
+        System.Threading.Thread.Sleep(1000);
+
+        // Returning the 1st argument, if given.
+        if (arguments.Count > 0)
+            return arguments.Get(0);
+        return null;
     }
 
     public static void Main(string[] args)
     {
-        // Executing some C# code 10,000 times!
-        Console.WriteLine("Executing some C# code 10,000 times, please wait ...");
-        Stopwatch sw = Stopwatch.StartNew();
-        for (var idx = 0; idx < 10000; idx++) {
-            var integer1 = 5 + 2 + 50;
-            Foo(integer1);
-            var integer2 = 100 - 30 - 3;
-            Foo(integer2);
-            var integer3 = 5 * 3 * 2;
-            Foo(integer3);
-            var integer4 = 100 / 4;
-            Foo(integer4);
-            var integer5 = 10 % 4;
-            Foo(integer5);
-        }
-        sw.Stop();
-        Console.WriteLine($"We executed the above Lizzie code 10,000 times in {sw.ElapsedMilliseconds} milliseconds!");
+        // Some inline Lizzie code
+        var code = @"
+if(all(@expensive(), @expensive(), @expensive(), @expensive(), @expensive(5)), {
+  write(""And we're done with TRUE!"")
+}, {
+  write(""And we're done with FALSE!"")
+})
+";
+
+        // Creating a lambda function from our code.
+        var function = LambdaCompiler.Compile<MainClass>(new MainClass(), code);
+
+        // Evaluates our Lizzie code making sure we bind it to our instance.
+        var result = function();
 
         // Waiting for user input.
         Console.Read();

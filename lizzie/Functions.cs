@@ -495,14 +495,27 @@ namespace lizzie
                 throw new LizzieRuntimeException("The 'any' function must be given at least 2 arguments.");
             return arguments.FirstOrDefault(ix => {
 
-                // Making sure we support "delayed function invocation".
+                // Making sure we verify that this is a "delayed verification" of condition.
                 if (ix is Function<TContext> function) {
+
+                    // Checking if function returns something, and returning predicate value accordingly.
                     var ixContent = function(ctx, binder, arguments);
                     if (ixContent == null)
                         return false;
                     return true;
+
+                } else if (ix is string symbol) {
+
+                    // Symbol.
+                    var symbolValue = binder[symbol];
+                    if (symbolValue == null)
+                        return false;
+                    return true;
+
+                } else {
+
+                    throw new LizzieRuntimeException("The 'any' function requires you to only pass in conditions as function invocations. Prepend your condition with an '@' sign if this is a problem.");
                 }
-                return ix != null;
             });
         });
 
@@ -520,8 +533,7 @@ namespace lizzie
             foreach (var arg in arguments) {
                 if (arg == null) {
 
-                    // No reasons to continue.
-                    return null;
+                    throw new LizzieRuntimeException("The 'all' function requires you to only pass in function invocations. Prepend your condition with an '@' sign if this is a problem.");
 
                 } else {
 
@@ -530,12 +542,25 @@ namespace lizzie
                      * to make sure we support "delayed function invocations".
                      */
                     if (arg is Function<TContext> functor) {
+
+                        // Making sure we verify that this is a "delayed verification" of condition.
                         if (functor(ctx, binder, arguments) == null)
                             return null; // No reasons to continue ...
+
+                    } else if (arg is string symbol) {
+
+                        // Symbol.
+                        var symbolValue = binder[symbol];
+                        if (symbolValue == null)
+                            return null;
+
+                    } else {
+
+                        throw new LizzieRuntimeException("The 'all' function requires you to only pass in function invocations. Prepend your condition with an '@' sign if this is a problem.");
                     }
                 }
             }
-            return true;
+            return (object)true;
         });
 
         /// <summary>

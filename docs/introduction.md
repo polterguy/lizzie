@@ -493,7 +493,7 @@ if(foo,{
 })
 ```
 
-#### The definition of truth in Lizzie
+### The definition of truth in Lizzie
 
 Lizzie does not have any explicit _"true"_ or _"false"_ boolean types or values.
 The definition of something that is _"true"_ in Lizzie, is anything returning
@@ -517,7 +517,7 @@ This is called _"implicit conversion to boolean"_, and everything in Lizzie,
 including the boolean value of _"false"_, will in fact evaluate to true.
 The only thing that evaluates to _"false"_ is null.
 
-#### Wait, where's the return keyword?
+### Wait, where's the return keyword?
 
 Well, it doesn't exist! This is because inside of a lambda object, whatever is
 evaluated last, before the lambda returns, will be implicitly returned as the
@@ -570,7 +570,7 @@ if(eq(null, foo), {
 })
 ```
 
-#### Testing for equality
+### Testing for equality
 
 Sometimes you need to check if a variable has a specific value, and not only
 if it is defined. For those cases there's the `eq` function.
@@ -636,14 +636,14 @@ In addition to `eq` and `not` you also have the following comparison functions.
 The above 4 functions can only be used for types that have overloaded the
 equivalent operators for these types of comparisons.
 
-#### OR and AND
+### OR and AND
 
-Since Lizzie doesn't have operators, neither the OR nor the AND keywords exists
-in Lizzie. However, you can accomplish the same result by using the `any` and the
+Lizzie doesn't have operators, neither OR nor AND keywords exists in Lizzie.
+However, you can accomplish the same result by using the `any` and the
 `all` functions. The `any` is the equivalent of OR in a traditional programming
-language, while `all` is the equivalent of AND. The `any` function will return
-non-null if any of its arguments evaluates to non-null, while `all` will only return
-non-null if all of its arguments yields non-null. This allows you to combine `any` and
+language, while `all` is the equivalent of AND. `any` function will return
+the first non-null argument that it is given, while `all` will return null
+if any of its arguments yields null. This allows you to combine `any` and
 `all` to accomplish the same as OR and AND would do for you normally. Consider
 the following.
 
@@ -657,40 +657,66 @@ var(@foo3, 57)
 /*
  * Yields true since foo3 contains a non-null value
  */
-if(any(foo1, foo1, foo3), {
+if(any(@foo1, @foo1, @foo3), {
   write("Any yields true")
 })
 ```
 
 If you exchange the above `any` with an `all`, it will yield null, since some of
-its arguments are null. For the record, the `any` function will in fact return
-the first non-null value from its arguments, allowing you to easily use it also
-for finding the first non-null value in a list of arguments.
+its arguments are null.
 
-#### Boolean shortcutting your code
+### Short-circuit evaluation
 
 Since everything in Lizzie is evaluated, this creates a dilemma for us, where
-the previously mentioned `@` becomes crucially important due to something that
-is called _"boolean conditional shortcut"_, which implies that both the OR and
-the AND operator does not need to check its arguments, if the first argument
-returns true for `any`, or the first argument returns null for `all`. This is
-because when we test for `any`, and the first argument yields true, we don't need
-to check anymore arguments to `any` to know that our `any` function will evaluate to true.
-While for `all`, if the first argument yields null, we know that `all` as a
-whole will not yield true. This implies that for expensive functions, that have
-a significant cost to evaluate, we can use the `@` symbol to avoid evaluating
-the condition, before we know for a fact that we need to. And since the value
-of the n-1 argument always decides if we need to evaluate the n argument, we
-can significantly conserve resources by postponing the evaluation of the
-condition in both our `any` functions and our `all` functions.
+the previously mentioned `@` character becomes important due to something that
+is called _"short-circuit evaluation"_, which implies that both `any` and
+the `all` functions do not need to check more arguments, if the first argument
+returns anything but null null for `any`, or the first argument returns null for
+`all`. This is because when we test for `any`, and the first argument yields
+non-null, we don't need to check anymore arguments to `any` to know that our
+`any` function will evaluate to its first argument. While for `all`, if the
+first argument yields null, we know that `all` as a whole will not yield anything.
 
-This is possible because internally inside of `any` and `all`, Lizzie will check
-to see if the argument it should check is a function, and if it is a function,
-it will evaluate that function to see if it yields something, and only if that
-function yields something, it will return null or _"something"_ to caller - Or
-continue checking the rest of its arguments.
+This implies that for expensive functions, that have a significant cost to evaluate,
+we can use the `@` symbol to avoid evaluating the condition before we know for a
+fact that we need to. And since the value of the n-1 argument always decides if
+we need to evaluate the n argument, we can significantly conserve resources by
+postponing the evaluation of the condition in both our `any` functions and our
+`all` functions. Hence, both of these two functions requires you to use _"lazy
+evaluation"_ of their arguments, by appending your arguments to them with an
+`@` character. For simple symbols this isn't that important, but for costy
+function evaluations, this might significantly improve the cost of evaluating
+these functions. Hence, internally in Lizzie, the `all` and the `any` functions
+actually **require** you to pass in functions, and/or symbol names, to make it
+impossible to evaluate them erronously, bypassing _"lazy evaluation"_ of their
+arguments.
 
-Consider the following entire console program.
+If this sounds like Greek to you, simply remember that you must **always** prefix your
+arguments to `any` and `all` with an `@` character. For instance, the code below
+will throw an exception.
+
+```javascript
+var(@foo1)
+var(@foo2)
+
+// This line throws an exception during runtime
+if(any(foo1, foo2), {
+  // Never executed
+})
+```
+
+To fix the above Lizzie code, such that it evaluates correctly, without throwing
+an exception - Simply add an `@` character in front of `foo1` and `foo2` inside
+of `any`. The same is true for function invocations. I have consciously chosen
+to explicitly throw an exception if these two functions are given anything but
+functions themselves as arguments, to prevent you from creating code that might
+evaluate sub-optimial. If I had allowed for passing in non-functions to `any`
+and `all`, you might have erronously created code that spent an unreasonable
+amount of time executing, simply by _"forgetting"_ how to correctly use these
+two functions.
+
+Consider the following entire console program, that throws an exception during
+runtime for the record after 5 seconds.
 
 ```csharp
 using System;
@@ -740,12 +766,13 @@ if(all(expensive(), expensive(), expensive(), expensive(), expensive(5)), {
 }
 ```
 
-In the above program it will take 5 seconds before our `all` invocation is
-finished evaluating, because each of our `expensive` functions will take 1
+In the above program it will take 5 seconds before our `all` invocation starts
+evaluating, because each of our `expensive` functions will take 1
 second to evaluate, and all of our invocations are evaluated before we invoke
 our `all` function. If we change its Lizzie code to the following, it will
-only require 1 second, because only the first argument needs to be evaluated,
-before we know that `all` will for a fact evaluate to null.
+only require 1 second, and not throw an exception, because only the first
+argument needs to be evaluated, before we know that `all` will for a fact
+evaluate to null.
 
 ```javascript
 if(all(@expensive(), @expensive(), @expensive(), @expensive(), @expensive(5)), {
@@ -756,12 +783,12 @@ if(all(@expensive(), @expensive(), @expensive(), @expensive(), @expensive(5)), {
 ```
 
 This is because in the first example all of our invocations to `expensive` are
-evaluated before we even invoke our `any` function. While in our second example,
-we delay evaluation by passing in our function invocations by reference to our
-`any` function, which will inspect the values of its arguments, and if it finds
-that these are function invocations, evaluate these functions before it determines
-whether or not it's a null value or a true value. You can (and _should_) also apply
-the same trick for `any` invocations if you know they will be expensive to evaluate.
+evaluated before we even invoke our `all` function. While in our second example,
+we delay evaluation of our conditions, by passing in our conditions as _"delayed
+function invocations"_ to our `all` function, which will only evaluate these
+functions if it needs to evaluate them. Since the first `expensive` invocation
+returns null, the `all` function does not need to evaluate anymore functions, and
+can do a _"short-circuit evaluation"_ by simply returning null immediately.
 
 ### Lists
 

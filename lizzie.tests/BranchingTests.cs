@@ -286,7 +286,7 @@ if(lte(foo, 3), {
 var(@foo1)
 var(@foo2, 1)
 var(@foo3)
-if(any(foo1, foo2, foo3), {
+if(any(@foo1, @foo2, @foo3), {
   57
 }, {
   67
@@ -303,7 +303,7 @@ if(any(foo1, foo2, foo3), {
 var(@foo1)
 var(@foo2)
 var(@foo3)
-if(any(foo1, foo2, foo3), {
+if(any(@foo1, @foo2, @foo3), {
   57
 }, {
   67
@@ -320,7 +320,7 @@ if(any(foo1, foo2, foo3), {
 var(@foo1, 1)
 var(@foo2, 2)
 var(@foo3, 3)
-if(all(foo1, foo2, foo3), {
+if(all(@foo1, @foo2, @foo3), {
   57
 }, {
   67
@@ -337,7 +337,7 @@ if(all(foo1, foo2, foo3), {
 var(@foo1, 1)
 var(@foo2, 2)
 var(@foo3)
-if(all(foo1, foo2, foo3), {
+if(all(@foo1, @foo2, @foo3), {
   57
 }, {
   67

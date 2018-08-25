@@ -154,7 +154,7 @@ bar");
 var(@foo, list(""57"", ""67"", ""77"", ""88.88"", ""97""))
 var(@bar, list())
 each(@ix, foo, {
-  if(any(eq(""57"", ix), eq(""77"", ix), eq(""88.88"", ix)), {
+  if(any(@eq(""57"", ix), @eq(""77"", ix), @eq(""88.88"", ix)), {
     add(bar, number(ix))
   })
 })
