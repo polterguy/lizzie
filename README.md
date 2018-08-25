@@ -245,18 +245,12 @@ demanding tasks, such as polygon rendering, algorithmic intensive math
 operations, complex parsing, etc. Because after all, it will never execute
 as fast as the equivalent C# code, due to its dynamic nature.
 
+## Reference documentation
+
+* [Reference documentation for Lizze](/docs/introduction.md)
+
 ## Installation
 
 Lizzie is still not finished, but will probably be released in the near future.
-However, if you're determined on trying it out, you can clone the repository.
-
-Documentation is work in progress. Feel free to view the unit tests for examples
-of how Lizzie works. However, evaluation of a _"body"_ will always return the
-result of the Symbolic Delegate that was last evaluated. This is why the above
-code will return _"77"_, because the value of the `bar` symbol is 77 after we
-have added the the value of `foo` to the result of `multiply(10,2)` and assigned
-the result to `bar`.
-
-## Introduction to Lizzie
-
-* [Reference documentation for Lizze](/docs/introduction.md)
+However, if you're determined on trying it out, you can clone the repository,
+and use the unit tests as examples.
