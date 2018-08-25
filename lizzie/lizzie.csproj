@@ -2,15 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageVersion>0.1</PackageVersion>
+    <PackageVersion>0.5</PackageVersion>
     <Authors>Thomas Hansen</Authors>
     <PackageLicenseUrl>https://github.com/polterguy/lizzie/blob/master/LICENSE</PackageLicenseUrl>
     <Owners>Thomas Hansen</Owners>
     <PackageProjectUrl>https://github.com/polterguy/lizzie</PackageProjectUrl>
-    <Summary>Lizzie, a dynamically interpreted quasi LISP implementation for .Net</Summary>
-    <PackageTags>LISP, delegates, scripting</PackageTags>
+    <Summary>Lizzie, the world's smallest script language for the CLR</Summary>
+    <PackageTags>delegates, scripting, symbolic delegates</PackageTags>
     <Title>lizzie</Title>
-    <Description>S-expressions from delegates</Description>
+    <Description>A dynamic script language based upon Symbolic Delegates</Description>
     <PackageId>lizzie</PackageId>
   </PropertyGroup>
 
@@ -20,10 +20,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" version="4.5.0" Version="4.5.0">
       <PrivateAssets>all</PrivateAssets>
-      <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="types\Body.cs" />
   </ItemGroup>
 </Project>
