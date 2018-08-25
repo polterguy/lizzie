@@ -306,9 +306,9 @@ _"foo is invoked"_ to the console, even though we have created our function
 invocation as an argument to our `foo` function.
 
 An easy way to visualize this, is by realizing that the statement
-`@write("This will be evaluated last ...")` does not invoke `write`, but rather
-creates an anonymouz function, that once is evaluated, will invoke `write` with
-the arguments you have already declared for your write invocation.
+`@write(...)` does not invoke `write`, but rather creates an anonymous function,
+that once evaluated will invoke `write` with the arguments you have already
+declared that you want to use for your `write` invocation.
 
 The above syntax might seem a little bit weird, but realize that Lizzie is
 entirely built upon _"Symbolic Delegates"_, which are kind of like S-Expressions
