@@ -91,6 +91,10 @@ namespace lizzie
 
         #region [ -- Interface implementations -- ]
 
+        /// <summary>
+        /// Gets the enumerator.
+        /// </summary>
+        /// <returns>The enumerator.</returns>
         public IEnumerator<object> GetEnumerator()
         {
             return _list.GetEnumerator();

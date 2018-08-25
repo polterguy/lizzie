@@ -26,6 +26,11 @@ namespace lizzie
 
         #region [ -- Interface implementation -- ]
 
+        /// <summary>
+        /// Retrieves the next token from the specified reader.
+        /// </summary>
+        /// <returns>The next token from the reader.</returns>
+        /// <param name="reader">Reader to retrieve token from.</param>
         public string Next(StreamReader reader)
         {
             // Checking if we have cached tokens.

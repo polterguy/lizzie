@@ -40,7 +40,6 @@ namespace lizzie
         /// <returns>Each token found in your code.</returns>
         /// <param name="stream">Stream containing Lizzie code. Notice, this method does not claim ownership over
         /// your stream, and you are responsible for correctly disposing it yourself</param>
-        /// <typeparam name="TContext">The type of your context object.</typeparam>
         public IEnumerable<string> Tokenize(Stream stream)
         {
             // Notice! We do NOT take ownership over stream!
@@ -60,7 +59,6 @@ namespace lizzie
         /// <returns>Each token found in your code.</returns>
         /// <param name="streams">Streams containing Lizzie code. Notice, this method does not claim ownership over
         /// your streams, and you are responsible for correctly disposing the streams yourself</param>
-        /// <typeparam name="TContext">The type of your context object.</typeparam>
         public IEnumerable<string> Tokenize(IEnumerable<Stream> streams)
         {
             foreach (var ixStream in streams) {

@@ -111,11 +111,11 @@ namespace lizzie
             binder["null"] = null;
         }
 
-        /*
-         * Empty class to help create a Lambda function without needing to
-         * bind to some specific type, but rather simply evaluate Lizzie code,
-         * without having bound it to anything in particular.
-         */
+        /// <summary>
+        /// Empty class to help create a Lambda function without needing to
+        /// bind to some specific type, but rather simply evaluate Lizzie code,
+        /// without having bound it to anything in particular.
+        /// </summary>
         public class Nothing { };
     }
 }
