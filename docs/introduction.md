@@ -312,7 +312,12 @@ An easy way to visualize this, is by realizing that the statement
 `@write(...)` does not invoke `write`, but rather creates an anonymous function,
 that once evaluated will invoke `write` with the arguments you have already
 declared that you want to use for your `write` invocation. Think of this in
-such a way that in Lizzie function invocations are also objects.
+such a way that in Lizzie function invocations are also objects. The above
+`@write(...)` syntax is logically similar to the following JavaScript.
+
+```javascript
+foo(function() { write("This will be evaluated last ...") });
+```
 
 If you don't understand what the above code does, relax and keep on reading,
 we will dive deep into functions further down in this document.
