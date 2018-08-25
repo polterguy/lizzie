@@ -136,9 +136,12 @@ for the language_. This implies that you can learn the entire programming langua
 literally in 10 minutes. The _"compiler"_ for the language is less than 500 lines
 of code, and all _"keywords"_ are less than 800 lines of code in total. The project
 as a whole has roughly 2000 lines of code, but 50% of these are comments. When built,
-the dll is roughly 40KB on disc. This arguably makes Lizzie the smallest (useful)
-programming language on the planet, if you ignore languages such as _"brainfuck"_,
-arguably created as a joke.
+the dll is roughly 40KB on disc. There are 7 public classes in the project, one
+attribute, and one interface. There are less than 30 methods in total, and you don't
+have to use more than a handful of these to start adding dynamica scripting abilities
+to your CLR code. This arguably makes Lizzie the smallest (useful) programming
+language on the planet, if you ignore languages such as _"brainfuck"_, arguably
+created more or less as a joke.
 
 ## Installation
 
