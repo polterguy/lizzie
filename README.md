@@ -3,8 +3,9 @@
 
 Lizzie is a dynamic scripting language for .Net based upon a design pattern
 called _"Symbolic Delegates"_. This allows you to execute dynamically created
-scripts, that does neither compile nor are interpreted, but instead _"transpiles"_
-directly down to managed CLR delegates. Below is an example of using Lizzie.
+scripts, that does neither compile nor are interpreted, but instead _"compiles"_
+directly down to managed CLR delegates. Below is an example of using Lizzie from
+C#.
 
 ```csharp
 using System;
@@ -20,14 +21,14 @@ var(@foo, 57)
 var(@bar, add(foo, multiply(10,2)))
 bar";
 
-        // Creating a Lizzie lambda and evaluating it.
+        // Creating a Lizzie lambda object from the above code, and evaluating it
         var lambda = LambdaCompiler.Compile(code);
         var result = lambda();
 
-        // Writing the result of the above evaluation to the console.
+        // Writing the result of the above evaluation to the console
         Console.WriteLine("Result was: " + result);
 
-        // Waiting for user input.
+        // Waiting for user input
         Console.Read();
     }
 }
