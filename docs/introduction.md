@@ -863,3 +863,9 @@ write(*(5, 3, 2))
 write(/(100, 4))
 write(%(18, 4))
 ```
+
+### String manipulation
+
+
+[Does perfect software exist?](perfect-software.md)
+
