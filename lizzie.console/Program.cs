@@ -1,9 +1,33 @@
 ﻿using System;
+using lizzie;
 
 class MainClass
 {
+    [Bind(Name = "write")]
+    object WriteLine(Binder<MainClass> binder, Arguments arguments)
+    {
+        Console.WriteLine(arguments.Get(0));
+        return null;
+    }
+
     public static void Main(string[] args)
     {
-        Console.WriteLine("Hello World!");
+        // Some inline Lizzie code
+        var code = @"
+var(@foo, ""Hello World"")
+write(length(foo))
+write(replace(foo, ""World"", ""Sirius""))
+write(substr(foo, 6, 2))
+write(substr(foo, 6)) // The count is optional
+";
+
+        // Creating a lambda function from our code.
+        var function = LambdaCompiler.Compile<MainClass>(new MainClass(), code);
+
+        // Evaluates our Lizzie code making sure we bind it to our instance.
+        var result = function();
+
+        // Waiting for user input.
+        Console.Read();
     }
 }

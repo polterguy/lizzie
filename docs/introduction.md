@@ -872,5 +872,13 @@ Lizzie contains the following functions for manipulating strings.
 * __length__ returns the length of the string
 * __replace__ replaces all occurrencies of the specified 1st arg value with the 2nd arg value
 
-[Does perfect software exist?](perfect-software.md)
+```javascript
+var(@foo, "Hello World")
+write(length(foo))
+write(replace(foo, "World", "Sirius"))
+write(substr(foo, 6, 2))
+write(substr(foo, 6)) // The count is optional
+```
+
+[Is Lizzie 'perfect'?](perfect-software.md)
 
