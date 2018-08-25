@@ -245,10 +245,6 @@ demanding tasks, such as polygon rendering, algorithmic intensive math
 operations, complex parsing, etc. Because after all, it will never execute
 as fast as the equivalent C# code, due to its dynamic nature.
 
-## Reference documentation
-
-* [Reference documentation for Lizze (12 pages, 20 minute read)](/docs/introduction.md)
-
 ## A 5 minutes introductory video to Lizzie
 
 <p align="center">
@@ -256,6 +252,10 @@ as fast as the equivalent C# code, due to its dynamic nature.
 <img alt="A 5 minutes introduction video to Lizzie" title="A 5 minutes introduction video to Lizzie" src="https://phosphorusfive.files.wordpress.com/2018/08/intro-to-lizzie-video-screenshot.png" />
 </a>
 </p>
+
+## Reference documentation
+
+* [Reference documentation for Lizze (12 pages, 20 minute read)](/docs/introduction.md)
 
 ## Installation
 
