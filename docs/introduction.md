@@ -244,7 +244,7 @@ your Lizzie code.
 C# console program around, and simply replace its Lizzie code, to try out the
 following examples.
 
-#### What's with the funny '@' symbol?
+### What's with the funny '@' symbol?
 
 **Warning** - Advanced concept coming up. If you don't understand the contents
 of this sub-title, simply skip it, and come back to it later, at which point
