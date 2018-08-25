@@ -50,7 +50,7 @@ As you execute the above C# console program, you will see that clearly your Lizz
 code is able to execute your `Foo` C# method, as if it was a Lizzie function. This
 is because of that the type of `MainClass` is the type argument to the
 `LambdaCompiler.Compile` line. Internally, the Lizzie compiler will create a
-_"Symbolic Delegate"_ for each method that you have marked with the Bind attribute,
+_"Symbolic Delegate"_ for each method that you have marked with the `Bind` attribute,
 and make that method available as a _"function"_ to your Lizzie code.
 
 This allows you to extend Lizzie as you see fit, with your own _"keywords"_
@@ -94,10 +94,9 @@ class MainClass
 }
 ```
 
-The last example from above is a slightly more manual job, and can't use
-the `LambdaBuilder` convenience methods at the moment. But from a functional
+The last example above requires a slightly more manual job, but from a functional
 point of view, the above two examples are identical, except that in the first
-example the `this` reference is implicitly passed into your method, since this
+example the `this` reference is implicitly passed into your function, since this
 is a member instance method of the `MainClass` - While in the second example,
 the reference to your context is passed explicitly as the `ctx` argument.
 The signature of the functions are still the same, and can be found below.
@@ -106,24 +105,26 @@ The signature of the functions are still the same, and can be found below.
 delegate object Function<TContext>(TContext ctx, Binder<TContext> binder, Arguments arguments);
 ```
 
-TContext above in our second example above is our `MainClass`.
+`TContext` is our `MainClass` above.
 
 Every Lizzie function has the exact same signature. This is what makes it possible for
 us to handle delegates _"symbolically"_. Since we know that every method/function/delegate
 will have the same signature, we can treat them as function objects. This
-creates many advantages, and some disadvantages. The disadvantage is that you
+creates many advantages, and some disadvantages. The _"disadvantage"_ is that you
 loose type safety while passing arguments around, since the `Arguments` class
 is simply a wrapper around `List<object>`. This means you are responsible yourself
 for making sure you don't try to perform an illegal cast or conversion inside of
-your C# code. However, internally in Lizzie type safety doesn't really matter,
+your C# code. However, internally in Lizzie type safety doesn't really matter much,
 since it will just as happily accept anything, and convert back and forth from
 almost anything to anything, as long as there exists a legal conversion somehow.
 Although in your C# code, you must be slightly more careful. You can use the
 `Get<T>(int index)` method on your `Arguments` instance to perform automatic
-conversion, if you know what types your method is expecting.
+conversion, if you know what types your method is expecting. If you do, and your
+object does not support conversion to the requested type, your code will throw
+an exception.
 
-**Notice!** Lizzie is not type safe, but after a while, you will
-realize that _is the whole point_, and its _main advantage_ in fact! If Lizzie
+**Notice** - Lizzie is not type safe, but after a while, you will
+realize that _is the whole point_, and its _main advantage_ in fact. If Lizzie
 had type safety, it wouldn't have much practical use in fact, since the
 whole idea is to create an extremely loosely coupling, allowing you to create
 configurations and rule based engines, which can be dynamically stored any place,
@@ -132,7 +133,11 @@ dynamically compiled script language. This also implies that the same piece of
 Lizzie code, might in theory perform two distinct different tasks, depending
 upon which class you are binding it towards. So you can completely change what
 your code does, by simply choosing to bind it to something else, which of
-course is extremely powerful once you realize its advantages.
+course is extremely powerful once you realize its advantages. This trait also
+makes Lizzie pathetically easy to learn. In fact, the entire reference documentation
+for the language, which is this page, is not more than roughly 10 pages if
+you choose to print it out. These 10 pages are _everything_ you need to learn
+in order to master Lizzie!
 
 ## Pre-defined Lizzie functions
 
