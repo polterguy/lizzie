@@ -882,13 +882,20 @@ write(substr(foo, 6)) // The count is optional
 
 ### Eval
 
-No script language is complete without an `eval` function, which allows for
+No script language is complete without an `eval` function, that allows for
 dynamically creating code, that is evaluated dynamically by the code that
-creates it. Below you can find an example of Lizzie's `eval`.
+creates it. Below you can find an example of Lizzie's `eval` function.
 
 ```javascript
-eval("+(57,10,10)")
+write(eval("+(57,10,10)"))
 ```
+
+This function requires one argument, which must be a valid piece of Lizzie code,
+which it compiles, evaluates, for then to return the result of the evaluation
+back to caller. It will share the context object, but it will create a new stack,
+not having access to the already dynamically declared variables. Notice though
+that `eval` will load up the default keywords from the `LambdaCompiler` from you,
+which might not necessarily be what you want.
 
 [Is Lizzie 'perfect'?](perfect-software.md)
 
