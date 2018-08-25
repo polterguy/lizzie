@@ -92,7 +92,7 @@ write(foo)";
         // Creating a lambda function from our code, using the above tokenizer.
         var function = Compiler.Compile<MainClass>(tokenizer, code);
 
-        // Creating an instance of our class, which we can bind to our code.
+        // Creating an instance of our class, which we can bind to our Lizzie code.
         var context = new MainClass();
 
         // Creating a binder, and adding some pre-defined functions to it.
@@ -124,6 +124,10 @@ have to use more than a handful of these to start adding dynamic scripting abili
 to your CLR code. This arguably makes Lizzie the smallest (useful) programming
 language on the planet, if you ignore languages such as _"brainfuck"_, arguably
 created more or less as a joke.
+
+The Lizzie tokenizer also contains only 7 different tokens. There are no operators
+in the language, and only one type of statements, which are _"functions"_, that
+all have the same signature.
 
 ## How fast is Lizzie
 
