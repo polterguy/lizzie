@@ -327,6 +327,10 @@ basically a delegate, that internally contains a list of other delegates, that
 it sequentially evaluated once the _"lambda"_ is evaluated. `{}` simply creates
 an object, that happens to be a function, which you can execute when needed.
 
+Yet again, if this part is all Greek, simply keep on reading, and refer back to
+it later, at which point you'll have the necessary knowledge to understand this
+part.
+
 ### Changing a variable's value
 
 To declare a value, you always use the `var` function. This allocates space for
