@@ -284,7 +284,7 @@ foo(@write("This will be evaluated last ..."))
 ```
 
 If you evaluate the Lizzie code above, you might be surprised to see that the
-`@write` invocation that we pass into our `foo` function is in fact not evaluated
+`@write(...)` invocation that we pass into our `foo` function is in fact not evaluated
 as we pass it into our `foo` function. This allows you to decorate a function
 invocation, and _"delay"_ its evaluation, to the point in time where you are
 sure of that you actually want to evaluate it. Internally in Lizzie, this is
@@ -304,6 +304,11 @@ _after_ we first write _"foo is invoked"_ to the console. For this reason the
 evaluation of our `bar` function actually occurs _after_ we have written
 _"foo is invoked"_ to the console, even though we have created our function
 invocation as an argument to our `foo` function.
+
+An easy way to visualize this, is by realizing that the statement
+`@write("This will be evaluated last ...")` does not invoke `write`, but rather
+creates an anonymouz function, that once is evaluated, will invoke `write` with
+the arguments you have already declared for your write invocation.
 
 The above syntax might seem a little bit weird, but realize that Lizzie is
 entirely built upon _"Symbolic Delegates"_, which are kind of like S-Expressions
