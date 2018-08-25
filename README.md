@@ -17,9 +17,11 @@ class MainClass
     {
         // Some inline Lizzie code
         var code = @"
-var(@foo, 57)
-var(@bar, +(foo, *(10,2)))
-bar";
+
+// Multiples 10 by 2 and adds to 57
++(57, *(10, 2))
+
+";
 
         // Creating a Lizzie lambda object from the above code, and evaluating it
         var lambda = LambdaCompiler.Compile(code);
