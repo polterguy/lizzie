@@ -41,6 +41,7 @@
     <Compile Include="ListTests.cs" />
     <Compile Include="NullTests.cs" />
     <Compile Include="StringTests.cs" />
+    <Compile Include="EvalTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\lizzie\lizzie.csproj">

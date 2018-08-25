@@ -69,7 +69,7 @@ using lizzie;
 
 class MainClass
 {
-    // This method will be available as a function in your Lizzie code.
+    // This method will be available as a function in your Lizzie code
     [Bind(Name = "write")]
     object Write(Binder<MainClass> ctx, Arguments arguments)
     {
@@ -86,39 +86,39 @@ write(foo)
 set(@foo, +(foo, 10))
 write(foo)";
 
-        // Creating a tokenizer for our Lizzie code.
+        // Creating a tokenizer for our Lizzie code
         var tokenizer = new Tokenizer(new LizzieTokenizer());
 
-        // Creating a lambda function from our code, using the above tokenizer.
+        // Creating a lambda function from our code, using the above tokenizer
         var function = Compiler.Compile<MainClass>(tokenizer, code);
 
-        // Creating an instance of our class, which we can bind to our Lizzie code.
+        // Creating an instance of our class, which we can bind to our Lizzie code
         var context = new MainClass();
 
-        // Creating a binder, and adding some pre-defined functions to it.
+        // Creating a binder, and adding some pre-defined functions to it
         var binder = new Binder<MainClass>();
         binder["var"] = Functions<MainClass>.Var;
         binder["set"] = Functions<MainClass>.Set;
         binder["+"] = Functions<MainClass>.Add;
 
-        // Evaluates our Lizzie code, making sure we bind it to our instance.
+        // Evaluates our Lizzie code, making sure we bind it to our instance
         function(context, binder);
 
-        // Waiting for user input.
+        // Waiting for user input
         Console.Read();
     }
 }
 ```
 
-## How small is Lizzie
+## How small is Lizzie?
 
 The [entire reference documentation for Lizze](/docs/introduction.md) is roughly
 12 pages if you choose to print it. _This is the entire reference documentation
 for the language_. This allows you to learn the entire programming language
 literally in 20 minutes. The _"compiler"_ for the language is less than 500 lines
-of code, and all _"keywords"_ are less than 800 lines of code in total. The project
-as a whole has roughly 2000 lines of code, but 50% of these are comments. When built,
-the dll is roughly 40KB on disc. There are 7 public classes in the project, one
+of code, and all _"keywords"_ are less than 1,000 lines of code in total. The project
+as a whole has roughly 2,200 lines of code, but 50% of these are comments. When built,
+the dll is roughly 45KB on disc. There are 7 public classes in the project, one
 attribute, and one interface. There are less than 30 methods in total, and you don't
 have to use more than a handful of these to start adding dynamic scripting abilities
 to your CLR code. This arguably makes Lizzie the smallest (useful) programming
@@ -153,7 +153,7 @@ class MainClass
 {
     public static void Main(string[] args)
     {
-        // Some inline Lizzie code.
+        // Some inline Lizzie code
         var code = @"
 +(5, 2, 50)
 -(100, 30, 3)
@@ -162,16 +162,16 @@ class MainClass
 %(18, 4)
 ";
 
-        // Compiling the above code 10,000 times!
+        // Compiling the above code 10,000 times
         Console.WriteLine("Compiling some Lizzie code 10,000 times, please wait ...");
         Stopwatch sw = Stopwatch.StartNew();
         for (var idx = 0; idx < 10000; idx++) {
             var lambda = LambdaCompiler.Compile(code);
         }
         sw.Stop();
-        Console.WriteLine($"We compiled the above code 10,000x in {sw.ElapsedMilliseconds} milliseconds!");
+        Console.WriteLine($"We compiled the above code 10,000x in {sw.ElapsedMilliseconds} milliseconds");
 
-        // Waiting for user input.
+        // Waiting for user input
         Console.Read();
     }
 }
@@ -233,12 +233,10 @@ method. So you can't expect a Lizzie lambda object to evaluate nearly as fast as
 equivalent C# method. However, compared to the execution speed of an interpreter
 written on the CLR, and/or a _"true compiler"_ written on the CLR, Lizzie will
 purely mathematically outperform both of these for all practical concerns,
-assuming you have an interest in executing dynamic code.
-
-Since most practical snippets of code does complex tasks, such as accessing the
-file system, and reading/writing to databases, fetching data over sockets, etc -
-The execution speed overhead of your Lizzie code for most practical concerns will
-be irrelevant.
+assuming you have an interest in executing dynamic code. Since most practical
+snippets of code does complex tasks, such as accessing the file system, and
+reading/writing to databases, fetching data over sockets, etc - The execution
+speed overhead of your Lizzie code for most practical concerns will be irrelevant.
 
 **DISCLAIMER** - I would not encourage you to use Lizzie for extremely CPU resource
 demanding tasks, such as polygon rendering, algorithmic intensive math

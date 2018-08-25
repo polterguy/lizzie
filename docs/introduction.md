@@ -880,5 +880,15 @@ write(substr(foo, 6, 2))
 write(substr(foo, 6)) // The count is optional
 ```
 
+### Eval
+
+No script language is complete without an `eval` function, which allows for
+dynamically creating code, that is evaluated dynamically by the code that
+creates it. Below you can find an example of Lizzie's `eval`.
+
+```javascript
+eval("+(57,10,10)")
+```
+
 [Is Lizzie 'perfect'?](perfect-software.md)
 

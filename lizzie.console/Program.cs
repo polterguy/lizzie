@@ -14,11 +14,7 @@ class MainClass
     {
         // Some inline Lizzie code
         var code = @"
-var(@foo, ""Hello World"")
-write(length(foo))
-write(replace(foo, ""World"", ""Sirius""))
-write(substr(foo, 6, 2))
-write(substr(foo, 6)) // The count is optional
+eval(""+(57, 10, 10)"")
 ";
 
         // Creating a lambda function from our code.

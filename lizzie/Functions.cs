@@ -728,7 +728,7 @@ namespace lizzie
         /// This function will return the numeric representation of whatever object
         /// it is given. The function must be given exactly one argument.
         /// </summary>
-        /// <value>The function wrapping the 'string keyword'.</value>
+        /// <value>The function wrapping the 'number keyword'.</value>
         public static Function<TContext> Number => new Function<TContext>((ctx, binder, arguments) =>
         {
             if (arguments.Count != 1)
@@ -752,7 +752,7 @@ namespace lizzie
         /// an offset of where to start the returned string from. You can also
         /// optionally supply a third argument
         /// </summary>
-        /// <value>The function wrapping the 'string keyword'.</value>
+        /// <value>The function wrapping the 'substr keyword'.</value>
         public static Function<TContext> Substr => new Function<TContext>((ctx, binder, arguments) =>
         {
             // Sanity checking.
@@ -777,7 +777,7 @@ namespace lizzie
         ///
         /// This function will return the length of the given string value.
         /// </summary>
-        /// <value>The function wrapping the 'string keyword'.</value>
+        /// <value>The function wrapping the 'length keyword'.</value>
         public static Function<TContext> Length => new Function<TContext>((ctx, binder, arguments) =>
         {
             // Sanity checking.
@@ -796,7 +796,7 @@ namespace lizzie
         /// This function will replace all occurrencies of the 2nd argument with the
         /// value of the 3rd argument, and return a new string to the caller.
         /// </summary>
-        /// <value>The function wrapping the 'string keyword'.</value>
+        /// <value>The function wrapping the 'replace keyword'.</value>
         public static Function<TContext> Replace => new Function<TContext>((ctx, binder, arguments) =>
         {
             // Sanity checking.
@@ -808,6 +808,27 @@ namespace lizzie
             var arg2 = arguments.Get<string>(1);
             var arg3 = arguments.Get<string>(2);
             return arg1.Replace(arg2, arg3);
+        });
+
+        /// <summary>
+        /// Dynamically compiles and evaluates the given code, and returns the result.
+        ///
+        /// This function will compile and evaluate the given string, assuming it
+        /// contains valid Lizzie code. Notice, the evaluated code will not have
+        /// access to the stack of the code evaluating eval, but it will share
+        /// the same context instance.
+        /// </summary>
+        /// <value>The function wrapping the 'eval keyword'.</value>
+        public static Function<TContext> Eval => new Function<TContext>((ctx, binder, arguments) =>
+        {
+            // Sanity checking.
+            if (arguments.Count != 1)
+                throw new LizzieRuntimeException("The 'eval' function must be given exactly 1 argument.");
+
+            // Retrieving string's length.
+            var arg1 = arguments.Get<string>(0);
+            var lambda = LambdaCompiler.Compile<TContext>(ctx, arg1);
+            return lambda();
         });
     }
 }

@@ -104,6 +104,9 @@ namespace lizzie
             binder["length"] = Functions<TContext>.Length;
             binder["replace"] = Functions<TContext>.Replace;
 
+            // The eval function.
+            binder["eval"] = Functions<TContext>.Eval;
+
             // Null is simply a constant yielding null.
             binder["null"] = null;
         }
