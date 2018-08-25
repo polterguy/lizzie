@@ -680,9 +680,10 @@ non-null, we don't need to check anymore arguments to `any` to know that our
 `any` function will evaluate to its first argument. While for `all`, if the
 first argument yields null, we know that `all` as a whole will not yield anything.
 
-This implies that for expensive functions, that have a significant cost to evaluate,
+To consistently support this in Lizzie, and to avoid erronous code being created,
 we _must_ use the `@` symbol to avoid evaluating the condition before we know for a
-fact that we need to. And since the value of the n-1 argument always decides if
+fact that we need to. This allows for something called _"lazy evaluation"_ of
+conditions. And since the value of the n-1 argument always decides if
 we need to evaluate the n argument, we can significantly conserve resources by
 postponing the evaluation of the condition in both our `any` functions and our
 `all` functions. Hence, both of these two functions requires you to use _"lazy
