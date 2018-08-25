@@ -774,7 +774,7 @@ argument needs to be evaluated, before we know that `all` will for a fact
 evaluate to null.
 
 ```javascript
-if(all(@expensive(), @expensive(), @expensive(), @expensive(), @expensive(5)), {
+if(all(@expensive(), @expensive(), @expensive(), @expensive(), @expensive()), {
   write("And we're done with TRUE!")
 }, {
   write("And we're done with FALSE!")
@@ -794,26 +794,26 @@ can do a _"short-circuit evaluation"_ by simply returning null immediately.
 Lizzie has good support for handling lists of objects. To create a list you can
 use the `list` function. To add to a list you can use `add`. To get an item you
 can use `get`. To count items in a list you can use `count`, and to slice a list
-you can use `slice`, which will return a sub list of your original list.
+you can use `slice`, which will return a sub-list of your original list.
 
 ```javascript
-// Declare a list.
+// Declare a list
 var(@foo, list(57, 67, 77))
 write(+("list count ", count(foo)))
 
-// Returns the 3rd item.
+// Returns the 3rd item
 write(+("list 3rd item ", get(foo, 2)))
 
-// Adds two new items to the list.
+// Adds two new items to the list
 add(foo, 88, 99)
 write(+("list count ", count(foo)))
 
-// Slice the list, and puts the new list into 'bar'.
+// Slice the list, and puts the new list into 'bar'
 var(@bar, slice(foo, 1, 3))
 write(+("bar list count ", count(bar)))
 ```
 
-#### Iterating lists
+### Iterating lists
 
 The `each` function allows you to evaluate a lambda once for each value in a list.
 The first argument is expected to be a symbol prefixed with an `@` character,
@@ -830,7 +830,7 @@ each(@ix, foo, {
 
 ### Conversion
 
-Sometimes you need to convert an object from its string representatio to a number,
+Sometimes you need to convert an object from its string representation to a number,
 or vice versa. For such cases you have the `number` and `string` functions. Below
 is an example.
 
@@ -843,11 +843,11 @@ write(+(string(55), 5))
 
 Lizzie contains all the basic math functions, these are as follows.
 
-* `+` adds two or more _"things"_ together.
-* `-` subtracts one or more _"things"_ from its first argument.
-* `/` divides one or more _"things"_ from its first argument.
-* `*` multiplies one or more _"things"_ to each other.
-* `%` calculate the modulo (remainder) after division.
+* `+` adds two or more _"things"_ together
+* `-` subtracts one or more _"things"_ from its first argument
+* `/` divides one or more _"things"_ from its first argument
+* `*` multiplies one or more _"things"_ to each other
+* `%` calculate the modulo (remainder) after division
 
 Notice, we say _"things"_ above, because these functions works with all types
 that have somehow overloaded the equivalent operators. This allows you to use
