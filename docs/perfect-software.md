@@ -60,5 +60,7 @@ system, or the underlaying framework or CLR.
 When I do this, I will clearly mark it as such, and it will be scientifically
 impossible to find bugs in it. The reasons for this is quite simple in fact.
 All bugs are dependent upon code to exist. If you eliminate the code, there
-can be no bugs. And Lizzie contains almost no code! Just like the above chess
-pussle almost contains no pieces ...
+can be no bugs, and Lizzie contains almost no code - Just like the above chess
+pussle contains almost no pieces ...
+
+**No code, no bugs, no problems!**
