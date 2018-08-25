@@ -53,6 +53,9 @@ from a dictionary of delegates with the same signature. This allows you to dynam
 wire together delegates to an _"execution tree"_ during runtime, based upon whatever
 delegate happens to be the value for your _"symbol"_. Lizzie is literally a
 dictionary of delegates, where the key to lookup your delegates are of type string.
+This allows you to easily extend Lizzie by simply creating a new delegate, and
+associating it with a _"symbol"_, to such have access to execute CLR methods
+from your Lizzie script code.
 
 ## Binding Lizzie to your own types
 
