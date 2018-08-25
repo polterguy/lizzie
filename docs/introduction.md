@@ -6,6 +6,8 @@ without the _"funny syntax"_. Although this arguably eliminates most of the
 peculiarities from Lisp, it still keeps some of these around. The same way that
 Lisp is based upon Symbolix Expressions, or S-Expressions, Lizzie is based upon
 a similar construct which we refer to as _"Symbolic Delegates"_ in this documentation.
+This arguably makes the ideas of Lisp, dynamically available to developers on
+the CLR stack, without forcing an entirely new way of thinking down their throats.
 However, let's start with the basics.
 
 ## Binding your Lizzie code to your domain types
