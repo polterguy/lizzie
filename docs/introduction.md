@@ -317,6 +317,11 @@ be within the paranthesis of the invocation to that keyword. We will dive closer
 into functions later down in this chapter, so just relax if it doesn't make sense
 to you yet ...
 
+**FYI** - The `{...}` parts above simply creates a _"lambda object"_, that is
+basically a delegate, that internally contains a list of other delegates, that
+it sequentially evaluates once the _"lambda"_ is evaluated. `{}` simply creates
+an object, that happens to be a function, which you can execute when needed.
+
 ### Changing a variable's value
 
 To declare a value, you always use the `var` function. This allocates space for
@@ -325,7 +330,7 @@ you for some reasons want to change the variable later, you can use the `set`
 keyword. Below is an example.
 
 ```javascript
-// Declaring 'foo' and giving it an initial value of 57.
+// Declaring 'foo' and giving it an initial value of 57
 var(@foo, 57)
 write(foo)
 
