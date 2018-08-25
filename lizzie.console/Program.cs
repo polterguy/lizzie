@@ -26,10 +26,19 @@ class MainClass
     {
         // Some inline Lizzie code
         var code = @"
-if(all(@expensive(), @expensive(), @expensive(), @expensive(), @expensive(5)), {
-  write(""And we're done with TRUE!"")
+var(@foo1)
+var(@foo2)
+
+// Remove the 57 value to have the if below yield false
+var(@foo3)
+
+/*
+ * Yields true since foo3 contains a non-null value
+ */
+if(any(@foo1, @foo1, @foo3), {
+  write(""Any yields true"")
 }, {
-  write(""And we're done with FALSE!"")
+  write(""Any yields false"")
 })
 ";
 

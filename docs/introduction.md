@@ -641,11 +641,12 @@ equivalent operators for these types of comparisons.
 Lizzie doesn't have operators, neither OR nor AND keywords exists in Lizzie.
 However, you can accomplish the same result by using the `any` and the
 `all` functions. The `any` is the equivalent of OR in a traditional programming
-language, while `all` is the equivalent of AND. `any` function will return
-the first non-null argument that it is given, while `all` will return null
-if any of its arguments yields null. This allows you to combine `any` and
-`all` to accomplish the same as OR and AND would do for you normally. Consider
-the following.
+language, while `all` is the equivalent of AND. `any` will return the first
+non-null argument that it is given, or null if all arguments are null.
+While `all` will return the first null argument it is given, otherwise it will
+return the value of its last argument. This allows you to combine `any` and `all`
+to accomplish the same as OR and AND would do for you normally. Consider the
+following.
 
 ```javascript
 var(@foo1)
@@ -659,6 +660,8 @@ var(@foo3, 57)
  */
 if(any(@foo1, @foo1, @foo3), {
   write("Any yields true")
+}, {
+  write("Any yields false")
 })
 ```
 
@@ -669,16 +672,16 @@ its arguments are null.
 
 Since everything in Lizzie is evaluated, this creates a dilemma for us, where
 the previously mentioned `@` character becomes important due to something that
-is called _"short-circuit evaluation"_, which implies that both `any` and
-the `all` functions do not need to check more arguments, if the first argument
-returns anything but null null for `any`, or the first argument returns null for
+is called _"short-circuit evaluation"_, which implies that both the `any` and
+the `all` functions do _not need to check more arguments_, if the first argument
+returns anything but null for `any`, or the first argument returns null for
 `all`. This is because when we test for `any`, and the first argument yields
 non-null, we don't need to check anymore arguments to `any` to know that our
 `any` function will evaluate to its first argument. While for `all`, if the
 first argument yields null, we know that `all` as a whole will not yield anything.
 
 This implies that for expensive functions, that have a significant cost to evaluate,
-we can use the `@` symbol to avoid evaluating the condition before we know for a
+we _must_ use the `@` symbol to avoid evaluating the condition before we know for a
 fact that we need to. And since the value of the n-1 argument always decides if
 we need to evaluate the n argument, we can significantly conserve resources by
 postponing the evaluation of the condition in both our `any` functions and our

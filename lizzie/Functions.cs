@@ -560,7 +560,7 @@ namespace lizzie
                     }
                 }
             }
-            return (object)true;
+            return arguments.Last();
         });
 
         /// <summary>
