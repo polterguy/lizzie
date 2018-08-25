@@ -59,14 +59,16 @@ write(foo)";
 ```
 
 Lizzie is highly influenced and inspired from Lisp, but without the unintuitive
-_"Polish notation"_. In such a way, it arguably is Lisp for .Net. Its dynamic
+_"Polish notation"_. In such a way, it arguably is Lisp for the CLR. Its dynamic
 nature allows you to execute snippets of Lizzie code, inline in your C# code,
 by loading your code from files, or by for instance fetching the code from some
 database of some sort.
 
 You can easily create your own _"keywords"_ in Lizzie, which allows you to create
 your own DSL or _"Domain Specific programming Languages"_. Lizzie hence easily
-lends itself to richer rule based engines, and similar domain specific problems.
+lends itself to richer rule based engines, and similar domain specific problems,
+where your code needs to be more dynamic in nature than that which the CLR allows
+you to through e.g. C#, VB.NET or F#.
 
 ## What is a "Symbolic Delegate"?
 
