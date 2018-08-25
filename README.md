@@ -247,7 +247,7 @@ as fast as the equivalent C# code, due to its dynamic nature.
 
 ## Reference documentation
 
-* [Reference documentation for Lizze](/docs/introduction.md)
+* [Reference documentation for Lizze (10 pages)](/docs/introduction.md)
 
 ## Installation
 
