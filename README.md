@@ -37,10 +37,10 @@ class MainClass
 ```
 
 Lizzie is highly influenced and inspired from Lisp, but without the unintuitive
-_"Polish notation"_. In such a way, it arguably is Lisp for the CLR. Its dynamic
-nature allows you to execute snippets of Lizzie code, inline in your C# code,
-by loading your code from files, or by for instance fetching the code from some
-database of some sort.
+_"Polish notation"_. In such a way, it arguably is dynamic Lisp for the CLR. Its
+dynamic nature allows you to execute snippets of Lizzie code, inline in your C#
+code, by loading your code from files, or by for instance fetching the code from
+some database of some sort.
 
 You can easily create your own _"keywords"_ in Lizzie, which allows you to create
 your own DSL or _"Domain Specific programming Languages"_. Lizzie hence easily
@@ -120,7 +120,7 @@ for the language_. This allows you to learn the entire programming language
 literally in 20 minutes. The _"compiler"_ for the language is less than 500 lines
 of code, and all _"keywords"_ are less than 1,000 lines of code in total. The project
 as a whole has roughly 2,200 lines of code, but 50% of these are comments. When built,
-the dll is roughly 45KB on disc. There are 7 public classes in the project, one
+the DLL is roughly 45KB on disc. There are 7 public classes in the project, one
 attribute, and one interface. There are less than 30 methods in total, and you don't
 have to use more than a handful of these to start adding dynamic scripting abilities
 to your CLR code. This arguably makes Lizzie the smallest (useful) programming
@@ -128,10 +128,10 @@ language on the planet, if you ignore languages such as _"brainfuck"_, arguably
 created more or less as a joke.
 
 The Lizzie tokenizer also contains only 7 different tokens. There are no operators
-in the language, no keywords, and only one type of statement, which are all _"functions"_,
-that all have the same signature. Compare this to the 500+ keywords, and 50+
-operators of C#, and the 1,000+ pages of reference documentation for C#, and
-hopefully you understand the advantage.
+in the language, no keywords, and only one type of statement. In fact all
+_"statements"_ are _"functions"_, that all have the same signature. Compare this
+to the 500+ keywords, and 50+ operators of C#, and the 1,000+ pages of reference
+documentation for C#, and hopefully you understand the advantage.
 
 * [The entire language and its syntax explained in 12 pages](/docs/introduction.md)
 
@@ -248,6 +248,14 @@ as fast as the equivalent C# code, due to its dynamic nature.
 ## Reference documentation
 
 * [Reference documentation for Lizze (12 pages, 20 minute read)](/docs/introduction.md)
+
+## A 5 minutes introductory video to Lizzie
+
+<p align="center">
+<a href="https://www.youtube.com/watch?v=hgRaTRJ2nUc">
+<img alt="A 5 minutes introduction video to Lizzie" title="A 5 minutes introduction video to Lizzie" src="https://phosphorusfive.files.wordpress.com/2018/08/lizzie-logo.png" />
+</a>
+</p>
 
 ## Installation
 

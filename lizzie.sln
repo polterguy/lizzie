@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{AD7396D8-7
 	ProjectSection(SolutionItems) = preProject
 		docs\introduction.md = docs\introduction.md
 		docs\perfect-software.md = docs\perfect-software.md
+		docs\logo.svg = docs\logo.svg
 	EndProjectSection
 EndProject
 Global
