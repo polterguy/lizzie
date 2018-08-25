@@ -8,11 +8,11 @@ Take a look at the following chess pussle.
 Any mediumly skilled chess player can take a look at the above chess pussle,
 and say with 100% confidence who will win, assuming two skilled players are
 playing each other. This is because chess is a system of _"perfect information"_.
-What this means, is that all variables is known, and there is no _"chance"_ in the
+What this means, is that all variables are known, and there is no _"chance"_ in the
 game. In fact, mathematicians have proven that there exists a _"perfect solution"_
 to chess, implying you can be 100% certain who will win, depending upon who starts,
 as long as some _"recipe"_ is being followed. Chess has in such a regards a
-scientific _"solution"_, which guarantees you to win, if you know this solution.
+scientific _"perfect solution"_, which guarantees you to win, if you know this solution.
 The problem is that the number of permutations before the 1st move is being made,
 are so staggeringly large, that no human being, or super computers for that
 matter, are capable of calculating all permutations today. However, some time
@@ -46,10 +46,9 @@ Lizzie is (almost) equally simple in nature as the above code. For a mediumly
 skilled C# system developer, it is easy to put the entirety of Lizzie, and all
 of its possible permutations, into his or her consciousness at the same time,
 and prove that all of its possible permutations are 100% perfectly bug free, and
-does not contain security holes, and are according to its specifications.
-
-This is because it's equally simple in nature for a C# system developer, as the
-above chess pussle istoa chess player.
+does not contain security holes, and are according to its specifications. This
+is because it's equally simple in nature for a C# system developer, as the above
+chess pussle is to a chess player.
 
 I have not yet done this exercize for the record. However, one of these days I
 will, and as I do that process, which would probably only require a handful of
@@ -61,4 +60,5 @@ system, or the underlaying framework or CLR.
 When I do this, I will clearly mark it as such, and it will be scientifically
 impossible to find bugs in it. The reasons for this is quite simple in fact.
 All bugs are dependent upon code to exist. If you eliminate the code, there
-can be no bugs. And Lizzie contains almost no code!
+can be no bugs. And Lizzie contains almost no code! Just like the above chess
+pussle almost contains no pieces ...
