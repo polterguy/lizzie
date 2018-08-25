@@ -260,12 +260,12 @@ exception, because it will try to evaluate the symbol `foo`, which at that point
 is not declared, and your code will throw an exception.
 
 If you know Lisp from before, realize that the `@` character in Lizzie equals
-the `'` character in Lisp, or the `(quote foo)` in Lisp. Internally, it simply
-returns the string _"foo"_ instead of trying to evaluate _"foo"_ as a function,
-to retrieve its value. This is a necessary level of indirection, since there are
-no _"operators"_ or _"keywords"_ in Lizzie, or Lisp for that matter.
+the `'` character in Lisp, or the `(quote foo)` in Lisp. Internally it simply
+returns the string _"foo"_ instead of trying to evaluate _"foo"_ as a function
+to retrieve its value. This is a necessary level of indirection since there are
+no _"operators"_ or _"keywords"_ in Lizzie.
 
-This seems a little bit weird in the beginning, but also have a lot of advantages,
+This might seem a little bit weird in the beginning, but also have a lot of advantages,
 such as the ability to declare an entire function invocation, which might be an
 entire code tree for that matter, and pass that into another function, without
 evaluating it. Below is an example of this.
@@ -290,17 +290,20 @@ invocation, and _"delay"_ its evaluation, to the point in time where you are
 sure of that you actually want to evaluate it. Internally in Lizzie, this is
 actually done by creating a wrapper function invocation, that decorates our
 inner function invocation, and returns that decorated function invocation when
-referencing the symbol.
+referencing the symbol. For expensive functions, that might perform expensive
+IO operations for instance, this little trick can significantly improve
+your performance.
 
-For expensive functions, that might perform expensive IO operations for instance,
-this little trick can significantly improve performance. For the record, if the
-above code is all Greek to you, it simply declares a variable named `foo`, and
-assigns the _"anonymous function"_ returned from the `function` invocation to
-the value of `foo`. Our `foo` function can take one parameter, and internally
-within our `foo` function we can de-reference this argument's value as `bar`.
+**FYI** - If the above code is all Greek to you, it simply declares a variable
+named `foo`, and assigns the _"anonymous function"_ returned from the `function`
+invocation to the value of `foo`. Our `foo` function can take one parameter,
+and within our `foo` function we can de-reference this argument's value as `bar`.
 Since `bar` happens to be a function, that internally invokes `write`, we can
-evaluate `bar` internally in our `foo` function, which is what we do the above
-code after we first write _"foo is invoked"_ to the console.
+evaluate `bar` in our `foo` function, which is what we do in the above code
+_after_ we first write _"foo is invoked"_ to the console. For this reason the
+evaluation of our `bar` function actually occurs _after_ we have written
+_"foo is invoked"_ to the console, even though we have created our function
+invocation as an argument to our `foo` function.
 
 The above syntax might seem a little bit weird, but realize that Lizzie is
 entirely built upon _"Symbolic Delegates"_, which are kind of like S-Expressions
