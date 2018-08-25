@@ -61,6 +61,8 @@ When I do this, I will clearly mark it as such, and it will be scientifically
 impossible to find bugs in it. The reasons for this is quite simple in fact.
 All bugs are dependent upon code to exist. If you eliminate the code, there
 can be no bugs, and Lizzie contains almost no code - Just like the above chess
-pussle contains almost no pieces ...
+pussle contains almost no pieces. So even though Lizzie is _"immature"_ in its
+age, it is still probably highly mature in its mind, simply because it has almost
+no moving parts.
 
 **No code, no bugs, no problems!**

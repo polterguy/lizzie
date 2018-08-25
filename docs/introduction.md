@@ -893,9 +893,8 @@ write(eval("+(57,10,10)"))
 This function requires one argument, which must be a valid piece of Lizzie code,
 which it compiles, evaluates, for then to return the result of the evaluation
 back to caller. It will share the context object, but it will create a new stack,
-not having access to the already dynamically declared variables. Notice though
-that `eval` will load up the default keywords from the `LambdaCompiler` from you,
-which might not necessarily be what you want.
+not having access to the already dynamically declared variables. Notice that `eval`
+will load up the default keywords from the `LambdaCompiler` from you.
 
 [Is Lizzie 'perfect'?](perfect-software.md)
 
