@@ -18,7 +18,7 @@ class MainClass
         // Some inline Lizzie code
         var code = @"
 var(@foo, 57)
-var(@bar, add(foo, multiply(10,2)))
+var(@bar, +(foo, *(10,2)))
 bar";
 
         // Creating a Lizzie lambda object from the above code, and evaluating it
