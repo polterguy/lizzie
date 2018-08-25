@@ -1,11 +1,12 @@
 
 # Lizzie reference guide
 
-Lizzie is a programming language based upon the (good) ideas from Lisp, but
+Lizzie is a programming language based upon the _"good"_ ideas from Lisp, but
 without the _"funny syntax"_. Although this arguably eliminates most of the
 peculiarities from Lisp, it still keeps some of these around. The same way that
 Lisp is based upon Symbolix Expressions, or S-Expressions, Lizzie is based upon
-similar constructs. However, let's start with the basics.
+a similar construct which we refer to as _"Symbolic Delegates"_ in this documentation.
+However, let's start with the basics.
 
 ## Binding your Lizzie code to your domain types
 
