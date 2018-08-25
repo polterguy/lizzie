@@ -81,17 +81,9 @@ class MainClass
     {
         // Some inline Lizzie code
         var code = @"
-
-// Declaring "foo" as a variable and setting its initial value.
 var(@foo, 57)
-
-// Writing out the value of "foo" on the console.
 write(foo)
-
-// Adding 10 to "foo".
 set(@foo, +(foo, 10))
-
-// Writing out the value of "foo" on the console.
 write(foo)";
 
         // Creating a tokenizer for our Lizzie code.
