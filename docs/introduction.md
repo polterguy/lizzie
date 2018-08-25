@@ -112,16 +112,7 @@ us to handle delegates _"symbolically"_. Since we know that every method/functio
 will have the same signature, we can treat them as interchangeable function objects. This
 creates many advantages, and some disadvantages. The _"disadvantage"_ is that you
 loose type safety while passing arguments around, since the `Arguments` class
-is simply a wrapper around `List<object>`. This means you are responsible yourself
-for making sure you don't try to perform an illegal cast or conversion inside of
-your C# code. However, internally in Lizzie type safety doesn't really matter much,
-since it will just as happily accept anything, and convert back and forth from
-almost anything to anything, as long as there exists a legal conversion somehow.
-Although in your C# code, you must be slightly more careful. You can use the
-`Get<T>(int index)` method on your `Arguments` instance to perform automatic
-conversion, if you know what types your method is expecting. If you do, and your
-object does not support conversion to the requested type, your code will throw
-an exception.
+is simply a wrapper around `List<object>`.
 
 **Notice** - Lizzie is not type safe, but after a while, you will
 realize that _is the whole point_, and its _main advantage_ in fact. If Lizzie
@@ -134,15 +125,15 @@ Lizzie code, might in theory perform two distinct different tasks, depending
 upon which class you are binding it towards. So you can completely change what
 your code does, by simply choosing to bind it to something else, which of
 course is extremely powerful once you realize its advantages. This trait also
-makes Lizzie pathetically easy to learn. In fact, the entire reference documentation
+makes Lizzie very easy to learn. In fact, the entire reference documentation
 for the language, which is this page, is not more than roughly 10 pages if
 you choose to print it out. These 10 pages are _everything_ you need to learn
-in order to master Lizzie!
+in order to master Lizzie.
 
 ## Pre-defined Lizzie functions
 
 Lizzie contains many pre-defined functions for different use cases, which you
-can choose to use. In fact, if you want to have complete control over which
+can choose to use. In fact, if you want to have complete control over what
 _"keywords"_ your Lizzie code has access to, you can control this, through a
 slightly more manual process, resembling the example below.
 
@@ -154,32 +145,32 @@ class MainClass
 {
     public static void Main(string[] args)
     {
-        // Some inline Lizzie code.
+        // Some inline Lizzie code
         var code = "+(10, 57)";
 
-        // Creating a tokenizer and compiling our Lizzie code.
+        // Creating a tokenizer and compiling our Lizzie code
         var tokenizer = new Tokenizer(new LizzieTokenizer());
         var function = Compiler.Compile<MainClass>(tokenizer, code);
 
         /*
          * Creating a context object, a binder, and adding up only one
-         * single function to it.
+         * single function to it
          */
         var ctx = new MainClass();
         var binder = new Binder<MainClass>();
         binder["+"] = Functions<MainClass>.Add;
 
-        // Evaluating our Lizzie function.
+        // Evaluating our Lizzie function
         var result = function(ctx, binder);
         Console.WriteLine($"Result: '{result}'");
 
-        // Waiting for user input.
+        // Waiting for user input
         Console.Read();
     }
 }
 ```
 
-In our above example, we have created a Binder with only one single function
+In our above example, we have created a `Binder` with only one single function
 available for Lizzie, which of course is our `+` function. Anything you try
 to do besides invoking `+` will throw an exception, because it doesn't contain
 any other functions besides `+`. This gives you complete control over
@@ -228,13 +219,13 @@ var(@foo, 57)
 write(foo)
 ";
 
-        // Creating a lambda function from our code.
+        // Creating a lambda function from our code
         var function = LambdaCompiler.Compile<MainClass>(new MainClass(), code);
 
-        // Evaluates our Lizzie code making sure we bind it to our instance.
+        // Evaluates our Lizzie code making sure we bind it to our instance
         var result = function();
 
-        // Waiting for user input.
+        // Waiting for user input
         Console.Read();
     }
 }
@@ -248,6 +239,10 @@ optionally an initial value for that variable. The value can be anything ranging
 from a function, to a string, or a number of some sort - Or the return value from
 a bound C# method, allowing you to create complex objects and handle these within
 your Lizzie code.
+
+**FYI** - In the next examples, we will only include the Lizzie code - So keep the above
+C# console program around, and simply replace its Lizzie code, to try out the
+following examples.
 
 #### What's with the funny '@' symbol?
 
