@@ -216,7 +216,7 @@ class MainClass
             lambda();
         }
         sw.Stop();
-        Console.WriteLine($"We executed the above Lizzie code 10,000 times in {sw.ElapsedMilliseconds} milliseconds!");
+        Console.WriteLine($"We executed the above code 10,000x in {sw.ElapsedMilliseconds} milliseconds!");
 
         // Waiting for user input.
         Console.Read();
