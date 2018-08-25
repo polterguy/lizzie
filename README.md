@@ -195,6 +195,66 @@ important as its execution speed. On my computer, compiling Lizzie itself, and
 its unit tests, **once**, requires 4.62 seconds! Compiling the above Lizzie code
 10,000 times took me only 2 seconds.
 
+### Execution speed
+
+If we slightly modify our above code, to execute the code 10,000 times, instead
+of compiling it 10,000 times, such that it resembles the following ...
+
+```csharp
+using System;
+using System.Diagnostics;
+using lizzie;
+
+class MainClass
+{
+    public static void Main(string[] args)
+    {
+        // Some inline Lizzie code.
+        var code = @"
++(5, 2, 50)
+-(100, 30, 3)
+*(5, 3, 2)
+/(100, 4)
+%(18, 4)
+";
+
+        // Executing the above code 10,000 times!
+        Console.WriteLine("Executing some Lizzie code 10,000 times, please wait ...");
+        var lambda = LambdaCompiler.Compile(code);
+        Stopwatch sw = Stopwatch.StartNew();
+        for (var idx = 0; idx < 10000; idx++) {
+            lambda();
+        }
+        sw.Stop();
+        Console.WriteLine($"We executed the above Lizzie code 10,000 times in {sw.ElapsedMilliseconds} milliseconds!");
+
+        // Waiting for user input.
+        Console.Read();
+    }
+}
+```
+
+The results on my computer says 722 milliseconds. Lizzie is not as fast as C#,
+since each function invocation also requires a lookup into a `Dictionary`. In
+addition, each function invocation implies evaluating a delegate, which has an
+additional overhead of 20% compared to invoking a virtual method. So you can't
+expect a Lizzie lambda object to evaluate as fast as the equivalent C# function.
+However, compared to the execution speed of an interpreter written on the CLR,
+and/or a _"true compiler"_ written on the CLR, Lizzie will purely mathematically
+outperform both of these for all practical concerns, assuming you have an interest
+in executing dynamically created code.
+
+Since most practical snippets of code does complex tasks, such as accessing the
+file system, and reading/writing to databases, fetching data over sockets, etc -
+The execution speed overhead of your Lizzie code for most practical concerns will
+be irrelevant.
+
+**Notice** - I would not encourage you to use Lizzie for extremely demanding
+resource tasks though, such as polygon rendering, algorithmic intensive math
+operations, complex parsing, etc. Because after all, it will never execute
+as fast as the equivalent C# code, due to its dynamic nature.
+
+
 ## Installation
 
 Lizzie is still not finished, but will probably be released in the near future.
