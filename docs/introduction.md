@@ -714,13 +714,13 @@ an exception - Simply add an `@` character in front of `foo1` and `foo2` inside
 of `any`. The same is true for function invocations. I have consciously chosen
 to explicitly throw an exception if these two functions are given anything but
 functions themselves as arguments, to prevent you from creating code that might
-evaluate sub-optimial. If I had allowed for passing in non-functions to `any`
+evaluate sub-optimal. If I had allowed for passing in non-functions to `any`
 and `all`, you might have erronously created code that spent an unreasonable
 amount of time executing, simply by _"forgetting"_ how to correctly use these
 two functions.
 
-Consider the following entire console program, that throws an exception during
-runtime for the record after 5 seconds.
+Consider the following console program, that throws an exception during runtime
+after 5 seconds.
 
 ```csharp
 using System;
@@ -738,12 +738,8 @@ class MainClass
     [Bind(Name = "expensive")]
     object Expensive(Binder<MainClass> binder, Arguments arguments)
     {
-        // Faking an expensive process by sleeping for 1 second.
+        // Faking an expensive process by sleeping for 1 second
         System.Threading.Thread.Sleep(1000);
-
-        // Returning the 1st argument, if given.
-        if (arguments.Count > 0)
-            return arguments.Get(0);
         return null;
     }
 
@@ -758,10 +754,8 @@ if(all(expensive(), expensive(), expensive(), expensive(), expensive(5)), {
 })
 ";
 
-        // Creating a lambda function from our code.
+        // Creating and evaluating our lambda function
         var function = LambdaCompiler.Compile<MainClass>(new MainClass(), code);
-
-        // Evaluates our Lizzie code making sure we bind it to our instance.
         var result = function();
 
         // Waiting for user input.
