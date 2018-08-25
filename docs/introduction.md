@@ -319,9 +319,6 @@ such a way that in Lizzie function invocations are also objects. The above
 foo(function() { write("This will be evaluated last ...") });
 ```
 
-If you don't understand what the above code does, relax and keep on reading,
-we will dive deep into functions further down in this document.
-
 **FYI** - The `{...}` parts above simply creates a _"lambda object"_, that is
 basically a delegate, that internally contains a list of other delegates, that
 it sequentially evaluated once the _"lambda"_ is evaluated. `{}` simply creates
