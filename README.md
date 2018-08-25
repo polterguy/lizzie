@@ -70,9 +70,9 @@ lends itself to richer rule based engines, and similar domain specific problems,
 where your code needs to be more dynamic in nature than that which the CLR allows
 you to through e.g. C#, VB.NET or F#.
 
-## What is a "Symbolic Delegate"?
+## What is a Symbolic Delegate?
 
-A Symbolic Delegate is a .Net delegate that is dynamically looked up during runtime,
+A Symbolic Delegate is a CLR delegate that is dynamically looked up during runtime,
 from a dictionary of delegates with the same signature. This allows you to dynamically
 wire together delegates to an _"execution tree"_ during runtime, based upon whatever
 delegate happens to be the value for your key. Hence; _"Symbolic Delegates"_. In
@@ -86,7 +86,8 @@ the above code for instance, we create 4 such symbolic delagates.
 The first 3 above are added directly to the binder by referencing pre-existing
 _"keywords"_ that exists in the `Functions` class, while the last _"keyword"_
 is bound to the lambda object, since it's a method in our `MainClass` marked with
-the `Bind` attribute.
+the `Bind` attribute. The last function from above illustrates how easily you
+can extend Lizzie with your own _"keywords"_ to create your own DSL.
 
 ## Convenience classes and methods
 
@@ -129,12 +130,12 @@ bar";
 
 ## How small is Lizzie
 
-The entire reference documentation to Lizzie is roughly 10 pages if you choose
-to print them out. This is the _entire reference documentation for the language_.
-This implies that you can learn the entire programming language literally in 10
-minutes. The _"compiler"_ for the language is less than 500 lines of code, and
-all _"keyword"_ are less than 800 lines of code in total. The project as a whole
-has roughly 2000 lines of code, but roughly 50% of these are comments. When built,
+The [entire reference documentation for Lizze](/docs/introduction.md) is roughly
+10 pages if you choose to print them out. This is the _entire reference documentation
+for the language_. This implies that you can learn the entire programming language
+literally in 10 minutes. The _"compiler"_ for the language is less than 500 lines
+of code, and all _"keywords"_ are less than 800 lines of code in total. The project
+as a whole has roughly 2000 lines of code, but 50% of these are comments. When built,
 the dll is roughly 40KB on disc. This arguably makes Lizzie the smallest (useful)
 programming language on the planet, if you ignore languages such as _"brainfuck"_,
 arguably created as a joke.
