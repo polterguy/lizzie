@@ -5,10 +5,7 @@ Lizzie is a programming language based upon the (good) ideas from Lisp, but
 without the _"funny syntax"_. Although this arguably eliminates most of the
 peculiarities from Lisp, it still keeps some of these around. The same way that
 Lisp is based upon Symbolix Expressions, or S-Expressions, Lizzie is based upon
-similar constructs. So hence some things will come very natural for every
-developer that has done any development, in languages such as JavaScript
-and C#, while some things will feel different. However, let's start with the
-basics.
+similar constructs. However, let's start with the basics.
 
 ## Binding your Lizzie code to your domain types
 
