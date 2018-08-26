@@ -4,5 +4,5 @@ mono: none
 dotnet: 2.0.0
 script:
  - dotnet restore
- - dotnet build ./lizzie.sln Release
+ - dotnet build ./lizzie.sln --configuration Release
  - dotnet test ./lizzie/lizzie.tests --configuration Release
