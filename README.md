@@ -72,7 +72,6 @@ using lizzie;
 
 class MainClass
 {
-    // This method will be available as a function in your Lizzie code
     [Bind(Name = "write")]
     object Write(Binder<MainClass> ctx, Arguments arguments)
     {
