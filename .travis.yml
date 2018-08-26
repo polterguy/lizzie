@@ -2,5 +2,6 @@ language: csharp
 solution: lizzie.sln
 mono: none
 dotnet: 2.0.0
-dotnet build ./lizzie.sln Release
-dotnet test ./lizzie/lizzie.tests --configuration Release
+script:
+ - dotnet build ./lizzie.sln Release
+ - dotnet test ./lizzie/lizzie.tests --configuration Release
