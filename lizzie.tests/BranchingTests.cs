@@ -6,7 +6,6 @@
  */
 
 using NUnit.Framework;
-using lizzie.exceptions;
 using lizzie.tests.context_types;
 
 namespace lizzie.tests

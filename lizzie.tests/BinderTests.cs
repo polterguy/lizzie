@@ -5,7 +5,6 @@
  * file for details.
  */
 
-using System.Collections.Generic;
 using NUnit.Framework;
 using lizzie.tests.context_types;
 
