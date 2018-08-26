@@ -130,6 +130,15 @@ for the language, which is this page, is not more than roughly 12 pages if
 you choose to print it out. These 12 pages are _everything_ you need to learn
 in order to master Lizzie.
 
+### Binder internals
+
+**Notice** - Instances of the `Binder` class are not thread safe. Creating an
+instance of the Binder class and binding it to your own context type also implies
+some runtime overhead, since it includes reflection. However, you can still cache
+a single binder, and then use its `Clone` method for each thread that needs to
+bind towards the same type, to significantly reduce resource usage during
+compilation of your Lizzie code.
+
 ## Pre-defined Lizzie functions
 
 Lizzie contains many pre-defined functions for different use cases, which you
