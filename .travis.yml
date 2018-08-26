@@ -2,7 +2,7 @@ language: csharp
 solution: lizzie.sln
 install:
   - nuget restore lizzie.sln
-  - nuget install NUnit.Runners -Version 3.8.0.0 -OutputDirectory testrunner
+  - nuget install NUnit.Runners -Version 3.8.0 -OutputDirectory testrunner
 script:
   - xbuild /p:Configuration=Release lizzie.sln
-  - mono ./testrunner/NUnit.Runners.3.8.0.0/tools/nunit-console.exe ./lizzie.Tests/bin/Release/lizzie.tests.dll
+  - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./lizzie.Tests/bin/Release/lizzie.tests.dll
