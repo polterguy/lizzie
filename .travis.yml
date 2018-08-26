@@ -1,9 +1,8 @@
 language: csharp
-solution: lizzie.sln
+mono: none
 dotnet: 2.0.0
-install:
-  - nuget restore lizzie.sln
-  - nuget install NUnit.Runners -Version 3.8.0 -OutputDirectory testrunner
 script:
-  - msbuild /p:Configuration=Release lizzie.sln
-  - mono ./testrunner/NUnit.ConsoleRunner.3.8.0/tools/nunit3-console.exe ./lizzie.tests/bin/Release/lizzie.tests.dll
+  - dotnet restore
+  - dotnet build ./lizzie/
+  - dotnet build ./lizzie.tests/
+  - dotnet test ./lizzie.tests/
