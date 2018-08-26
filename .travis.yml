@@ -1,5 +1,7 @@
 language: csharp
 solution: lizzie.sln
+mono: none
+dotnet: 2.0.0
 install:
   - nuget restore lizzie.sln
   - nuget install NUnit.Runners -Version 3.8.0 -OutputDirectory testrunner
