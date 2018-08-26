@@ -47,5 +47,13 @@ namespace lizzie.tests
             clone.PopStack();
             Assert.AreEqual(57, clone["foo"]);
         }
+
+        [Test]
+        public void StaticFunctions()
+        {
+            var lambda = LambdaCompiler.Compile<SimpleValues>(new SimpleValues(), "get-static()");
+            var result = lambda();
+            Assert.AreEqual(7, result);
+        }
     }
 }

@@ -173,7 +173,7 @@ namespace lizzie
          */
         void BindTypeMethods()
         {
-            var methods = typeof(TContext).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            var methods = typeof(TContext).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static);
             foreach (var ix in methods) {
 
                 var attribute = ix.GetCustomAttribute<BindAttribute>();
@@ -195,16 +195,34 @@ namespace lizzie
 
             // Sanity checking method.
             var methodArgs = method.GetParameters();
-            if (methodArgs.Length != 2)
-                throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take exactly two arguments");
-            if (methodArgs[0].ParameterType != typeof(Binder<TContext>))
-                throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take a '{nameof(Binder<TContext>)}' type of argument as its first argument.");
-            if (methodArgs[1].ParameterType != typeof(Arguments))
-                throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take an '{nameof(Arguments)}' type of argument as its first argument.");
-            if (method.ContainsGenericParameters)
-                throw new LizzieBindingException($"Can't bind to {method.Name} since it requires a generic argument.");
-            if (method.ReturnType != typeof(object))
-                throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't return '{nameof(Object)}'.");
+            if (method.IsStatic) {
+
+                if (methodArgs.Length != 3)
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take the right number of arguments");
+                if (methodArgs[0].ParameterType != typeof(TContext))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take a '{nameof(TContext)}' type of argument as its first argument.");
+                if (methodArgs[1].ParameterType != typeof(Binder<TContext>))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take a '{nameof(Binder<TContext>)}' type of argument as its second argument.");
+                if (methodArgs[2].ParameterType != typeof(Arguments))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take an '{nameof(Arguments)}' type of argument as its third argument.");
+                if (method.ContainsGenericParameters)
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it requires a generic argument.");
+                if (method.ReturnType != typeof(object))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't return '{nameof(Object)}'.");
+
+            } else {
+
+                if (methodArgs.Length != 2)
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take the right number of arguments");
+                if (methodArgs[0].ParameterType != typeof(Binder<TContext>))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take a '{nameof(Binder<TContext>)}' type of argument as its first argument.");
+                if (methodArgs[1].ParameterType != typeof(Arguments))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take an '{nameof(Arguments)}' type of argument as its second argument.");
+                if (method.ContainsGenericParameters)
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it requires a generic argument.");
+                if (method.ReturnType != typeof(object))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't return '{nameof(Object)}'.");
+            }
 
             /*
              * Success, creating our delegate wrapping our method, and adding it to our dictionary with the specified

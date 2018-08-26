@@ -27,6 +27,12 @@ namespace lizzie.tests.context_types
             return ValueInteger;
         }
 
+        [Bind(Name = "get-static")]
+        static object GetStatic(SimpleValues context, Binder<SimpleValues> ctx, Arguments arguments)
+        {
+            return 7;
+        }
+
         [Bind(Name = "set-value-string")]
         object SetValueString(Binder<SimpleValues> ctx, Arguments arguments)
         {
