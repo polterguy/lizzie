@@ -6,18 +6,27 @@
  */
 
 using System;
+using System.Linq;
 using System.Reflection;
-using System.Collections.Generic;
 using lizzie.exceptions;
+using System.Collections.Generic;
 
 namespace lizzie
 {
     /// <summary>
     /// Binds your context type such that all methods marked with the BindAttribute
-    /// becomes available for you as functions in your Lizzie code, by referencing
-    /// them as symbols.
+    /// becomes available for you as functions in your Lizzie code.
+    /// 
+    /// NOTICE!
+    /// Class is not thread safe, which implies you cannot share instances of it
+    /// between different threads. However, you can still cache a "master instance"
+    /// of the class, and invoke Clone for each of your threads that needs to use
+    /// an instance bound to the same type. Cloning instances of such a master object
+    /// has some performance benefits, since creating a new instance of the
+    /// class implies some reflection, which is a realatively costy process on
+    /// the CLR.
     /// </summary>
-    public class Binder<TContext>
+    public class Binder<TContext> : ICloneable
     {
         // Statically bound functions.
         readonly Dictionary<string, object> _staticBinder = new Dictionary<string, object>();
@@ -31,6 +40,16 @@ namespace lizzie
         public Binder()
         {
             BindTypeMethods();
+        }
+
+        /*
+         * Private CTOR to allow for cloning instances of class, without having
+         * to run through reflection necessary to bind the type.
+         */
+        Binder(bool initialize)
+        {
+            if (initialize)
+                BindTypeMethods();
         }
 
         /// <summary>
@@ -135,6 +154,18 @@ namespace lizzie
             _stackBinder.Pop();
         }
 
+        /// <summary>
+        /// Gets the static item keys.
+        /// </summary>
+        /// <value>The static item keys for this instance.</value>
+        public IEnumerable<string> StaticItems => _staticBinder.Keys;
+
+        /// <summary>
+        /// Returns the count of stacks for this instance.
+        /// </summary>
+        /// <value>The stack count.</value>
+        public int StackCount => _stackBinder.Count;
+
         /*
          * Binds all methods in your TContext type that is marked with the
          * BindAttribute, and make these available for you as symbolic functions
@@ -181,6 +212,40 @@ namespace lizzie
              */
             _staticBinder[functionName] = (Function<TContext>)
                 Delegate.CreateDelegate(typeof(Function<TContext>), method);
+        }
+
+        /// <summary>
+        /// Clones this instance.
+        /// 
+        /// Since invoking the default CTOR has some overhead due to reflection,
+        /// caching instances of this class might improve your performance.
+        /// However, since instances of the class is not thread safe and cannot
+        /// be safely shared among multiple threads, you can use this method
+        /// to clone a "master instance" for each of your threads that needs to
+        /// bind to the same type. This method is also useful in case you want
+        /// to spawn of new threads, where each thread needs access to a thread
+        /// safe copy of the stack, at the point of creation.
+        /// </summary>
+        /// <returns>The cloned instance.</returns>
+        public Binder<TContext> Clone()
+        {
+            var clone = new Binder<TContext>(false);
+            foreach (var ix in _staticBinder.Keys) {
+                clone[ix] = _staticBinder[ix];
+            }
+            foreach (var ixStack in _stackBinder.Reverse()) {
+                var dictionary = new Dictionary<string, object>();
+                foreach (var ixKey in ixStack.Keys) {
+                    dictionary[ixKey] = ixStack[ixKey];
+                }
+                clone._stackBinder.Push(dictionary);
+            }
+            return clone;
+        }
+
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
     }
 }
