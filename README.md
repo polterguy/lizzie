@@ -126,8 +126,9 @@ measure.
 * __Compilation speed__
 * __Execution speed__
 
-Compilation is **blistering fast**, something we can illustrate with the
-following C# code, where we compile a snippet of Lizzie code 10,000 times.
+Compilation is **blistering fast**, at least if you consider the fact that the
+compiler is written in C#. Below is an example that compiles 10,000 snippets of
+Lizzie code. On my machine this code is finished after ~2 seconds.
 
 ```csharp
 using System;
