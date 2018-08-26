@@ -7,6 +7,7 @@
 
 using NUnit.Framework;
 using lizzie.tests.context_types;
+using lizzie.exceptions;
 
 namespace lizzie.tests
 {
@@ -73,6 +74,40 @@ var(@foo, function({
 foo()");
             var result = lambda();
             Assert.AreEqual(77, result);
+        }
+
+        [Test]
+        public void ChangeStackFromWithinFunction()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@bar, function({
+  var(@arg, 50)
+}))
+var(@foo, function({
+  var(@arg, 27)
+  +(arg, bar())
+}))
+foo()");
+            var result = lambda();
+            Assert.AreEqual(77, result);
+        }
+
+        [Test]
+        public void VariableDeclaredWithinFunctionDoesNotExistThrows()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, function({
+  var(@bar, 50)
+}))
+foo()
+bar");
+            var success = false;
+            try {
+                lambda();
+            } catch(LizzieRuntimeException) {
+                success = true;
+            }
+            Assert.AreEqual(true, success);
         }
     }
 }

@@ -47,7 +47,7 @@ namespace lizzie
              * We still allow the caller to override a statically bound keyword, but
              * not to declare the same variable twice in the same stack.
              */
-            if (binder.ContainsDynamicKey(symbolName))
+            if (binder.ContainsKey(symbolName))
                 throw new LizzieRuntimeException($"The symbol '{symbolName}' has already been declared in the scope of where you are trying to declare it using the 'var' keyword.");
 
             // More sanity checks.
@@ -258,8 +258,7 @@ namespace lizzie
              * Returning function to caller.
              *
              * NOTICE!
-             * A function always pushes the stack, to have a unique stack, and to
-             * prevent it from meddling with the stack of its ancestor lambda(s).
+             * A function always pushes the stack.
              */
             return new Function<TContext>((ctx2, binder2, arguments2) => {
 

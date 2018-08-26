@@ -168,7 +168,13 @@ var(@foo)";
             var binder = new Binder<Nothing>();
             binder["var"] = Functions<Nothing>.Var;
             binder["foo"] = 57;
-            function(ctx, binder);
+            var success = false;
+            try {
+                function(ctx, binder);
+            } catch(LizzieRuntimeException) {
+                success = true;
+            }
+            Assert.AreEqual(true, success);
         }
 
         [Test]

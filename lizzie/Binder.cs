@@ -62,12 +62,8 @@ namespace lizzie
         {
             get {
 
-                // Prioritizing the stack, to allow for stack value to "override" global values.
-                var ixStack = _stackBinder.Count;
-                while (ixStack != 0) {
-                    if (_stackBinder[--ixStack].ContainsKey(symbolName))
-                        return _stackBinder[ixStack][symbolName];
-                }
+                if (_stackBinder.Count > 0 && _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName))
+                    return _stackBinder[_stackBinder.Count - 1][symbolName];
 
                 // Defaulting to static binder.
                 if (_staticBinder.ContainsKey(symbolName))
@@ -104,11 +100,8 @@ namespace lizzie
         public bool ContainsKey(string symbolName)
         {
             // Prioritizing the stack, to allow for stack value to "override" global values.
-            var ixStack = _stackBinder.Count;
-            while (ixStack != 0) {
-                if (_stackBinder[--ixStack].ContainsKey(symbolName))
-                    return true;
-            }
+            if (_stackBinder.Count > 0 && _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName))
+                return _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName);
 
             // Defaulting to static binder.
             return _staticBinder.ContainsKey(symbolName);
@@ -122,11 +115,8 @@ namespace lizzie
         /// <param name="symbolName">Symbol name.</param>
         public bool ContainsDynamicKey(string symbolName)
         {
-            var ixStack = _stackBinder.Count;
-            while (ixStack != 0) {
-                if (_stackBinder[--ixStack].ContainsKey(symbolName))
-                    return true;
-            }
+            if (_stackBinder.Count > 0 && _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName))
+                return _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName);
             return false;
         }
 

@@ -103,25 +103,15 @@ namespace lizzie
              */
             return new Lambda<TContext>((ctx, binder) => {
 
-                // Creating our initial root stack, making sure we release it when done.
-                binder.PushStack();
-                try {
-
-                    /*
-                     * Looping through each symbolic delegate, returning the 
-                     * return value from the last to caller.
-                     */
-                    object result = null;
-                    foreach (var ix in functions) {
-                        result = ix(ctx, binder, null);
-                    }
-                    return result;
-
-                } finally {
-
-                    // Releasing our root level stack object.
-                    binder.PopStack();
+                /*
+                 * Looping through each symbolic delegate, returning the 
+                 * return value from the last to caller.
+                 */
+                object result = null;
+                foreach (var ix in functions) {
+                    result = ix(ctx, binder, null);
                 }
+                return result;
             });
         }
 
