@@ -1,7 +1,7 @@
 
-# Lizzie, the world's smallest scripting language for the CLR
+# Lizzie a scripting language for .Net
 
-[![Build status](https://travis-ci.org/polterguy/lizzie.svg?master)](https://travis-ci.org/polterguy)
+[![Build status](https://travis-ci.org/polterguy/lizzie.svg?master)](https://travis-ci.org/polterguy/lizzie)
 
 Lizzie is a dynamic scripting language for .Net based upon a design pattern
 called _"Symbolic Delegates"_. This allows you to execute dynamically created
