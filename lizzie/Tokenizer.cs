@@ -39,11 +39,12 @@ namespace lizzie
         /// </summary>
         /// <returns>Each token found in your code.</returns>
         /// <param name="stream">Stream containing Lizzie code. Notice, this method does not claim ownership over
-        /// your stream, and you are responsible for correctly disposing it yourself</param>
-        public IEnumerable<string> Tokenize(Stream stream)
+        /// your stream, and you are responsible for correctly disposing it yourself.</param>
+        /// <param name="encoding">Encoding to use for stream, if not given this defaults to UTF8.</param>
+        public IEnumerable<string> Tokenize(Stream stream, Encoding encoding = null)
         {
             // Notice! We do NOT take ownership over stream!
-            StreamReader reader = new StreamReader(stream);
+            StreamReader reader = new StreamReader(stream, encoding ?? Encoding.UTF8, true, 1024);
             while (true) {
                 var token = _tokenizer.Next(reader);
                 if (token == null)
@@ -58,11 +59,12 @@ namespace lizzie
         /// </summary>
         /// <returns>Each token found in your code.</returns>
         /// <param name="streams">Streams containing Lizzie code. Notice, this method does not claim ownership over
-        /// your streams, and you are responsible for correctly disposing the streams yourself</param>
-        public IEnumerable<string> Tokenize(IEnumerable<Stream> streams)
+        /// your streams, and you are responsible for correctly disposing the streams yourself.</param>
+        /// <param name="encoding">Encoding to use for stream, if not given this defaults to UTF8.</param>
+        public IEnumerable<string> Tokenize(IEnumerable<Stream> streams, Encoding encoding = null)
         {
             foreach (var ixStream in streams) {
-                foreach (var ixToken in Tokenize(ixStream)) {
+                foreach (var ixToken in Tokenize(ixStream, encoding)) {
                     yield return ixToken;
                 }
             }
@@ -102,41 +104,26 @@ namespace lizzie
         /// A white space character is any of the following characters; ' ', '\t',
         /// '\r' and '\n'.
         /// </summary>
-        /// <returns><c>true</c>, if space was eaten, <c>false</c> otherwise.</returns>
-        /// <param name="reader">Reader.</param>
-        public static bool EatSpace(StreamReader reader)
+        /// <param name="reader">Reader to eat whitespace characters from.</param>
+        public static void EatSpace(StreamReader reader)
         {
-            var retVal = false;
             while (!reader.EndOfStream) {
                 var ch = (char)reader.Peek();
                 if (ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n') {
                     reader.Read();
-                    retVal = true;
-                } else {
-                    break;
+                    continue;
                 }
+                break;
             }
-            return retVal;
         }
 
         /// <summary>
         /// Eats and discards the rest of the line from your reader.
         /// </summary>
-        /// <returns><c>true</c>, if line was eaten, <c>false</c> otherwise.</returns>
-        /// <param name="reader">Reader.</param>
+        /// <param name="reader">Reader to eat the rest of the lines from.</param>
         public static void EatLine(StreamReader reader)
         {
-            while (!reader.EndOfStream) {
-                var ch = (char)reader.Read();
-                if (ch == '\r' || ch == '\n') {
-                    if (!reader.EndOfStream) {
-                        ch = (char)reader.Peek();
-                        if (ch == '\r' || ch == '\n')
-                            reader.Read();
-                    }
-                    break;
-                }
-            }
+            reader.ReadLine();
         }
 
         /// <summary>

@@ -137,7 +137,7 @@ namespace lizzie
         /// <summary>
         /// Empty class to help create a Lambda function without needing to
         /// bind to some specific type, but rather simply evaluate Lizzie code,
-        /// without having bound it to anything in particular.
+        /// without having to bind it to anything in particular.
         /// </summary>
         public class Nothing { };
     }
