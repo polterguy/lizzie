@@ -1,5 +1,5 @@
 
-# Lizzie, the world's smallest script language for the CLR
+# Lizzie, the world's smallest scripting language for the CLR
 
 Lizzie is a dynamic scripting language for .Net based upon a design pattern
 called _"Symbolic Delegates"_. This allows you to execute dynamically created
@@ -40,7 +40,8 @@ Lizzie is highly influenced and inspired from Lisp, but without the unintuitive
 _"Polish notation"_. In such a way, it arguably is dynamic Lisp for the CLR. Its
 dynamic nature allows you to execute snippets of Lizzie code, inline in your C#
 code, by loading your code from files, or by for instance fetching the code from
-some database of some sort.
+some database of some sort, or even transmit code over the network to have a
+server endpoint (securely) evaluate your code.
 
 You can easily create your own _"keywords"_ in Lizzie, which allows you to create
 your own DSL or _"Domain Specific programming Languages"_. Lizzie hence easily
@@ -63,7 +64,7 @@ from your Lizzie script code.
 
 If you want to, you can _"bind"_ your Lizzie code to a CLR type. This
 allows you to extend your Lizzie code with your own C# _"keywords"_, to
-create your own DSL.
+create your own _"DSL"_. Below is an example.
 
 ```csharp
 using System;
@@ -83,31 +84,14 @@ class MainClass
     {
         // Some inline Lizzie code
         var code = @"
-var(@foo, 57)
-write(foo)
-set(@foo, +(foo, 10))
-write(foo)";
 
-        // Creating a tokenizer for our Lizzie code
-        var tokenizer = new Tokenizer(new LizzieTokenizer());
+write(""Hello World!!"")
 
-        // Creating a lambda function from our code, using the above tokenizer
-        var function = Compiler.Compile<MainClass>(tokenizer, code);
+";
 
-        // Creating an instance of our class, which we can bind to our Lizzie code
-        var context = new MainClass();
-
-        // Creating a binder, and adding some pre-defined functions to it
-        var binder = new Binder<MainClass>();
-        binder["var"] = Functions<MainClass>.Var;
-        binder["set"] = Functions<MainClass>.Set;
-        binder["+"] = Functions<MainClass>.Add;
-
-        // Evaluates our Lizzie code, making sure we bind it to our instance
-        function(context, binder);
-
-        // Waiting for user input
-        Console.Read();
+        // Creating a lambda function from our code, and evaluating it
+        var function = LambdaCompiler.Compile(new MainClass(), code);
+        function();
     }
 }
 ```
