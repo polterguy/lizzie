@@ -340,10 +340,8 @@ namespace lizzie
                 // Referencing value of symbol.
                 return new Tuple<Function<TContext>, bool>(new Function<TContext>((ctx, binder, arguments) => {
 
-                    // Sanity checking that symbol actually exists.
-                    if (!binder.ContainsKey(symbolName))
-                        throw new LizzieRuntimeException($"The '{symbolName}' symbol does not exist.");
                     return binder[symbolName];
+
                 }), eof);
             }
         }
@@ -383,10 +381,6 @@ namespace lizzie
 
                 // Applying arguments.
                 var appliedArguments = new Arguments(arguments.Select(ix => ix(ctx, binder, args)));
-
-                // Basic sanity checking.
-                if (!binder.ContainsKey(symbolName))
-                    throw new LizzieRuntimeException($"The '{symbolName}' symbol does not exist.");
 
                 // Retrieving symbol's value and doing some basic sanity checks.
                 var symbol = binder[symbolName];

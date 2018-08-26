@@ -32,7 +32,7 @@ namespace lizzie
         readonly Dictionary<string, object> _staticBinder = new Dictionary<string, object>();
 
         // Stack of dynamically created variables and functions.
-        readonly Stack<Dictionary<string, object>> _stackBinder = new Stack<Dictionary<string, object>>();
+        readonly List<Dictionary<string, object>> _stackBinder = new List<Dictionary<string, object>>();
 
         /// <summary>
         /// Creates a default binder, binding all bound methods in your context type.
@@ -63,8 +63,11 @@ namespace lizzie
             get {
 
                 // Prioritizing the stack, to allow for stack value to "override" global values.
-                if (_stackBinder.Count > 0 && _stackBinder.Peek().ContainsKey(symbolName))
-                    return _stackBinder.Peek()[symbolName];
+                var ixStack = _stackBinder.Count;
+                while (ixStack != 0) {
+                    if (_stackBinder[--ixStack].ContainsKey(symbolName))
+                        return _stackBinder[ixStack][symbolName];
+                }
 
                 // Defaulting to static binder.
                 if (_staticBinder.ContainsKey(symbolName))
@@ -87,7 +90,7 @@ namespace lizzie
                 } else {
 
                     // Stack has been pushed at least once, and we're in "Lizzie land".
-                    _stackBinder.Peek()[symbolName] = value;
+                    _stackBinder[_stackBinder.Count - 1][symbolName] = value;
                 }
             }
         }
@@ -100,8 +103,14 @@ namespace lizzie
         /// <param name="symbolName">Symbol name.</param>
         public bool ContainsKey(string symbolName)
         {
-            if (_stackBinder.Count > 0 && _stackBinder.Peek().ContainsKey(symbolName))
-                return true;
+            // Prioritizing the stack, to allow for stack value to "override" global values.
+            var ixStack = _stackBinder.Count;
+            while (ixStack != 0) {
+                if (_stackBinder[--ixStack].ContainsKey(symbolName))
+                    return true;
+            }
+
+            // Defaulting to static binder.
             return _staticBinder.ContainsKey(symbolName);
         }
 
@@ -113,8 +122,11 @@ namespace lizzie
         /// <param name="symbolName">Symbol name.</param>
         public bool ContainsDynamicKey(string symbolName)
         {
-            if (_stackBinder.Count > 0 && _stackBinder.Peek().ContainsKey(symbolName))
-                return true;
+            var ixStack = _stackBinder.Count;
+            while (ixStack != 0) {
+                if (_stackBinder[--ixStack].ContainsKey(symbolName))
+                    return true;
+            }
             return false;
         }
 
@@ -135,7 +147,7 @@ namespace lizzie
         /// <param name="symbolName">Symbol name of item to remove.</param>
         public void RemoveKey(string symbolName)
         {
-            _stackBinder.Peek().Remove(symbolName);
+            _stackBinder[_stackBinder.Count - 1].Remove(symbolName);
         }
 
         /// <summary>
@@ -143,7 +155,7 @@ namespace lizzie
         /// </summary>
         public void PushStack()
         {
-            _stackBinder.Push(new Dictionary<string, object>());
+            _stackBinder.Add(new Dictionary<string, object>());
         }
 
         /// <summary>
@@ -151,7 +163,7 @@ namespace lizzie
         /// </summary>
         public void PopStack()
         {
-            _stackBinder.Pop();
+            _stackBinder.RemoveAt(_stackBinder.Count - 1);
         }
 
         /// <summary>
@@ -251,12 +263,12 @@ namespace lizzie
             foreach (var ix in _staticBinder.Keys) {
                 clone[ix] = _staticBinder[ix];
             }
-            foreach (var ixStack in _stackBinder.Reverse()) {
+            foreach (var ixStack in _stackBinder) {
                 var dictionary = new Dictionary<string, object>();
                 foreach (var ixKey in ixStack.Keys) {
                     dictionary[ixKey] = ixStack[ixKey];
                 }
-                clone._stackBinder.Push(dictionary);
+                clone._stackBinder.Add(dictionary);
             }
             return clone;
         }

@@ -59,5 +59,20 @@ foo(""Thomas"", 44)");
             var result = lambda();
             Assert.AreEqual("Hello Thomas it seems you are 44 years old", result);
         }
+
+        [Test]
+        public void EvaluateFunctionFromWithinFunction()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@bar, function({
+  77
+}))
+var(@foo, function({
+  bar()
+}))
+foo()");
+            var result = lambda();
+            Assert.AreEqual(77, result);
+        }
     }
 }
