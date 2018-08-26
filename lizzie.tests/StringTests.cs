@@ -42,5 +42,29 @@ namespace lizzie.tests
             var result = lambda();
             Assert.AreEqual("fxxxx", result);
         }
+
+        [Test]
+        public void SingleQuoteStrings()
+        {
+            var lambda = LambdaCompiler.Compile(@"replace('foo', 'o', 'xx')");
+            var result = lambda();
+            Assert.AreEqual("fxxxx", result);
+        }
+
+        [Test]
+        public void EscapedSingleQuotedString()
+        {
+            var lambda = LambdaCompiler.Compile(@"'foo\'bar'");
+            var result = lambda();
+            Assert.AreEqual("foo'bar", result);
+        }
+
+        [Test]
+        public void EscapedDoubleQuotedString()
+        {
+            var lambda = LambdaCompiler.Compile(@"""foo\""bar""");
+            var result = lambda();
+            Assert.AreEqual("foo\"bar", result);
+        }
     }
 }

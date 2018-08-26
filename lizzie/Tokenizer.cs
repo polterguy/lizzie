@@ -135,35 +135,20 @@ namespace lizzie
         {
             if (string.IsNullOrEmpty(sequence))
                 throw new LizzieTokenizerException("No stop sequence specified to EatUntil.");
-            var first = sequence[0];
-            var buffer = "";
-            while (true) {
-                var ix = reader.Read();
-                if (ix == -1)
-                    return;
-                if (buffer != "") {
 
-                    // Seen first character.
-                    buffer += (char)ix;
-                    if (buffer == sequence) {
-                        return; // Found sequence
-                    } else if (buffer.Length == sequence.Length) {
-                        buffer = ""; // Throwing away matches found so far, starting over again.
-                    }
-                } else {
-                    if (first == (char)ix) {
-
-                        // Beginning of sequence.
-                        buffer += (char)ix;
-                        if (buffer == sequence) {
-                            return; // Sequence found
-                        } else if (buffer.Length == sequence.Length) {
-                            buffer = ""; // Throwing away matches found so far, starting over again.
-                            if (first == (char)ix) {
-                                buffer += (char)ix; // This is the opening token for sequence.
-                            }
-                        }
-                    }
+            /*
+             * Not sure if this is the optimal method to do this, but I think it
+             * shouldn't be too far away from optimal either ...
+             */
+            var buffer = new List<char>(sequence.Length + 1);
+            while(!reader.EndOfStream) {
+                buffer.Add((char)reader.Read());
+                if (buffer.Count > sequence.Length) {
+                    buffer.RemoveAt(0);
+                }
+                if (buffer[0] == sequence[0]) {
+                    if (sequence == new string(buffer.ToArray()))
+                        return; // Done!
                 }
             }
         }
@@ -172,9 +157,9 @@ namespace lizzie
         /// Reads a single line string literal from the reader, escaping characters if necessary,
         /// and also supporting UNICODE hex syntax to reference UNICODE characters.
         /// </summary>
-        /// <returns>The string.</returns>
-        /// <param name="reader">Reader.</param>
-        /// <param name="stop">Stop.</param>
+        /// <returns>The string literal.</returns>
+        /// <param name="reader">Reader to read from.</param>
+        /// <param name="stop">Stop what character that ends the string.</param>
         public static string ReadString(StreamReader reader, char stop = '"')
         {
             var builder = new StringBuilder();

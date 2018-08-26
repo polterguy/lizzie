@@ -93,9 +93,10 @@ namespace lizzie
                      */
 
                     case '"':
+                    case '\'':
 
                         reader.Read(); //  Skipping '"'.
-                        var strLiteral = Tokenizer.ReadString(reader);
+                        var strLiteral = Tokenizer.ReadString(reader, ch);
 
                         /*
                          * This time we need to cache our tokens for future invocations.
