@@ -1,0 +1,8 @@
+language: csharp
+solution: lizzie.sln
+install:
+  - nuget restore lizzie.sln
+  - nuget install NUnit.Runners -Version 2.4.8.0 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release lizzie.sln
+  - mono ./testrunner/NUnit.Runners.2.4.8.0/tools/nunit-console.exe ./lizzie.Tests/bin/Release/lizzie.tests.dll

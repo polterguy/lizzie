@@ -103,9 +103,9 @@ namespace lizzie
                          * 
                          * Notice, we need to push tokens in reversed order (LIFO).
                          */
-                        _cachedTokens.Push("\"");
+                        _cachedTokens.Push(ch == '\'' ? "'" : "\"");
                         _cachedTokens.Push(strLiteral);
-                        return "\"";
+                        return ch == '\'' ? "'" : "\"";
 
                     /*
                      * Possible single line comment token.

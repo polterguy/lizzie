@@ -172,6 +172,7 @@ namespace lizzie
                 case "@":
                     return CompileSymbolReference<TContext>(en);
                 case "\"":
+                case "'":
                     return CompileString<TContext>(en);
                 default:
                     if (IsNumeric(en.Current))
@@ -269,13 +270,16 @@ namespace lizzie
          */
         static Tuple<Function<TContext>, bool> CompileString<TContext>(IEnumerator<string> en)
         {
+            // Storing type of string literal quote.
+            var quote = en.Current;
+
             // Sanity checking tokenizer's content.
             if (!en.MoveNext())
-                throw new LizzieParsingException("Unexpected EOF after '\"'.");
+                throw new LizzieParsingException($"Unexpected EOF after {quote}.");
 
             // Retrieving actual string constant, and sanity checking tokenizer.
             var stringConstant = en.Current;
-            if (!en.MoveNext() || en.Current != "\"")
+            if (!en.MoveNext() || en.Current != quote)
                 throw new LizzieParsingException($"Unexpected EOF after to '{stringConstant}'");
 
             // Returning a function that evaluates to the actual string's constant value.
