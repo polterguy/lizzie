@@ -15,6 +15,27 @@ namespace lizzie
     public static class LambdaCompiler
     {
         /// <summary>
+        /// Compiling the specified code to a lambda function, without requiring
+        /// the caller to bind the evaluation towards a particular type.
+        /// 
+        /// Will bind to all the default 'keywords' in Lizzie found in the
+        /// Functions class.
+        /// </summary>
+        /// <returns>The compiled lambda function.</returns>
+        /// <param name="code">Lizzie code to compile.</param>
+        public static Func<object> Compile(string code)
+        {
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<Nothing>(tokenizer, code);
+            var binder = new Binder<Nothing>();
+            BindFunctions(binder);
+            var nothing = new Nothing();
+            return new Func<object>(() => {
+                return function(nothing, binder);
+            });
+        }
+
+        /// <summary>
         /// Compiles the specified code, binding to the specified context, and
         /// returns a function allowing you to evaluate the specified code.
         /// 
@@ -37,30 +58,32 @@ namespace lizzie
         }
 
         /// <summary>
-        /// Compiling the specified code to a lambda function, without requiring
-        /// the caller to bind the evaluation towards a particular type.
+        /// Compiles the specified code, binding to the specified context, and
+        /// returns a function allowing you to evaluate the specified code.
         /// 
         /// Will bind to all the default 'keywords' in Lizzie found in the
         /// Functions class.
         /// </summary>
         /// <returns>The compiled lambda function.</returns>
+        /// <param name="context">Context to bind the lambda towards.</param>
+        /// <param name="binder">Binder to use for your lambda.</param>
         /// <param name="code">Lizzie code to compile.</param>
-        public static Func<object> Compile(string code)
+        /// <typeparam name="TContext">The type of context you want to bind towards.</typeparam>
+        public static Func<object> Compile<TContext>(TContext context, Binder<TContext> binder, string code)
         {
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var binder = new Binder<Nothing>();
-            BindFunctions(binder);
-            var nothing = new Nothing();
+            var function = Compiler.Compile<TContext>(tokenizer, code);
             return new Func<object>(() => {
-                return function(nothing, binder);
+                return function(context, binder);
             });
         }
 
-        /*
-         * Binds the specified binder to all default 'keywords' in Lizzie.
-         */
-        static void BindFunctions<TContext>(Binder<TContext> binder)
+        /// <summary>
+        /// Binds the specified binder to all default functions in Lizzie from the Functions class.
+        /// </summary>
+        /// <param name="binder">Binder to bind.</param>
+        /// <typeparam name="TContext">The type of context you want to use.</typeparam>
+        public static void BindFunctions<TContext>(Binder<TContext> binder)
         {
             // Variables.
             binder["var"] = Functions<TContext>.Var;

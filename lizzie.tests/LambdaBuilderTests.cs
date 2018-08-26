@@ -94,5 +94,37 @@ bar");
             var result = lambda();
             Assert.AreEqual(57, result);
         }
+
+        [Test]
+        public void WithContext()
+        {
+            /*
+             * Creating a "master binder" that you never directly use, but rather
+             * clones for each time you evaluate a snippet of Lizzie code, allows
+             * you to avoid having to run through all the reflection initialization
+             * when binding to your context type, probably saving you a lot of
+             * resources when binding to the same type in multiple threads.
+             */
+            var masterBinder = new Binder<SimpleValues>();
+            LambdaCompiler.BindFunctions<SimpleValues>(masterBinder);
+
+            // Cloning our binder and evaluating a snippet of Lizzie code.
+            var binder1 = masterBinder.Clone();
+            var lambda1 = LambdaCompiler.Compile<SimpleValues>(new SimpleValues(), binder1, @"
+var(@foo, 57)
+");
+            var result1 = lambda1();
+
+            // Cloning a new binder and evaluating a new snippet of Lizzie code.
+            var binder2 = masterBinder.Clone();
+            var lambda2 = LambdaCompiler.Compile<SimpleValues>(new SimpleValues(), binder2, @"
+var(@foo, 77)
+");
+            var result2 = lambda2();
+
+            // Sanity checking result.
+            Assert.AreEqual(57, result1);
+            Assert.AreEqual(77, result2);
+        }
     }
 }
