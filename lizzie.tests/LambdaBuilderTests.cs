@@ -107,23 +107,26 @@ bar");
              */
             var masterBinder = new Binder<SimpleValues>();
             LambdaCompiler.BindFunctions<SimpleValues>(masterBinder);
+            masterBinder["bar"] = 10;
 
             // Cloning our binder and evaluating a snippet of Lizzie code.
             var binder1 = masterBinder.Clone();
+            binder1["bar2"] = 2;
             var lambda1 = LambdaCompiler.Compile<SimpleValues>(new SimpleValues(), binder1, @"
-var(@foo, 57)
+var(@foo, +(55, bar, bar2))
 ");
             var result1 = lambda1();
 
             // Cloning a new binder and evaluating a new snippet of Lizzie code.
             var binder2 = masterBinder.Clone();
+            Assert.IsFalse(binder2.ContainsKey("bar2"));
             var lambda2 = LambdaCompiler.Compile<SimpleValues>(new SimpleValues(), binder2, @"
-var(@foo, 77)
+var(@foo, +(67, bar))
 ");
             var result2 = lambda2();
 
             // Sanity checking result.
-            Assert.AreEqual(57, result1);
+            Assert.AreEqual(67, result1);
             Assert.AreEqual(77, result2);
         }
     }
