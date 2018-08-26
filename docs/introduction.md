@@ -139,6 +139,13 @@ a single binder, and then use its `Clone` method for each thread that needs to
 bind towards the same type, to significantly reduce resource usage during
 compilation of your Lizzie code.
 
+The `Binder` also functions as a stack. At the global level, everything you
+declare becomes available for every function, and all of your Lizzie code.
+However, everything you declare as symbols/variables inside a function, will only
+exist for that function. This is similar to how JavaScript works. If you declare
+a symbol/variable inside a stack, that already exists at the global level, this
+variable will locally override the variable for the duration of your function.
+
 ## Pre-defined Lizzie functions
 
 Lizzie contains many pre-defined functions for different use cases, which you
