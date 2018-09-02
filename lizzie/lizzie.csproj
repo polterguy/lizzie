@@ -2,18 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageVersion>0.6</PackageVersion>
+    <PackageVersion>0.7</PackageVersion>
     <Authors>Thomas Hansen</Authors>
     <PackageLicenseUrl>https://github.com/polterguy/lizzie/blob/master/LICENSE</PackageLicenseUrl>
     <Owners>Thomas Hansen</Owners>
     <PackageProjectUrl>https://github.com/polterguy/lizzie</PackageProjectUrl>
-    <Summary>Lizzie, the world's smallest script language for the CLR</Summary>
+    <Summary>Lizzie, a (tiny) scripting language for .Net</Summary>
     <PackageTags>delegates, scripting, symbolic delegates</PackageTags>
     <Title>lizzie</Title>
     <Description>A dynamic script language for the CLR based upon Symbolic Delegates</Description>
     <PackageId>lizzie</PackageId>
     <PackOnBuild>true</PackOnBuild>
-    <ReleaseVersion>0.6</ReleaseVersion>
+    <ReleaseVersion>0.7</ReleaseVersion>
     <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
 
