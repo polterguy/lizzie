@@ -744,7 +744,7 @@ write(get(get(foo,'howdy'),2)) // Writes 3
 addition to that you can use `number` to convert a string to a numeric value.
 
 ```javascript
-write(+(number("55"), 2))
+write(+(number('55'), 2))
 write(+(string(55), 5))
 ```
 
