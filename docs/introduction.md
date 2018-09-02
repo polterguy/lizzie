@@ -710,7 +710,7 @@ By combining the `map`, `list` and `string` functions, you can easily create
 JSON using Lizzie. Below is an example.
 
 ```javascript
-string(list(
+write(string(list(
   'foo',
   map(
     'bar1',57,
@@ -719,7 +719,7 @@ string(list(
       1,
       2,
       map(
-        'hello','world')))))
+        'hello','world'))))))
 ```
 
 The above results in the following JSON.
