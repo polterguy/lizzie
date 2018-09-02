@@ -277,7 +277,7 @@ further down.
 
 ```javascript
 var(@foo, function({
-  write("foo is invoked ...")
+  write('foo is invoked ...')
   bar()
 }, @bar))
 
