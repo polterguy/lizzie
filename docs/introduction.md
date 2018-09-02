@@ -731,6 +731,10 @@ The above results in the following JSON.
 You can also reverse the process, and create an object out of JSON, using `json`.
 
 ```javascript
+/*
+ * Notice, make sure you escape the " characters below
+ * if you paste this code into a C# string literal.
+ */
 var(@foo, json("{'bar':57,'howdy':[1,2,3]}"))
 write(get(foo,'bar')) // Writes 57
 write(get(get(foo,'howdy'),2)) // Writes 3
