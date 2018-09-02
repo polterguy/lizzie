@@ -364,11 +364,11 @@ to the `function` function. Below is an example.
 // Declaring 'foo' to be a function
 var(@foo, 
   function({
-    write('Hello ')
+    write('Hello')
     write(name)
-    write('you are ')
+    write('you are')
     write(age)
-    write(' years old ...')
+    write('years old ...')
   },
 
   // These are arguments our function can handle
