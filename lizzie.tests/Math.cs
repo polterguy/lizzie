@@ -11,17 +11,17 @@ using lizzie.exceptions;
 
 namespace lizzie.tests
 {
-    public class MathTests
+    public class Math
     {
         [Test]
         public void AddTwoIntegers()
         {
             var code = "+(10, 57)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["+"] = Functions<Nothing>.Add;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["+"] = Functions<LambdaCompiler.Nothing>.Add;
             var result = function(ctx, binder);
             Assert.AreEqual(67, result);
         }
@@ -31,10 +31,10 @@ namespace lizzie.tests
         {
             var code = "+(7, 30, 5, 15)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["+"] = Functions<Nothing>.Add;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["+"] = Functions<LambdaCompiler.Nothing>.Add;
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
         }
@@ -44,10 +44,10 @@ namespace lizzie.tests
         {
             var code = "+(7.0, 30.0, 5.47, 15.10)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["+"] = Functions<Nothing>.Add;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["+"] = Functions<LambdaCompiler.Nothing>.Add;
             var result = function(ctx, binder);
             Assert.AreEqual(57.57, result);
         }
@@ -57,10 +57,10 @@ namespace lizzie.tests
         {
             var code = @"+(""hello"", "" "", ""worl"",""d"")";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["+"] = Functions<Nothing>.Add;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["+"] = Functions<LambdaCompiler.Nothing>.Add;
             var result = function(ctx, binder);
             Assert.AreEqual("hello world", result);
         }
@@ -70,10 +70,10 @@ namespace lizzie.tests
         {
             var code = "-(67, 10)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["-"] = Functions<Nothing>.Subtract;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["-"] = Functions<LambdaCompiler.Nothing>.Subtract;
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
         }
@@ -83,10 +83,10 @@ namespace lizzie.tests
         {
             var code = "-(77, 10, 5, 5)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["-"] = Functions<Nothing>.Subtract;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["-"] = Functions<LambdaCompiler.Nothing>.Subtract;
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
         }
@@ -96,10 +96,10 @@ namespace lizzie.tests
         {
             var code = "*(5, 7)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["*"] = Functions<Nothing>.Multiply;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["*"] = Functions<LambdaCompiler.Nothing>.Multiply;
             var result = function(ctx, binder);
             Assert.AreEqual(35, result);
         }
@@ -109,10 +109,10 @@ namespace lizzie.tests
         {
             var code = "*(5, 7, 2)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["*"] = Functions<Nothing>.Multiply;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["*"] = Functions<LambdaCompiler.Nothing>.Multiply;
             var result = function(ctx, binder);
             Assert.AreEqual(70, result);
         }
@@ -122,10 +122,10 @@ namespace lizzie.tests
         {
             var code = "/(24.8, 8)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["/"] = Functions<Nothing>.Divide;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["/"] = Functions<LambdaCompiler.Nothing>.Divide;
             var result = function(ctx, binder);
             Assert.AreEqual(3.1, result);
         }
@@ -135,10 +135,10 @@ namespace lizzie.tests
         {
             var code = "/(100.1, 5, 2)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["/"] = Functions<Nothing>.Divide;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["/"] = Functions<LambdaCompiler.Nothing>.Divide;
             var result = function(ctx, binder);
             Assert.AreEqual(10.01, result);
         }
@@ -148,10 +148,10 @@ namespace lizzie.tests
         {
             var code = "%(7, 5)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["%"] = Functions<Nothing>.Modulo;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["%"] = Functions<LambdaCompiler.Nothing>.Modulo;
             var result = function(ctx, binder);
             Assert.AreEqual(2, result);
         }
@@ -161,10 +161,10 @@ namespace lizzie.tests
         {
             var code = "%(13, 10, 2)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["%"] = Functions<Nothing>.Modulo;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["%"] = Functions<LambdaCompiler.Nothing>.Modulo;
             var result = function(ctx, binder);
             Assert.AreEqual(1, result);
         }

@@ -11,12 +11,12 @@ using lizzie.tests.context_types;
 
 namespace lizzie.tests
 {
-    public class ListTests
+    public class List
     {
         [Test]
         public void CreateList()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), "list(57, 67, 77)");
+            var lambda = LambdaCompiler.Compile("list(57, 67, 77)");
             var result = lambda();
             Assert.IsTrue(result is List<object>);
             var list = result as List<object>;
@@ -29,7 +29,7 @@ namespace lizzie.tests
         [Test]
         public void CountListContent()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, list(57, 67, 77))
 count(foo)");
             var result = lambda();
@@ -39,7 +39,7 @@ count(foo)");
         [Test]
         public void GetListValue()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, list(57, 67, 77))
 get(foo, 2)");
             var result = lambda();
@@ -49,7 +49,7 @@ get(foo, 2)");
         [Test]
         public void AddToList()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, list(57))
 add(foo, 67, 77)
 foo");
@@ -65,7 +65,7 @@ foo");
         [Test]
         public void SliceList_01()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, list(57, 67, 77, 87))
 slice(foo, 1, 3)");
             var result = lambda();
@@ -79,7 +79,7 @@ slice(foo, 1, 3)");
         [Test]
         public void SliceList_02()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, list(57, 67, 77, 87))
 slice(foo, 1)");
             var result = lambda();
@@ -94,7 +94,7 @@ slice(foo, 1)");
         [Test]
         public void SliceList_03()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, list(57, 67, 77, 87))
 slice(foo)");
             var result = lambda();
@@ -110,7 +110,7 @@ slice(foo)");
         [Test]
         public void Each_01()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, list(57, 67, 77, 87))
 var(@bar, list())
 each(@ix, foo, {
@@ -130,7 +130,7 @@ bar");
         [Test]
         public void Each_02()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, list(57, 67, 77, 87))
 var(@bar, list())
 each(@ix, foo, {
@@ -150,7 +150,7 @@ bar");
         [Test]
         public void Each_03()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, list(""57"", ""67"", ""77"", ""88.88"", ""97""))
 var(@bar, list())
 each(@ix, foo, {
@@ -171,7 +171,7 @@ bar");
         [Test]
         public void ApplyArgumentsToAdd()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, +(apply(list(57,10,10))))
 ");
             var result = lambda();

@@ -6,12 +6,12 @@
  */
 
 using NUnit.Framework;
-using lizzie.tests.context_types;
+using lizzie;
 using lizzie.exceptions;
 
 namespace lizzie.tests
 {
-    public class VariableTests
+    public class Variables
     {
         [Test]
         public void VariableAssignedToIntegerValue()
@@ -19,10 +19,10 @@ namespace lizzie.tests
             var code = @"
 var(@foo, 57)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["var"] = Functions<LambdaCompiler.Nothing>.Var;
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
         }
@@ -33,10 +33,10 @@ var(@foo, 57)";
             var code = @"
 var(@foo, 57.67)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["var"] = Functions<LambdaCompiler.Nothing>.Var;
             var result = function(ctx, binder);
             Assert.AreEqual(57.67, result);
         }
@@ -48,10 +48,10 @@ var(@foo, 57.67)";
 var(@foo, ""bar"")
 foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["var"] = Functions<LambdaCompiler.Nothing>.Var;
             var result = function(ctx, binder);
             Assert.AreEqual("bar", result);
         }
@@ -63,10 +63,10 @@ foo";
 var(@foo, 57)
 foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["var"] = Functions<LambdaCompiler.Nothing>.Var;
             var result = function(ctx, binder);
             Assert.AreEqual(57, result);
         }
@@ -76,9 +76,9 @@ foo";
         {
             var code = "foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
             var success = false;
             try {
                 function(ctx, binder);
@@ -95,10 +95,10 @@ foo";
 var(@foo, 57)
 var(@foo, 57)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["var"] = Functions<LambdaCompiler.Nothing>.Var;
             var success = false;
             try {
                 function(ctx, binder);
@@ -115,10 +115,10 @@ var(@foo, 57)";
 var(@foo)
 foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["var"] = Functions<LambdaCompiler.Nothing>.Var;
             var result = function(ctx, binder);
             Assert.IsNull(result);
         }
@@ -131,11 +131,11 @@ var(@foo, 57)
 set(@foo, 67)
 foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
-            binder["set"] = Functions<Nothing>.Set;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["var"] = Functions<LambdaCompiler.Nothing>.Var;
+            binder["set"] = Functions<LambdaCompiler.Nothing>.Set;
             var result = function(ctx, binder);
             Assert.AreEqual(67, result);
         }
@@ -148,11 +148,11 @@ var(@foo, 57)
 set(@foo)
 foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
-            binder["set"] = Functions<Nothing>.Set;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["var"] = Functions<LambdaCompiler.Nothing>.Var;
+            binder["set"] = Functions<LambdaCompiler.Nothing>.Set;
             var result = function(ctx, binder);
             Assert.IsNull(result);
         }
@@ -163,10 +163,10 @@ foo";
             var code = @"
 var(@foo)";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["var"] = Functions<LambdaCompiler.Nothing>.Var;
             binder["foo"] = 57;
             var success = false;
             try {
@@ -185,11 +185,11 @@ var(@foo, 57.67)
 set(@foo, ""bar"")
 foo";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<Nothing>(tokenizer, code);
-            var ctx = new Nothing();
-            var binder = new Binder<Nothing>();
-            binder["var"] = Functions<Nothing>.Var;
-            binder["set"] = Functions<Nothing>.Set;
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["var"] = Functions<LambdaCompiler.Nothing>.Var;
+            binder["set"] = Functions<LambdaCompiler.Nothing>.Set;
             var result = function(ctx, binder);
             Assert.AreEqual("bar", result);
         }

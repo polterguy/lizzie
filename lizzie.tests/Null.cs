@@ -11,7 +11,7 @@ using lizzie.tests.context_types;
 
 namespace lizzie.tests
 {
-    public class NullTests
+    public class Null
     {
         [Test]
         public void AssertNullIsNull()

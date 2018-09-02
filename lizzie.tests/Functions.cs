@@ -11,12 +11,12 @@ using lizzie.exceptions;
 
 namespace lizzie.tests
 {
-    public class FunctionTests
+    public class Functions
     {
         [Test]
         public void ReturnsNumberConstant()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, function({
   57
 }))
@@ -28,7 +28,7 @@ foo()");
         [Test]
         public void ReturnsStringConstant()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, function({
   ""Hello World""
 }))
@@ -40,7 +40,7 @@ foo()");
         [Test]
         public void SingleParameter()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, function({
   +(""Hello "", input)
 }, @input))
@@ -52,7 +52,7 @@ foo(""Thomas"")");
         [Test]
         public void MultipleParameters()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, function({
   +(""Hello "", name, "" it seems you are "", old, "" years old"")
 }, @name, @old))
@@ -64,7 +64,7 @@ foo(""Thomas"", 44)");
         [Test]
         public void EvaluateFunctionFromWithinFunction()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@bar, function({
   77
 }))
@@ -79,7 +79,7 @@ foo()");
         [Test]
         public void ChangeStackFromWithinFunction()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@bar, function({
   var(@arg, 50)
 }))
@@ -95,7 +95,7 @@ foo()");
         [Test]
         public void VariableDeclaredWithinFunctionDoesNotExistThrows()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@foo, function({
   var(@bar, 50)
 }))

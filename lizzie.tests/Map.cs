@@ -11,12 +11,12 @@ using lizzie.tests.context_types;
 
 namespace lizzie.tests
 {
-    public class DictionaryTests
+    public class Map
     {
         [Test]
         public void CreateEmpty()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), "map()");
+            var lambda = LambdaCompiler.Compile("map()");
             var result = lambda();
             Assert.IsTrue(result is Dictionary<string, object>);
         }
@@ -24,7 +24,7 @@ namespace lizzie.tests
         [Test]
         public void CreateWithInitialValues()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 map(
   'foo', 57,
   'bar', 77
@@ -40,7 +40,7 @@ map(
         [Test]
         public void Count()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 count(map(
   'foo', 57,
   'bar', 77
@@ -53,7 +53,7 @@ count(map(
         [Test]
         public void RetrieveValues()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@my-map, map(
   'foo', 57,
   'bar', 77
@@ -67,7 +67,7 @@ get(my-map, 'foo')
         [Test]
         public void Add()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@my-map, map(
   'foo', 57
 ))
@@ -85,7 +85,7 @@ my-map
         [Test]
         public void ComplexAdd_01()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@my-map, map(
   'foo', 57
 ))
@@ -110,7 +110,7 @@ my-map
         [Test]
         public void ComplexAdd_02()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@my-map, map(
   'world', list(1,2,3)
 ))
@@ -133,7 +133,7 @@ my-map
         [Test]
         public void ComplexAdd_03()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@my-map, map(
   'world', list(1,2,3)
 ))
@@ -160,7 +160,7 @@ my-map
         [Test]
         public void Each_01()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+            var lambda = LambdaCompiler.Compile(@"
 var(@my-map, map(
   'foo', 47,
   'bar', 10

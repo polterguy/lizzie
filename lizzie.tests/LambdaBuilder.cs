@@ -11,12 +11,12 @@ using lizzie.tests.context_types;
 
 namespace lizzie.tests
 {
-    public class LambdaBuilderTests
+    public class LambdaBuilder
     {
         [Test]
         public void WithType()
         {
-            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), "57");
+            var lambda = LambdaCompiler.Compile("57");
             var result = lambda();
             Assert.AreEqual(57, result);
         }

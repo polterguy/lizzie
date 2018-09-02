@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace lizzie.tests
 {
-    public class EvalTests
+    public class Eval
     {
         [Test]
         public void EvaluateInlineCode()

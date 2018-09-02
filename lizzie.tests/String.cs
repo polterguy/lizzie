@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace lizzie.tests
 {
-    public class StringTests
+    public class String
     {
         [Test]
         public void SubstringOnlyOffset()

@@ -10,7 +10,7 @@ using lizzie.tests.context_types;
 
 namespace lizzie.tests
 {
-    public class BinderTests
+    public class Binder
     {
         [Test]
         public void CloneWithoutStack()

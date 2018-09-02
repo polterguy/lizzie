@@ -16,4 +16,7 @@
   <ItemGroup>
     <None Remove="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="context_types\Nothing.cs" />
+  </ItemGroup>
 </Project>
