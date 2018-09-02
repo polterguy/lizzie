@@ -815,4 +815,4 @@ you to create methods that instantiates stuff such as `BigInteger`, `DateTime`,
 or `TimeSpan` instances, and still handle these internally quite well in Lizzie.
 
 * [Download Lizzie here](https://github.com/polterguy/lizzie/releases)
-* Or use the NuGet _"lizzie"_ package
+* Or add the NuGet _"lizzie"_ package
