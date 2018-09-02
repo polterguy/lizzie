@@ -44,21 +44,19 @@ class MainClass
 }
 ```
 
-As you execute the above C# console program, you will see that clearly your Lizzie
+As you execute the above C# console program, you will realize that your Lizzie
 code is able to execute your `Foo` C# method, as if it was a Lizzie function. This
 is because of that the type of `MainClass` is the type argument to the
 `LambdaCompiler.Compile` method. Internally, the Lizzie compiler will create a
 _"Symbolic Delegate"_ for each method that you have marked with the `Bind` attribute
 on your `MainClass`, and make this method available as a _"function"_ to your
-Lizzie code.
-
-This allows you to extend Lizzie as you see fit, with your own _"keywords"_
+Lizzie code. This allows you to extend Lizzie as you see fit, with your own _"keywords"_
 created in C#, to create your own _"Domain Specific Language"_ - While
 still keeping the Lizzie syntax and its dynamic model. Another way to
 accomplish the same as above, is to choose to instead explicitly add your
 functions to the binder, as delegates. This is particularly useful if you can't
-for some reasons change the type you are binding to. The above code is logically
-identically to the following code.
+change the type you are binding to. The above code is logically identically
+to the following code.
 
 ```csharp
 using System;
@@ -93,7 +91,7 @@ class MainClass
 The last example above requires a slightly more manual job, but from a functional
 point of view, the above two examples are identical, except that in the first
 example the `this` reference is implicitly passed into your function, since this
-is a member instance method of the `MainClass` - While in the second example,
+is an instance member method of our `MainClass` - While in the second example,
 the reference to your context is passed explicitly in as the `ctx` argument.
 The signature of the functions are still the same, and can be found below.
 
@@ -106,7 +104,9 @@ us to handle delegates _"symbolically"_. Since we know that every method/functio
 will have the same signature, we can treat them as interchangeable function objects. This
 creates many advantages, and some disadvantages. The _"disadvantage"_ is that you
 loose type safety while passing arguments around, since the `Arguments` class
-is simply a wrapper around `List<object>`.
+is simply a wrapper around `List<object>`. The advantage is that you have 
+_"polymorphism"_ on all functions in Lizzie, and any function can be changed
+with any other function.
 
 **Notice** - Lizzie is not type safe, but after a while, you will
 realize that _is the whole point_, and its _main advantage_ in fact. If Lizzie
