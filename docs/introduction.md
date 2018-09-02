@@ -285,7 +285,7 @@ var(@foo, function({
  * Notice, this function is passed into our function without
  * being evaluated
  */
-foo(@write("This will be evaluated last ..."))
+foo(@write('This will be evaluated last ...'))
 ```
 
 If you evaluate the Lizzie code above, you might be surprised to see that the
@@ -333,7 +333,7 @@ and actually not make it available for us in any ways.
 
 ```javascript
 function({
-  write("This function can never be invoked!")
+  write('This function can never be invoked!')
 })
 ```
 
@@ -348,7 +348,7 @@ somehow, to be able to actually use it. Below is a slightly more useful example.
  */
 var(@foo, 
   function({
-    write("This function can be invoked!")
+    write('This function can be invoked!')
   })
 )
 
@@ -364,11 +364,11 @@ to the `function` function. Below is an example.
 // Declaring 'foo' to be a function
 var(@foo, 
   function({
-    write("Hello ")
+    write('Hello ')
     write(name)
-    write("you are ")
+    write('you are ')
     write(age)
-    write(" years old ...")
+    write(' years old ...')
   },
 
   // These are arguments our function can handle
@@ -377,7 +377,7 @@ var(@foo,
 )
 
 // Invoking our function with two arguments
-foo("Thomas", 44)
+foo('Thomas', 44)
 ```
 
 When you declare a function, you must declare all arguments you want
@@ -393,7 +393,7 @@ The rule of thumb is as follows.
 To understand the difference, you might want to run the following program.
 
 ```javascript
-var(@howdy, "John Doe")
+var(@howdy, 'John Doe')
 write(@howdy)
 write(howdy)
 ```
@@ -435,9 +435,9 @@ functions interchangeable.
 To branch in Lizzie you can use the `if` function. Below is an example.
 
 ```javascript
-var(@foo, "Value of foo")
+var(@foo, 'Value of foo')
 if(foo,{
-  write("Foo has a value")
+  write('Foo has a value')
 })
 ```
 
@@ -450,9 +450,9 @@ that is evaluated if the condition of your `if` returns null.
 ```javascript
 var(@foo)
 if(foo,{
-  write("Foo has a value")
+  write('Foo has a value')
 },{
-  write("Foo is null")
+  write('Foo is null')
 })
 ```
 
@@ -471,7 +471,7 @@ var(@foo, function({
 
 // Evaluating the above function, and checking if it returned anything
 if(foo(),{
-  write("Foo returned something")
+  write('Foo returned something')
 })
 ```
 
@@ -508,12 +508,12 @@ var(@foo, function({
  * Evaluating the above function twice, with and without an argument,
  * and writing out what it returns on the console
  */
-var(@tmp1, foo("some value"))
-write(+("Foo returned ", tmp1))
+var(@tmp1, foo('some value'))
+write(+('Foo returned ', tmp1))
 
 // Notice! No value passed in to foo here ...
 var(@tmp2, foo())
-write(+("Foo returned ", tmp2))
+write(+('Foo returned ', tmp2))
 ```
 
 In our first function invocation above, `input` has a value, hence it will
@@ -535,17 +535,17 @@ if it is defined. For those cases there's the `eq` function.
 var(@foo, function({
 
   // Checking if 'input' contains 'Thomas'
-  if(eq(input, "Thomas"), {
-    "Welcome home boss!!"
+  if(eq(input, 'Thomas'), {
+    'Welcome home boss!!'
   }, {
-    "Welcome stranger"
+    'Welcome stranger'
   })
 
 }, @input))
 
 // Evaluating the above function
-write(foo("Thomas"))
-write(foo("John Doe"))
+write(foo('Thomas'))
+write(foo('John Doe'))
 ```
 
 If you wish to _"negate"_ the check, implying _"not equals"_, you can simply
@@ -559,17 +559,17 @@ return value of our `eq` is negated using a `not` invocation.
 var(@foo, function({
 
   // Checking if 'input' contains 'Thomas'
-  if(not(eq(input, "Thomas")), {
-    "Welcome stranger"
+  if(not(eq(input, 'Thomas')), {
+    'Welcome stranger'
   }, {
-    "Welcome home boss!!"
+    'Welcome home boss!!'
   })
 
 }, @input))
 
 // Evaluating the above function
-write(foo("Thomas"))
-write(foo("John Doe"))
+write(foo('Thomas'))
+write(foo('John Doe'))
 ```
 
 In addition to `eq` and `not` you also have the following comparison functions.
@@ -603,9 +603,9 @@ var(@foo3, 57)
 
 // Yields true since foo3 contains a non-null value
 if(any(@foo1, @foo1, @foo3), {
-  write("Any yields true")
+  write('Any yields true')
 }, {
-  write("Any yields false")
+  write('Any yields false')
 })
 ```
 
@@ -650,18 +650,18 @@ invocation.
 ```javascript
 // Declare a list
 var(@foo, list(57, 67, 77))
-write(+("list count ", count(foo)))
+write(+('list count ', count(foo)))
 
 // Returns the 3rd item
-write(+("list 3rd item ", get(foo, 2)))
+write(+('list 3rd item ', get(foo, 2)))
 
 // Adds two new items to the list
 add(foo, 88, 99)
-write(+("list count ", count(foo)))
+write(+('list count ', count(foo)))
 
 // Slice the list, and puts the new list into 'bar'
 var(@bar, slice(foo, 1, 3))
-write(+("bar list count ", count(bar)))
+write(+('bar list count ', count(bar)))
 
 /*
  * Apply arguments from a list
@@ -778,9 +778,9 @@ Lizzie contains the following functions for manipulating strings.
 * __replace__ replaces all occurrencies of the specified 1st arg value with the 2nd arg value
 
 ```javascript
-var(@foo, "Hello World")
+var(@foo, 'Hello World')
 write(length(foo))
-write(replace(foo, "World", "Sirius"))
+write(replace(foo, 'World', 'Sirius'))
 write(substr(foo, 6, 2))
 write(substr(foo, 6)) // The count is optional
 ```
@@ -792,7 +792,7 @@ dynamically creating code, that is evaluated dynamically by the code that
 creates it. Below you can find an example of Lizzie's `eval` function.
 
 ```javascript
-write(eval("+(57,10,10)"))
+write(eval('+(57,10,10)'))
 ```
 
 This function requires one argument, which must be a valid piece of Lizzie code,
