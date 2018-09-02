@@ -31,13 +31,11 @@ class MainClass
     public static void Main(string[] args)
     {
         // Some inline Lizzie code
-        var code = @"
+        // This invokes the above 'Foo' method from Lizzie
+        var code = "foo()";
 
-// This invokes the above 'Foo' method.
-foo()";
-
-        // Compiling the above code, 'binding' to our MainClass instance.
-        var lambda = LambdaCompiler.Compile<MainClass>(new MainClass(), code);
+        // Compiling the above code, 'binding' to a MainClass instance.
+        var lambda = LambdaCompiler.Compile(new MainClass(), code);
         var result = lambda();
 
         // Waiting for user input.
@@ -49,12 +47,13 @@ foo()";
 As you execute the above C# console program, you will see that clearly your Lizzie
 code is able to execute your `Foo` C# method, as if it was a Lizzie function. This
 is because of that the type of `MainClass` is the type argument to the
-`LambdaCompiler.Compile` line. Internally, the Lizzie compiler will create a
-_"Symbolic Delegate"_ for each method that you have marked with the `Bind` attribute,
-and make that method available as a _"function"_ to your Lizzie code.
+`LambdaCompiler.Compile` method. Internally, the Lizzie compiler will create a
+_"Symbolic Delegate"_ for each method that you have marked with the `Bind` attribute
+on your `MainClass`, and make this method available as a _"function"_ to your
+Lizzie code.
 
 This allows you to extend Lizzie as you see fit, with your own _"keywords"_
-created in C#, to create your own _"Domain Specific Language"_, while
+created in C#, to create your own _"Domain Specific Language"_ - While
 still keeping the Lizzie syntax and its dynamic model. Another way to
 accomplish the same as above, is to choose to instead explicitly add your
 functions to the binder, as delegates. This is particularly useful if you can't
@@ -69,24 +68,21 @@ class MainClass
 {
     public static void Main(string[] args)
     {
-        // Some inline Lizzie code.
+        // Some inline Lizzie code
         var code = "foo()";
 
-        // Creating a lambda function from our code.
+        // Creating a lambda function from our code
         var function = Compiler.Compile<MainClass>(new Tokenizer(new LizzieTokenizer()), code);
 
-        // Creating an instance of our class, which we can bind to our code.
-        var context = new MainClass();
-
-        // Creating a binder, and adding the 'foo' function to it.
+        // Creating a binder, and adding the 'foo' function to it
         var binder = new Binder<MainClass>();
         binder["foo"] = new Function<MainClass>((ctx, binder2, arguments) => {
             Console.WriteLine("Hello World");
             return null;
         });
 
-        // Evaluates our Lizzie code making sure we bind it to our instance.
-        function(context, binder);
+        // Evaluates our Lizzie code making sure we bind it to our instance
+        function(new MainClass(), binder);
 
         // Waiting for user input.
         Console.Read();
@@ -98,14 +94,12 @@ The last example above requires a slightly more manual job, but from a functiona
 point of view, the above two examples are identical, except that in the first
 example the `this` reference is implicitly passed into your function, since this
 is a member instance method of the `MainClass` - While in the second example,
-the reference to your context is passed explicitly as the `ctx` argument.
+the reference to your context is passed explicitly in as the `ctx` argument.
 The signature of the functions are still the same, and can be found below.
 
 ```csharp
 delegate object Function<TContext>(TContext ctx, Binder<TContext> binder, Arguments arguments);
 ```
-
-`TContext` is our `MainClass` above.
 
 Every Lizzie function has the exact same signature. This is what makes it possible for
 us to handle delegates _"symbolically"_. Since we know that every method/function/delegate
@@ -130,9 +124,7 @@ for the language, which is this page, is not more than roughly 12 pages if
 you choose to print it out. These 12 pages are _everything_ you need to learn
 in order to master Lizzie.
 
-### Binder internals
-
-**Notice** - Instances of the `Binder` class are not thread safe. Creating an
+**Notice** - Instances of the `Binder` class are _not_ thread safe. Creating an
 instance of the Binder class and binding it to your own context type also implies
 some runtime overhead, since it includes reflection. However, you can still cache
 a single binder, and then use its `Clone` method for each thread that needs to
@@ -169,15 +161,14 @@ class MainClass
         var function = Compiler.Compile<MainClass>(tokenizer, code);
 
         /*
-         * Creating a context object, a binder, and adding up only one
+         * Creating a binder, and adding up only one
          * single function to it
          */
-        var ctx = new MainClass();
         var binder = new Binder<MainClass>();
         binder["+"] = Functions<MainClass>.Add;
 
         // Evaluating our Lizzie function
-        var result = function(ctx, binder);
+        var result = function(new MainClass(), binder);
         Console.WriteLine($"Result: '{result}'");
 
         // Waiting for user input
@@ -187,9 +178,9 @@ class MainClass
 ```
 
 In our above example, we have created a `Binder` with only one single function
-available for Lizzie, which of course is our `+` function. Anything you try
+available for Lizzie, which is our `+` function. Anything you try
 to do besides invoking `+` will throw an exception, because it doesn't contain
-any other functions besides `+`. This gives you complete control over
+any other functions. This gives you complete control over
 what a piece of Lizzie code is legally allowed to do, and allows you to for
 instance evaluate _"insecure"_ code in a highly restricted context, which does
 not have access to negatively modify the state of your server/client in any
@@ -236,7 +227,7 @@ write(foo)
 ";
 
         // Creating a lambda function from our code
-        var function = LambdaCompiler.Compile<MainClass>(new MainClass(), code);
+        var function = LambdaCompiler.Compile(new MainClass(), code);
 
         // Evaluates our Lizzie code making sure we bind it to our instance
         var result = function();
@@ -250,7 +241,7 @@ write(foo)
 In the above Lizzie code we create a _"variable"_ named `foo`, and set its initial
 value to _"57"_, before we write out its content to the console by invoking our
 WriteLine method, which is bound to our Lizzie code, using the `[Bind]` attribute.
-The `var` function must be given at least on _"variable name"_, in addition to
+The `var` function must be given at least a _"variable name"_, in addition to
 optionally an initial value for that variable. The value can be anything ranging
 from a function, to a string, or a number of some sort - Or the return value from
 a bound C# method, allowing you to create complex objects and handle these within
@@ -261,11 +252,6 @@ C# console program around, and simply replace its Lizzie code, to try out the
 following examples.
 
 ### What's with the funny '@' symbol?
-
-**Warning** - Advanced concept coming up. If you don't understand the contents
-of this sub-title, simply skip it, and come back to it later, at which point
-it will make more sense to you. Understanding this part is not required to
-understand the rest of this documentation.
 
 Lizzie is based upon the ideas of Lisp. In Lisp, and hence in Lizzie, everything
 is evaluated. In fact, even constants you include in your code, are wrapped inside
@@ -298,7 +284,7 @@ var(@foo, function({
 
 /*
  * Notice, this function is passed into our function without
- * being evaluated!
+ * being evaluated
  */
 foo(@write("This will be evaluated last ..."))
 ```
@@ -312,37 +298,12 @@ actually done by creating a wrapper function invocation, that decorates our
 inner function invocation, and returns that decorated function invocation when
 referencing the symbol.
 
-If the above code is all Greek to you, it simply declares a variable
-named `foo`, and assigns the _"anonymous function"_ returned from the `function`
-invocation to the value of `foo`. Our `foo` function can take one parameter,
-and within our `foo` function we can de-reference this argument's value as `bar`.
-Since `bar` happens to be a function, that internally invokes `write`, with an
-argument that it has already been decorated with - We can evaluate `bar` in our
-`foo` function without arguments - Which is what we do in the above code
-_after_ we first write _"foo is invoked"_ to the console. For this reasons the
-evaluation of our `bar` function actually occurs _after_ we have written
-_"foo is invoked"_ to the console, even though we have created our function
-invocation as an argument to our `foo` function.
-
-An easy way to visualize this, is by realizing that the statement
-`@write(...)` does not invoke `write`, but rather creates an anonymous function,
-that once evaluated will invoke `write` with the arguments you have already
-declared that you want to use for your `write` invocation. Think of this in
-such a way that in Lizzie function invocations are also objects. The above
-`@write(...)` syntax is logically similar to the following JavaScript.
+Think of this in such a way that in Lizzie function invocations are also objects.
+The above `@write(...)` syntax is logically similar to the following JavaScript.
 
 ```javascript
 foo(function() { write("This will be evaluated last ...") });
 ```
-
-**FYI** - The `{...}` parts above simply creates a _"lambda object"_, that is
-basically a delegate, that internally contains a list of other delegates, that
-it sequentially evaluated once the _"lambda"_ is evaluated. `{}` simply creates
-an object, that happens to be a function, which you can execute when needed.
-
-Yet again, if this part is all Greek, simply keep on reading, and refer back to
-it later, at which point you'll have the necessary knowledge to understand this
-part.
 
 ### Changing a variable's value
 
@@ -445,6 +406,12 @@ howdy
 John Doe
 ```
 
+The `{ ... code ...}` notation is what is necessary to create a _"lambda object".
+Such lambda objects are used when we need multiple statements that are to be
+evaluated sequentially, such as we do when creating a function, or when we
+create a loop, or when we create an `if` statement. This is similar to JavaScript
+and C#.
+
 ### So what is a Symbolic Delegate anyway?
 
 A _"Symbolic Delegate"_ is exactly what it sounds like. It's a delegate, associated
@@ -453,11 +420,8 @@ into a dictionary, where the values are delegates. Below is how these are more
 or less implemented in Lizzie.
 
 ```csharp
-// The delegate type
-delegate object Function<TContext>(TContext ctx, Binder<TContext> binder, Arguments arguments);
-
-// Dictionary containing our symbolic delegates
-Dictionary<string, Function<TContext>>
+// Pseudo code
+Dictionary<string, Function> _keywords;
 ```
 
 This allows us to lookup functions from a dictionary using the symbol as a key.
@@ -466,21 +430,6 @@ for us compared to native CLR code, while also allowing us to dynamically
 parse Lizzie's syntax, to dynamically build and modify our delegate dictionary.
 And since every _"function"_ has the exact same signature, we can treat all
 functions interchangeable.
-
-This allows us to create a programming language (Lizzie), that is Turing complete,
-without neither any compilation nor any interpretation being necessary to
-_"execute"_ our end result. Which results in a **blistering fast** process for
-dynamically parsing Lizzie code, and creating a _"lambda object"_ out of it
-during runtime. Compiling C# code often requires seconds, in addition to often
-also _"reloading"_ the process such that it can execute our CLR code. Interpreting
-script code is often a process too expensive to be able to adequately implement
-in a managed language such as C#. However, parsing a bunch of _"Symbolic Delegates"_,
-and create a lambda object out of it, is not only blistering fast, but the end
-result is also rarely significantly slower to executing compiled C# code for all
-practical concerns. Even though there is one additional layer of indirection to
-lookup the delegates from your dictionary, this rarely have any practical concerns
-for most apps, unless you require insane amounts of speed, at which point you
-probably wouldn't choose a managed environment in the first place anyway.
 
 ### Branching
 
@@ -496,16 +445,15 @@ if(foo,{
 Since the `foo` variable has a value, the lambda which is the second argument
 to our `if` invocation will be evaluated. If you remove the above initial value
 to `foo` it won't evaluate the parts in between `{` and `}` above. If you supply
-an additional lambda as the third argument, this will become the `if` statement's
-associated `else` lambda, that is evaluated if the condition of your `if` returns
-null.
+an additional lambda as the third argument, this will become the `else` lambda,
+that is evaluated if the condition of your `if` returns null.
 
 ```javascript
 var(@foo)
 if(foo,{
   write("Foo has a value")
 },{
-  write("Foo is not defined")
+  write("Foo is null")
 })
 ```
 
@@ -535,9 +483,9 @@ The only thing that evaluates to _"false"_ is null.
 
 ### Wait, where's the return keyword?
 
-Well, it doesn't exist! This is because inside of a lambda object, whatever is
-evaluated last, before the lambda returns, will be implicitly returned as the
-_"value"_ of the lambda. Let's illustrate this with an example.
+Lizzie does not have a return keyword. This is because inside of a lambda object,
+whatever is evaluated last, before the lambda returns, will be implicitly returned
+as the _"value"_ of the lambda. Let's illustrate this with an example.
 
 ```javascript
 /*
@@ -574,16 +522,15 @@ evaluate the line `57`, which of course simply _"returns"_ the constant numeric
 value of 57 to caller. In the second invocation, `input` does **not** have a value,
 and hence the else parts of our `if` invocation will be evaluated, which returns
 67. Hence, by intelligently structuring your code, there is no need for an
-explicit `return` keyword in Lizzie.
+explicit `return` keyword in Lizzie. Notice also how the above code illustrates
+that all arguments to your functions are optional by default.
 
-**Notice** - If you for some reasons wants to explicitly use null for some reasons,
-you can do so with the null constant. Below is an example.
+**Notice** - If you for some reasons need to explicitly return null, you can use
+the `null` constant. Below is an example.
 
 ```javascript
-var(@foo)
-if(eq(null, foo), {
-  write("Yup,it's null!")
-})
+// Evaluates to null explicitly
+null
 ```
 
 ### Testing for equality
@@ -595,10 +542,7 @@ if it is defined. For those cases there's the `eq` function.
 // Creating a function.
 var(@foo, function({
 
-  /*
-   * Checking value of input argument, and returning 57 if it has
-   * a value, otherwise we return 67
-   */
+  // Checking if 'input' contains 'Thomas'
   if(eq(input, "Thomas"), {
     "Welcome home boss!!"
   }, {
@@ -608,27 +552,21 @@ var(@foo, function({
 }, @input))
 
 // Evaluating the above function
-var(@tmp1, foo("Thomas"))
-write(+("Foo returned ", tmp1))
+write(foo("Thomas"))
+write(foo("John Doe"))
 ```
 
-The above code of course writes _"Welcome home boss"_ on the console. If you
-change the value you invoke `foo` with above to e.g. _"John Doe"_, it will
-write _"Welcome stranger"_ instead. If you wish to _"negate"_ the check,
-implying _"not equals"_, you can simply wrap your `eq` invocation inside of
-a `not` function invocation, which will negate the value of `eq`, or any other
-values for that matter. Below is an example, that logically is the same as our
-previous example, but where the return value of our `eq` is negated using a `not`
-invocation.
+If you wish to _"negate"_ the check, implying _"not equals"_, you can simply
+wrap your `eq` invocation inside of a `not` function invocation, which will
+negate the value of `eq`, or any other values for that matter. Below is an
+example, that logically is the same as our previous example, but where the
+return value of our `eq` is negated using a `not` invocation.
 
 ```javascript
 // Creating a function.
 var(@foo, function({
 
-  /*
-   * Checking value of input argument, and returning 57 if it has
-   * a value, otherwise we return 67
-   */
+  // Checking if 'input' contains 'Thomas'
   if(not(eq(input, "Thomas")), {
     "Welcome stranger"
   }, {
@@ -638,8 +576,8 @@ var(@foo, function({
 }, @input))
 
 // Evaluating the above function
-var(@tmp1, foo("Thomas"))
-write(+("Foo returned ", tmp1))
+write(foo("Thomas"))
+write(foo("John Doe"))
 ```
 
 In addition to `eq` and `not` you also have the following comparison functions.
@@ -659,7 +597,7 @@ However, you can accomplish the same result by using the `any` and the
 `all` functions. The `any` is the equivalent of OR in a traditional programming
 language, while `all` is the equivalent of AND. `any` will return the first
 non-null argument that it is given, or null if all arguments are null.
-While `all` will return the first null argument it is given, otherwise it will
+`all` will return the first null argument it is given, otherwise it will
 return the value of its last argument. This allows you to combine `any` and `all`
 to accomplish the same as OR and AND would do for you normally. Consider the
 following.
@@ -668,12 +606,10 @@ following.
 var(@foo1)
 var(@foo2)
 
-// Remove the 57 value to have the if below yield false
+// Remove the 57 value to have the 'any' below yield false
 var(@foo3, 57)
 
-/*
- * Yields true since foo3 contains a non-null value
- */
+// Yields true since foo3 contains a non-null value
 if(any(@foo1, @foo1, @foo3), {
   write("Any yields true")
 }, {
@@ -681,10 +617,10 @@ if(any(@foo1, @foo1, @foo3), {
 })
 ```
 
-If you exchange the above `any` with an `all`, it will yield null, since some of
+If you exchange the above `any` with `all`, it will yield null, since some of
 its arguments are null.
 
-### Short-circuit evaluation
+### Lazy condition evaluation
 
 Since everything in Lizzie is evaluated, this creates a dilemma for us, where
 the previously mentioned `@` character becomes important due to something that
@@ -694,116 +630,20 @@ returns anything but null for `any`, or the first argument returns null for
 `all`. This is because when we test for `any`, and the first argument yields
 non-null, we don't need to check anymore arguments to `any` to know that our
 `any` function will evaluate to its first argument. While for `all`, if the
-first argument yields null, we know that `all` as a whole will not yield anything.
+first argument yields null, we know that `all` as a whole will always yield null.
 
-To consistently support this in Lizzie, and to avoid erronous code being created,
-we _must_ use the `@` symbol to avoid evaluating the condition before we know for a
-fact that we need to. This allows for something called _"lazy evaluation"_ of
+To consistently support this in Lizzie, and to avoid sub-optimal code being created,
+you _must_ use the `@` symbol to avoid evaluating the condition before Lizzie knows
+that it needs to evaluate your argument. This allows for something called _"lazy evaluation"_ of
 conditions. And since the value of the n-1 argument always decides if
 we need to evaluate the n argument, we can significantly conserve resources by
 postponing the evaluation of the condition in both our `any` functions and our
-`all` functions. Hence, both of these two functions requires you to use _"lazy
-evaluation"_ of their arguments, by appending your arguments to them with an
-`@` character. For simple symbols this isn't that important, but for costy
-function evaluations, this might significantly improve the cost of evaluating
-these functions. Hence, internally in Lizzie, the `all` and the `any` functions
-actually **require** you to pass in functions, and/or symbol names, to make it
-impossible to evaluate them erronously, bypassing _"lazy evaluation"_ of their
-arguments.
+`all` functions by evaluating the conditions _"lazy"_. Hence, both of these
+two functions requires you to use _"lazy evaluation"_ of their arguments, by
+appending your arguments to them with an `@` character.
 
 If this sounds like Greek to you, simply remember that you must **always** prefix your
-arguments to `any` and `all` with an `@` character. For instance, the code below
-will throw an exception.
-
-```javascript
-var(@foo1)
-var(@foo2)
-
-// This line throws an exception during runtime
-if(any(foo1, foo2), {
-  // Never executed
-})
-```
-
-To fix the above Lizzie code, such that it evaluates correctly, without throwing
-an exception - Simply add an `@` character in front of `foo1` and `foo2` inside
-of `any`. The same is true for function invocations. I have consciously chosen
-to explicitly throw an exception if these two functions are given anything but
-functions themselves as arguments, to prevent you from creating code that might
-evaluate sub-optimal. If I had allowed for passing in non-functions to `any`
-and `all`, you might have erronously created code that spent an unreasonable
-amount of time executing, simply by _"forgetting"_ how to correctly use these
-two functions.
-
-Consider the following console program, that throws an exception during runtime
-after 5 seconds.
-
-```csharp
-using System;
-using lizzie;
-
-class MainClass
-{
-    [Bind(Name = "write")]
-    object WriteLine(Binder<MainClass> binder, Arguments arguments)
-    {
-        Console.WriteLine(arguments.Get(0));
-        return null;
-    }
-
-    [Bind(Name = "expensive")]
-    object Expensive(Binder<MainClass> binder, Arguments arguments)
-    {
-        // Faking an expensive process by sleeping for 1 second
-        System.Threading.Thread.Sleep(1000);
-        return null;
-    }
-
-    public static void Main(string[] args)
-    {
-        // Some inline Lizzie code
-        var code = @"
-if(all(expensive(), expensive(), expensive(), expensive(), expensive()), {
-  write(""And we're done with TRUE!"")
-}, {
-  write(""And we're done with FALSE!"")
-})
-";
-
-        // Creating and evaluating our lambda function
-        var function = LambdaCompiler.Compile<MainClass>(new MainClass(), code);
-        var result = function();
-
-        // Waiting for user input
-        Console.Read();
-    }
-}
-```
-
-In the above program it will take 5 seconds before our `all` invocation starts
-evaluating, because each of our `expensive` functions will take 1
-second to evaluate, and all of our invocations are evaluated before we invoke
-our `all` function. When `all` finally starts evaluating, it will immediately
-throw an exception though. If we change its Lizzie code to the following, it will
-only require 1 second, and not throw an exception, because only the first
-argument needs to be evaluated, before we know that `all` will for a fact
-evaluate to null.
-
-```javascript
-if(all(@expensive(), @expensive(), @expensive(), @expensive(), @expensive()), {
-  write("And we're done with TRUE!")
-}, {
-  write("And we're done with FALSE!")
-})
-```
-
-This is because in the first example all of our invocations to `expensive` are
-evaluated before we even invoke our `all` function. While in our second example,
-we delay evaluation of our conditions, by passing in our conditions as _"delayed
-function invocations"_ to our `all` function, which will only evaluate these
-functions if it needs to evaluate them. Since the first `expensive` invocation
-returns null, the `all` function does not need to evaluate anymore functions, and
-can do a _"short-circuit evaluation"_ by simply returning null immediately.
+arguments to `any` and `all` with an `@` character.
 
 ### Lists
 
@@ -812,7 +652,7 @@ use the `list` function. To add to a list you can use `add`. To get an item you
 can use `get`. To count items in a list you can use `count`. To slice a list
 you can use `slice`, which will return a sub-list of your original list. In
 addition you can also `apply` a list of arguments to another function invocation,
-such that the content of your list, becomes the arguments to your outer function
+such that the content of your list, becomes the arguments to your other function
 invocation.
 
 ```javascript
@@ -839,7 +679,7 @@ write(+("bar list count ", count(bar)))
 write(+(apply(list(57, 10, 10))))
 ```
 
-### Iterating lists
+#### Iterating lists
 
 The `each` function allows you to evaluate a lambda once for each value in a list.
 The first argument is expected to be a symbol prefixed with an `@` character,
@@ -866,15 +706,10 @@ to provide a key in addition to a value. Below is an example.
 
 ```javascript
 var(@my-map, map(
-  'foo', 47,
-  'bar', 10
+  'foo', 47, // Key 'foo', value 47
+  'bar', 10  // Key 'bar', value 10
 ))
-var(@result, 0)
-each(@ix, my-map, {
-  set(@result, +(result, get(my-map, ix)))
-})
-write(get(my-map, 'foo'))
-result
+write(get(my-map, 'foo')) // Writes 47
 ```
 
 ### JSON conversion
@@ -901,11 +736,16 @@ The above results in the following JSON.
 ["foo",{"bar1":57,"bar2":77,"bar3":[1,2,{"hello":"world"}]}]
 ```
 
-### Conversion
+You can also reverse the process, and create an object out of JSON, using `json`.
 
-Sometimes you need to convert an object from its string representation to a number,
-or vice versa. For such cases you have the `number` and `string` functions. Below
-is an example.
+```javascript
+var(@foo, json("{'bar':57,'howdy':[1,2,3]}"))
+write(get(foo,'bar')) // Writes 57
+write(get(get(foo,'howdy'),2)) // Writes 3
+```
+
+`string` will also convert a simple object to its string representation, in
+addition to that you can use `number` to convert a string to a numeric value.
 
 ```javascript
 write(+(number("55"), 2))
