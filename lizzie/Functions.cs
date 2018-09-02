@@ -24,7 +24,7 @@ namespace lizzie
         /// Expects the first argument to be a symbol, referenced by an '@' prefix character,
         /// and the optional second argument to be the initial value for that symbol.
         /// If no second argument is provided, the initial value of the symbol
-        /// will be set to 'null'. This function will return the initial value of your symbol.
+        /// will be set to 'null'. The function will return the initial value of your symbol.
         /// </summary>
         /// <value>The function wrapping the 'var keyword'.</value>
         public static Function<TContext> Var => new Function<TContext>((ctx, binder, arguments) =>
@@ -39,16 +39,10 @@ namespace lizzie
                 throw new LizzieRuntimeException("You'll need to supply a symbol name for 'var' to function correctly.");
             var symbolName = symbolObject as string;
             if (symbolName == null)
-                throw new LizzieRuntimeException("You'll need to supply a symbol name as a string for 'var' to function correctly.");
+                throw new LizzieRuntimeException("You'll need to supply a symbol name for 'var' to function correctly. Please use the '@' character in front of your symbol's declaration.");
             Compiler.SanityCheckSymbolName(symbolName);
 
-            /*
-             * Sanity checking to make sure symbol doesn't already exist.
-             *
-             * NOTICE!
-             * We still allow the caller to override a statically bound keyword, but
-             * not to declare the same variable twice in the same stack.
-             */
+            // Sanity checking to make sure symbol doesn't already exist.
             if (binder.ContainsKey(symbolName))
                 throw new LizzieRuntimeException($"The symbol '{symbolName}' has already been declared in the scope of where you are trying to declare it using the 'var' keyword.");
 
@@ -56,14 +50,8 @@ namespace lizzie
             if (arguments.Count > 2)
                 throw new LizzieRuntimeException($"The 'var' keyword can only handle at most two arguments, and you tried to pass in more than two arguments as you tried to declare '{symbolName}'.");
 
-            /*
-             * Retrieving the initial value, if any, for the symbol to push
-             * onto the stack. If no variable is supplied, we default the
-             * stack object's value to 'null'.
-             */
-            var value = arguments.Count > 1 ? arguments.Get(1) : null;
-
-            // Setting the variable.
+            // Setting the symbol's initial value, if any.
+            var value = arguments.Get(1);
             binder[symbolName] = value;
             return value;
         });
@@ -84,37 +72,32 @@ namespace lizzie
             if (arguments.Count == 0)
                 throw new LizzieRuntimeException("No arguments provided to 'set', provide at least a symbol name, e.g. 'set(@foo)'.");
 
-            // Expecting symbol name as the first argument and doing some basic sanity checking.
-            var symbolObject = arguments.Get(0);
-            if (symbolObject == null)
-                throw new LizzieRuntimeException("You'll need to supply a symbol name for 'set' to function correctly.");
-            var symbolName = symbolObject as string;
+            // Retrieving symbol name, and doing some more basic sanity checking.
+            var symbolName = arguments.Get<string>(0);
             if (symbolName == null)
                 throw new LizzieRuntimeException("You'll need to supply a symbol name as a string for 'set' to function correctly.");
-
-            // Sanity checking that symbol already exists.
-            if (!binder.ContainsKey(symbolName))
-                throw new LizzieRuntimeException($"The symbol '{symbolName}' has not been declared in the scope of where you are trying to 'set' it.");
-
-            // More sanity checks.
             if (arguments.Count > 2)
                 throw new LizzieRuntimeException($"The 'set' keyword can only handle at most two arguments, and you tried to pass in more than two arguments as you tried to change the value of '{symbolName}'.");
 
             /*
-             * Retrieving the initial value, if any, for the symbol to push
-             * onto the stack. If no variable is supplied, we default the
-             * stack object's value to 'null'.
+             * Sanity checking that symbol exists from before, since we don't allow 'set'ing a variable that doesn't exist from before.
+             *
+             * NOTICE!
+             * We do allow to change a globally declared symbol, including one declared by the C# code that evaluates our Lizzie code.
              */
-            var value = arguments.Count > 1 ? arguments.Get(1) : null;
+            if (!binder.ContainsKey(symbolName))
+                throw new LizzieRuntimeException($"The symbol '{symbolName}' has not been declared in the scope of where you are trying to 'set' it.");
 
-            // Setting the variable.
+            // Retrieving the initial value of the variable, setting it, and returning the value to caller.
+            var value = arguments.Get(1);
             binder[symbolName] = value;
             return value;
         });
 
         /// <summary>
         /// Adds a bunch of things together. Can be used either for string literals,
-        /// integer numbers, or floating point numbers - Or anything that has operator + overload in fact.
+        /// integer numbers, or floating point numbers - Or anything that has the
+        /// operator + overload in fact.
         /// 
         /// Will return the result of the addition to caller.
         /// </summary>
@@ -128,11 +111,32 @@ namespace lizzie
             // Retrieving the first value, making sure we retrieve it as a "dynamic type".
             dynamic result = arguments.Get(0);
             foreach (dynamic ix in arguments.Skip(1)) {
-                result += ix;
+                if (ix is List<object> list) {
+
+                    // List of objects.
+                    foreach (var ix2 in list) {
+                        result += ix2;
+                    }
+
+                } else {
+
+                    // Anything else besides a list.
+                    result += ix;
+                }
             }
 
             // Returning the result of the operation to caller.
             return result;
+        });
+
+        /// <summary>
+        /// Converts a 'list' into an arguments collection, allowing you to explicitly
+        /// apply a bunch of arguments dynamically during runtime.
+        /// </summary>
+        /// <value>The applied arguments.</value>
+        public static Function<TContext> Apply => new Function<TContext>((ctx, binder, arguments) =>
+        {
+            return new Arguments(arguments.Get<List<object>>(0));
         });
 
         /// <summary>

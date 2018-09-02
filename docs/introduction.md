@@ -809,8 +809,11 @@ can do a _"short-circuit evaluation"_ by simply returning null immediately.
 
 Lizzie has good support for handling lists of objects. To create a list you can
 use the `list` function. To add to a list you can use `add`. To get an item you
-can use `get`. To count items in a list you can use `count`, and to slice a list
-you can use `slice`, which will return a sub-list of your original list.
+can use `get`. To count items in a list you can use `count`. To slice a list
+you can use `slice`, which will return a sub-list of your original list. In
+addition you can also `apply` a list of arguments to another function invocation,
+such that the content of your list, becomes the arguments to your outer function
+invocation.
 
 ```javascript
 // Declare a list
@@ -827,6 +830,13 @@ write(+("list count ", count(foo)))
 // Slice the list, and puts the new list into 'bar'
 var(@bar, slice(foo, 1, 3))
 write(+("bar list count ", count(bar)))
+
+/*
+ * Apply arguments from a list
+ * This will result in that your + function will be invoked with
+ * 3 arguments; 57, 10 and 10, instead of a single argument being a list.
+ */
+write(+(apply(list(57, 10, 10))))
 ```
 
 ### Iterating lists

@@ -371,6 +371,9 @@ namespace lizzie
 
                 // Applying arguments.
                 var appliedArguments = new Arguments(arguments.Select(ix => ix(ctx, binder, args)));
+                if (appliedArguments.Count == 1 && appliedArguments.Get(0) is Arguments explicitlyApplied) {
+                    appliedArguments = explicitlyApplied;
+                }
 
                 // Retrieving symbol's value and doing some basic sanity checks.
                 var symbol = binder[symbolName];

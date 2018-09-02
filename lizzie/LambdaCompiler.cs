@@ -108,6 +108,7 @@ namespace lizzie
             // List functions,
             binder["list"] = Functions<TContext>.List;
             binder["slice"] = Functions<TContext>.Slice;
+            binder["apply"] = Functions<TContext>.Apply;
 
             // Map functions,
             binder["map"] = Functions<TContext>.Map;

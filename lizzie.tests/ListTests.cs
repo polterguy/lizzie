@@ -167,5 +167,15 @@ bar");
             Assert.AreEqual(77, list[1]);
             Assert.AreEqual(88.88, list[2]);
         }
+
+        [Test]
+        public void ApplyArgumentsToAdd()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@foo, +(apply(list(57,10,10))))
+");
+            var result = lambda();
+            Assert.AreEqual(77, result);
+        }
     }
 }
