@@ -105,7 +105,7 @@ will have the same signature, we can treat them as interchangeable function obje
 creates many advantages, and some disadvantages. The _"disadvantage"_ is that you
 loose type safety while passing arguments around, since the `Arguments` class
 is simply a wrapper around `List<object>`. The advantage is that you have 
-_"polymorphism"_ on all functions in Lizzie, and any function can be changed
+_"implicit polymorphism"_ on all functions in Lizzie, and any function can be changed
 with any other function.
 
 **Notice** - Lizzie is not type safe, but after a while, you will
@@ -120,8 +120,8 @@ upon which class you are binding it towards. So you can completely change what
 your code does, by simply choosing to bind it to something else, which of
 course is extremely powerful once you realize its advantages. This trait also
 makes Lizzie very easy to learn. In fact, the entire reference documentation
-for the language, which is this page, is not more than roughly 12 pages if
-you choose to print it out. These 12 pages are _everything_ you need to learn
+for the language, which is this page, is not more than roughly 11 pages if
+you choose to print it. These 11 pages is _everything_ you need to learn
 in order to master Lizzie.
 
 **Notice** - Instances of the `Binder` class are _not_ thread safe. Creating an
@@ -247,10 +247,6 @@ from a function, to a string, or a number of some sort - Or the return value fro
 a bound C# method, allowing you to create complex objects and handle these within
 your Lizzie code.
 
-**FYI** - In the next examples, we will only include the Lizzie code - So keep the above
-C# console program around, and simply replace its Lizzie code, to try out the
-following examples.
-
 ### What's with the funny '@' symbol?
 
 Lizzie is based upon the ideas of Lisp. In Lisp, and hence in Lizzie, everything
@@ -263,10 +259,11 @@ instead of evaluating it, we need an additional layer of indirection.
 Hence, when you refer to the actual symbol, instead of its value, we prefix
 the symbol with an `@`. If you remove the '@' above, your code will throw an
 exception, because it will try to evaluate the symbol `foo`, which at that point
-is not declared, and your code will throw an exception.
+is not declared, and your code will throw an exception. The `@` symbol hence
+logically implies _"don't evaluate what follows"_.
 
 If you know Lisp from before, realize that the `@` character in Lizzie equals
-the `'` character in Lisp, or the `(quote foo)` in Lisp. Internally it simply
+the `'` character in Lisp, or the `(quote foo)`. Internally it simply
 returns the string _"foo"_ instead of trying to evaluate _"foo"_ as a function
 to retrieve its value. This is a necessary level of indirection since there are
 no _"operators"_ or _"keywords"_ in Lizzie, and everything is a _"Symbolic Delegate"_.
@@ -274,7 +271,9 @@ no _"operators"_ or _"keywords"_ in Lizzie, and everything is a _"Symbolic Deleg
 This might seem a little bit weird in the beginning, but also have a lot of advantages,
 such as the ability to declare an entire function invocation, which might be an
 entire code tree for that matter, and pass that invocation into another function,
-without actually evaluating it. Below is an example of this.
+without actually evaluating it. Below is an example of this. Don't worry if you
+don't understand all of the following code, we will go through its elements
+further down.
 
 ```javascript
 var(@foo, function({
@@ -339,13 +338,13 @@ function({
 ```
 
 The above function can never be invoked, simply because we do not have
-a reference to it, once we have passed beyond the line of code that creates it.
-So we must assign it to a symbol, or pass it into another function somehow,
-to be able to actually use it. Below is a slightly more useful example.
+a reference to it, once we have passed beyond the line that creates it.
+So we must assign our function to a symbol, or pass it into another function
+somehow, to be able to actually use it. Below is a slightly more useful example.
 
 ```javascript
 /*
- * Declaring a variable named 'foo' and assigning a function to its value
+ * Declaring a symbol named 'foo' and assigning a function to its value
  */
 var(@foo, 
   function({
@@ -369,7 +368,7 @@ var(@foo,
     write(name)
     write("you are ")
     write(age)
-    write("years old ...")
+    write(" years old ...")
   },
 
   // These are arguments our function can handle
@@ -377,7 +376,7 @@ var(@foo,
   @age)
 )
 
-// Invoking our function
+// Invoking our function with two arguments
 foo("Thomas", 44)
 ```
 
@@ -406,7 +405,7 @@ howdy
 John Doe
 ```
 
-The `{ ... code ...}` notation is what is necessary to create a _"lambda object".
+The `{ ... code ...}` notation is what is necessary to create a _"lambda object"_.
 Such lambda objects are used when we need multiple statements that are to be
 evaluated sequentially, such as we do when creating a function, or when we
 create a loop, or when we create an `if` statement. This is similar to JavaScript
@@ -421,7 +420,7 @@ or less implemented in Lizzie.
 
 ```csharp
 // Pseudo code
-Dictionary<string, Function> _keywords;
+Dictionary<string, Function> _stack;
 ```
 
 This allows us to lookup functions from a dictionary using the symbol as a key.
@@ -520,18 +519,11 @@ write(+("Foo returned ", tmp2))
 In our first function invocation above, `input` has a value, hence it will
 evaluate the line `57`, which of course simply _"returns"_ the constant numeric
 value of 57 to caller. In the second invocation, `input` does **not** have a value,
-and hence the else parts of our `if` invocation will be evaluated, which returns
+and hence the else parts of our `if` invocation will be evaluated, which _"returns"_
 67. Hence, by intelligently structuring your code, there is no need for an
 explicit `return` keyword in Lizzie. Notice also how the above code illustrates
-that all arguments to your functions are optional by default.
-
-**Notice** - If you for some reasons need to explicitly return null, you can use
-the `null` constant. Below is an example.
-
-```javascript
-// Evaluates to null explicitly
-null
-```
+that all arguments to your functions are optional by default. If you for some
+reasons need to explicitly return null, you can use the `null` constant.
 
 ### Testing for equality
 
@@ -808,3 +800,19 @@ which it compiles, evaluates, for then to return the result of the evaluation
 back to caller. It will share the context object, but it will create a new stack,
 not having access to the already dynamically declared variables. Notice that `eval`
 will load up the default keywords from the `LambdaCompiler` from you.
+
+### Lizzie types
+
+Lizzie is extremely weakly typed, and arguably only contains a handful of types.
+All numeric values are internally treated as `long`, unless they contain a decimal,
+at which point they're treated as `double`. A string can be created either with a
+`"` double quote or a `'` single quote string literal. These are the most important
+types that Lizzie supports. However, if you create extension methods or delegates,
+you can create more complex types, such as `DateTime` instances, and still to
+some extent have Lizzie work with these. This is possible because of that the
+math functions will use the `dynamic` type as it is doing its thing. This allows
+you to create methods that instantiates stuff such as `BigInteger`, `DateTime`,
+or `TimeSpan` instances, and still handle these internally quite well in Lizzie.
+
+* [Download Lizzie here](https://github.com/polterguy/lizzie/releases)
+* Or use the NuGet _"lizzie"_ package
