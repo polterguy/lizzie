@@ -83,6 +83,81 @@ my-map
         }
 
         [Test]
+        public void ComplexAdd_01()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@my-map, map(
+  'foo', 57
+))
+add(my-map, 'bar', 77, 'howdy', 99)
+add(my-map, 'world', list(1,2,3))
+my-map
+");
+            var result = lambda();
+            var map = result as Dictionary<string, object>;
+            Assert.AreEqual(4, map.Count);
+            Assert.AreEqual(57, map["foo"]);
+            Assert.AreEqual(77, map["bar"]);
+            Assert.AreEqual(99, map["howdy"]);
+            Assert.IsTrue(map["world"] is List<object>);
+            var list = map["world"] as List<object>;
+            Assert.AreEqual(3, list.Count);
+            Assert.AreEqual(1, list[0]);
+            Assert.AreEqual(2, list[1]);
+            Assert.AreEqual(3, list[2]);
+        }
+
+        [Test]
+        public void ComplexAdd_02()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@my-map, map(
+  'world', list(1,2,3)
+))
+add(get(my-map, 'world'),4,5)
+my-map
+");
+            var result = lambda();
+            var map = result as Dictionary<string, object>;
+            Assert.AreEqual(1, map.Count);
+            var list = map["world"] as List<object>;
+            Assert.IsNotNull(list);
+            Assert.AreEqual(5, list.Count);
+            Assert.AreEqual(1, list[0]);
+            Assert.AreEqual(2, list[1]);
+            Assert.AreEqual(3, list[2]);
+            Assert.AreEqual(4, list[3]);
+            Assert.AreEqual(5, list[4]);
+        }
+
+        [Test]
+        public void ComplexAdd_03()
+        {
+            var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
+var(@my-map, map(
+  'world', list(1,2,3)
+))
+add(
+  get(my-map, 'world'),
+  map(
+    'foo', 'bar'))
+my-map
+");
+            var result = lambda();
+            var map = result as Dictionary<string, object>;
+            Assert.AreEqual(1, map.Count);
+            var list = map["world"] as List<object>;
+            Assert.IsNotNull(list);
+            Assert.AreEqual(4, list.Count);
+            Assert.AreEqual(1, list[0]);
+            Assert.AreEqual(2, list[1]);
+            Assert.AreEqual(3, list[2]);
+            var innerMap = list[3] as Dictionary<string, object>;
+            Assert.IsNotNull(innerMap);
+            Assert.AreEqual("bar", innerMap["foo"]);
+        }
+
+        [Test]
         public void Each_01()
         {
             var lambda = LambdaCompiler.Compile<Nothing>(new Nothing(), @"
