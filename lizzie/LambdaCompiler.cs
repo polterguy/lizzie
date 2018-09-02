@@ -89,7 +89,7 @@ namespace lizzie
             binder["var"] = Functions<TContext>.Var;
             binder["set"] = Functions<TContext>.Set;
 
-            // Branching and comparison functions.
+            // Comparison functions.
             binder["if"] = Functions<TContext>.If;
             binder["eq"] = Functions<TContext>.Eq;
             binder["mt"] = Functions<TContext>.Mt;
@@ -97,18 +97,25 @@ namespace lizzie
             binder["mte"] = Functions<TContext>.Mte;
             binder["lte"] = Functions<TContext>.Lte;
             binder["not"] = Functions<TContext>.Not;
+
+            // Boolean algebraic functions.
             binder["any"] = Functions<TContext>.Any;
             binder["all"] = Functions<TContext>.All;
 
-            // Creates a function.
+            // Function functions.
             binder["function"] = Functions<TContext>.Function;
 
             // List functions,
             binder["list"] = Functions<TContext>.List;
-            binder["count"] = Functions<TContext>.Count;
-            binder["get"] = Functions<TContext>.Get;
-            binder["add"] = Functions<TContext>.AddList;
             binder["slice"] = Functions<TContext>.Slice;
+
+            // Map functions,
+            binder["map"] = Functions<TContext>.Map;
+
+            // Common functions for map and list.
+            binder["get"] = Functions<TContext>.Get;
+            binder["count"] = Functions<TContext>.Count;
+            binder["add"] = Functions<TContext>.AddValue;
             binder["each"] = Functions<TContext>.Each;
 
             // Conversion functions.

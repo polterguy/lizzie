@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageVersion>0.5</PackageVersion>
+    <PackageVersion>0.6</PackageVersion>
     <Authors>Thomas Hansen</Authors>
     <PackageLicenseUrl>https://github.com/polterguy/lizzie/blob/master/LICENSE</PackageLicenseUrl>
     <Owners>Thomas Hansen</Owners>
@@ -10,9 +10,11 @@
     <Summary>Lizzie, the world's smallest script language for the CLR</Summary>
     <PackageTags>delegates, scripting, symbolic delegates</PackageTags>
     <Title>lizzie</Title>
-    <Description>A dynamic script language based upon Symbolic Delegates</Description>
+    <Description>A dynamic script language for the CLR based upon Symbolic Delegates</Description>
     <PackageId>lizzie</PackageId>
     <PackOnBuild>true</PackOnBuild>
+    <ReleaseVersion>0.6</ReleaseVersion>
+    <SynchReleaseVersion>false</SynchReleaseVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

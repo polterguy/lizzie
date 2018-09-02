@@ -66,5 +66,74 @@ namespace lizzie.tests
             var result = lambda();
             Assert.AreEqual("foo\"bar", result);
         }
+
+        [Test]
+        public void JSONString_01()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+string(map(
+  'foo', 57,
+  'bar', 67
+))
+");
+            var result = lambda();
+            Assert.AreEqual(@"{""foo"":57,""bar"":67}", result);
+        }
+
+        [Test]
+        public void JSONString_02()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+string(map(
+  'foo', 'howdy',
+  'bar', 'world'
+))
+");
+            var result = lambda();
+            Assert.AreEqual(@"{""foo"":""howdy"",""bar"":""world""}", result);
+        }
+
+        [Test]
+        public void JSONString_03()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+string(map(
+  'foo', 'howdy',
+  'bar', 'wor""ld'
+))
+");
+            var result = lambda();
+            Assert.AreEqual(@"{""foo"":""howdy"",""bar"":""wor\""ld""}", result);
+        }
+
+        [Test]
+        public void JSONString_04()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+string(list(
+  'foo',
+  'bar'
+))
+");
+            var result = lambda();
+            Assert.AreEqual(@"[""foo"",""bar""]", result);
+        }
+
+        [Test]
+        public void JSONString_05()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+string(list(
+  'foo',
+  map(
+    'bar1',57,
+    'bar2',77,
+    'bar3',list(1,2,map('hello','world'))
+  )
+))
+");
+            var result = lambda();
+            Assert.AreEqual(@"[""foo"",{""bar1"":57,""bar2"":77,""bar3"":[1,2,{""hello"":""world""}]}]", result);
+        }
     }
 }
