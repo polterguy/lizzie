@@ -104,11 +104,11 @@ namespace lizzie
 
             // Function functions.
             binder["function"] = Functions<TContext>.Function;
+            binder["apply"] = Functions<TContext>.Apply;
 
             // List functions,
             binder["list"] = Functions<TContext>.List;
             binder["slice"] = Functions<TContext>.Slice;
-            binder["apply"] = Functions<TContext>.Apply;
 
             // Map functions,
             binder["map"] = Functions<TContext>.Map;
@@ -122,6 +122,7 @@ namespace lizzie
             // Conversion functions.
             binder["string"] = Functions<TContext>.String;
             binder["number"] = Functions<TContext>.Number;
+            binder["json"] = Functions<TContext>.Json;
 
             // Math functions.
             binder["+"] = Functions<TContext>.Add;

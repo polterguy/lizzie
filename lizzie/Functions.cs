@@ -5,11 +5,14 @@
  * file for details.
  */
 
+using System;
 using System.Linq;
 using System.Text;
 using System.Globalization;
 using System.Collections.Generic;
 using lizzie.exceptions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace lizzie
 {
@@ -111,32 +114,13 @@ namespace lizzie
             // Retrieving the first value, making sure we retrieve it as a "dynamic type".
             dynamic result = arguments.Get(0);
             foreach (dynamic ix in arguments.Skip(1)) {
-                if (ix is List<object> list) {
 
-                    // List of objects.
-                    foreach (var ix2 in list) {
-                        result += ix2;
-                    }
-
-                } else {
-
-                    // Anything else besides a list.
-                    result += ix;
-                }
+                // Adding currently iterated argument.
+                result += ix;
             }
 
             // Returning the result of the operation to caller.
             return result;
-        });
-
-        /// <summary>
-        /// Converts a 'list' into an arguments collection, allowing you to explicitly
-        /// apply a bunch of arguments dynamically during runtime.
-        /// </summary>
-        /// <value>The applied arguments.</value>
-        public static Function<TContext> Apply => new Function<TContext>((ctx, binder, arguments) =>
-        {
-            return new Arguments(arguments.Get<List<object>>(0));
         });
 
         /// <summary>
@@ -309,6 +293,34 @@ namespace lizzie
                     binder.PopStack();
                 }
             });
+        });
+
+        /// <summary>
+        /// Converts a 'list' into an arguments collection, allowing you to explicitly
+        /// apply a bunch of arguments dynamically during runtime. Can only be
+        /// evaluated with a 'list'. If you invoke it with anything but a 'list',
+        /// it will throw an exception during runtime.
+        /// 
+        /// Will return an "arguments collection" to caller.
+        /// </summary>
+        /// <value>The applied arguments.</value>
+        public static Function<TContext> Apply => new Function<TContext>((ctx, binder, arguments) =>
+        {
+            // Sanity checking invocation.
+            if (arguments.Count != 1)
+                throw new LizzieRuntimeException("The 'apply' keyword expects exactly 1 argument.");
+
+            // Checking type of invocation, which might be 'list' or 'map'.
+            if (arguments.Get(0) is List<object> list) {
+
+                // list of arguments.
+                return new Arguments(list);
+
+            } else {
+
+                // Oops ...!!
+                throw new LizzieRuntimeException("The 'apply' keyword expects a 'list' as its only argument.");
+            }
         });
 
         /// <summary>
@@ -780,6 +792,78 @@ namespace lizzie
             }
             return map;
         });
+
+        /// <summary>
+        /// Gets from string.
+        /// </summary>
+        /// <value>From string.</value>
+        public static Function<TContext> Json => new Function<TContext>((ctx, binder, arguments) =>
+        {
+            if (arguments.Count != 1)
+                throw new LizzieRuntimeException("The 'object' function must be given exactly 1 argument.");
+            var json = arguments.Get<string>(0);
+            var result = JsonConvert.DeserializeObject(json);
+            return ConvertJson(result);
+        });
+
+        /*
+         * Helper for above.
+         */
+        static object ConvertJson(object result)
+        {
+            if (result is JObject jObj) {
+
+                // Dictionary/map.
+                var map = new Dictionary<string, object>();
+                foreach (var ix in jObj) {
+                    map.Add(ix.Key, ConvertJson(ix.Value));
+                }
+                return map;
+
+            } else if (result is JArray jArr) {
+
+                // 'list'/List<object>.
+                var list = new List<object>();
+                foreach (var ix in jArr) {
+                    list.Add(ConvertJson(ix));
+                }
+                return list;
+                
+            } else if (result is JValue iVal) {
+
+                // Some value of some sort.
+                switch (iVal.Type) {
+
+                    case JTokenType.Integer:
+                        return iVal.Value<long>();
+
+                    case JTokenType.Float:
+                        return iVal.Value<double>();
+
+                    case JTokenType.Date:
+                        return iVal.Value<DateTime>();
+
+                    case JTokenType.Boolean:
+                        return iVal.Value<bool>();
+
+                    case JTokenType.Guid:
+                        return iVal.Value<Guid>();
+
+                    case JTokenType.Bytes:
+                        return iVal.Value<byte[]>();
+
+                    case JTokenType.TimeSpan:
+                        return iVal.Value<TimeSpan>();
+
+                    case JTokenType.Null:
+                        return null;
+
+                    default:
+                        return iVal.Value<string>();
+                }
+            }
+            throw new LizzieRuntimeException("Unsupported JSON type.");
+        }
 
         /// <summary>
         /// Converts the specified object to a string.

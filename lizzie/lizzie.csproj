@@ -31,5 +31,6 @@
     <PackageReference Include="Microsoft.CSharp" version="4.5.0" Version="4.5.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 </Project>

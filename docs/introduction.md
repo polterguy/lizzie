@@ -854,6 +854,53 @@ each(@ix, foo, {
 })
 ```
 
+### Maps
+
+A map is a dictionary of string/object values, allowing you to create a more
+efficient way of retrieving values than a list, since a map retrieval operation
+is an O(1) operation. It shares most of the functions from `list`, such as `add`,
+`get`, `count`, and `each`, but instead of using integer values to
+refer to items, you use strings to refer to values in your `map`. In
+addition when creating a map, or adding items to an existing map, you're expected
+to provide a key in addition to a value. Below is an example.
+
+```javascript
+var(@my-map, map(
+  'foo', 47,
+  'bar', 10
+))
+var(@result, 0)
+each(@ix, my-map, {
+  set(@result, +(result, get(my-map, ix)))
+})
+write(get(my-map, 'foo'))
+result
+```
+
+### JSON conversion
+
+By combining the `map`, `list` and `string` functions, you can easily create
+JSON using Lizzie. Below is an example.
+
+```javascript
+string(list(
+  'foo',
+  map(
+    'bar1',57,
+    'bar2',77,
+    'bar3',list(
+      1,
+      2,
+      map(
+        'hello','world')))))
+```
+
+The above results in the following JSON.
+
+```javascript
+["foo",{"bar1":57,"bar2":77,"bar3":[1,2,{"hello":"world"}]}]
+```
+
 ### Conversion
 
 Sometimes you need to convert an object from its string representation to a number,

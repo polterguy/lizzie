@@ -5,6 +5,7 @@
  * file for details.
  */
 
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace lizzie.tests
@@ -134,6 +135,53 @@ string(list(
 ");
             var result = lambda();
             Assert.AreEqual(@"[""foo"",{""bar1"":57,""bar2"":77,""bar3"":[1,2,{""hello"":""world""}]}]", result);
+        }
+
+        [Test]
+        public void JSONStringToObject_01()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+json(""{'foo':57}"")
+");
+            var result = lambda();
+            var map = result as Dictionary<string, object>;
+            Assert.IsNotNull(map);
+            Assert.AreEqual(57, map["foo"]);
+        }
+
+        [Test]
+        public void JSONStringToObject_02()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+json(""[0,1,2]"")
+");
+            var result = lambda();
+            var list = result as List<object>;
+            Assert.IsNotNull(list);
+            Assert.AreEqual(3, list.Count);
+            Assert.AreEqual(0, list[0]);
+            Assert.AreEqual(1, list[1]);
+            Assert.AreEqual(2, list[2]);
+        }
+
+        [Test]
+        public void JSONStringToObject_03()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+json(""[0,1,{'foo':57,'bar':77,'hello':'world'}]"")
+");
+            var result = lambda();
+            var list = result as List<object>;
+            Assert.IsNotNull(list);
+            Assert.AreEqual(3, list.Count);
+            Assert.AreEqual(0, list[0]);
+            Assert.AreEqual(1, list[1]);
+            var map = list[2] as Dictionary<string, object>;
+            Assert.IsNotNull(map);
+            Assert.AreEqual(3, map.Count);
+            Assert.AreEqual(57, map["foo"]);
+            Assert.AreEqual(77, map["bar"]);
+            Assert.AreEqual("world", map["hello"]);
         }
     }
 }
