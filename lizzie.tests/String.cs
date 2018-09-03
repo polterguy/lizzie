@@ -61,6 +61,30 @@ namespace lizzie.tests
         }
 
         [Test]
+        public void ConvertFromNumber()
+        {
+            var lambda = LambdaCompiler.Compile(@"string(57)");
+            var result = lambda();
+            Assert.AreEqual("57", result);
+        }
+
+        [Test]
+        public void ConvertToNumber()
+        {
+            var lambda = LambdaCompiler.Compile(@"number('57')");
+            var result = lambda();
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void ConvertFromStringToString()
+        {
+            var lambda = LambdaCompiler.Compile(@"string('57')");
+            var result = lambda();
+            Assert.AreEqual("57", result);
+        }
+
+        [Test]
         public void EscapedDoubleQuotedString()
         {
             var lambda = LambdaCompiler.Compile(@"""foo\""bar""");

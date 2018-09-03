@@ -86,7 +86,7 @@ class MainClass
         // Some inline Lizzie code
         var code = @"
 
-write(""Hello World!!"")
+write('Hello World!!')
 
 ";
 

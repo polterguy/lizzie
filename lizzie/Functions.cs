@@ -888,7 +888,7 @@ namespace lizzie
          * simply invokes ToString on object, unless object is "null", at which
          * point it creates "null" as its string representation.
          */
-        static void ToString(object value, StringBuilder builder)
+        static void ToString(object value, StringBuilder builder, bool isJson = false)
         {
             if (value == null) {
 
@@ -907,7 +907,7 @@ namespace lizzie
                     } else {
                         builder.Append(",");
                     }
-                    ToString(ix, builder);
+                    ToString(ix, builder, true);
                 }
                 builder.Append("]");
 
@@ -923,26 +923,24 @@ namespace lizzie
                         builder.Append(",");
                     }
                     builder.Append($"\"{key.Replace("\"", "\\\"")}\":");
-                    ToString(map[key], builder);
+                    ToString(map[key], builder, true);
                 }
                 builder.Append("}");
 
             } else {
 
-                if (value is double valueDbl) {
-
-                    // Double, making sure we get locale right.
-                    builder.Append(valueDbl.ToString(CultureInfo.InvariantCulture));
-
-                } else if (value is string valueStr) {
+                if (value is string valueStr) {
 
                     // String, making sure we escape it, and wrap it in double quotes.
-                    builder.Append("\"" + valueStr.Replace("\"", "\\\"") + "\"");
+                    if (isJson)
+                        builder.Append("\"" + valueStr.Replace("\"", "\\\"") + "\"");
+                    else
+                        builder.Append(valueStr);
 
                 } else {
 
-                    // "Anything else".
-                    builder.Append(value.ToString());
+                    // Everything else.
+                    builder.Append(Convert.ToString(value, CultureInfo.InvariantCulture));
                 }
             }
         }
