@@ -817,6 +817,18 @@ some extent have Lizzie work with these. This is possible because of that the
 math functions will use the `dynamic` type as it is doing its thing. This allows
 you to create methods that instantiates stuff such as `BigInteger`, `DateTime`,
 or `TimeSpan` instances, and still handle these internally quite well in Lizzie.
+The default conversion to string in Lizzie uses `CultureInfo.InvariantCulture`,
+allowing you to convert complex objects consistently to their string representations.
 
 * [Download Lizzie here](https://github.com/polterguy/lizzie/releases)
 * Or add the NuGet _"lizzie"_ package
+
+### Donate
+
+If you feel Lizzie has given you value, I would
+[appreciate some dollars](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=4RL5XLLZYNBF2).
+I am working on Lizzie out of my spare time, and your donations, even the smaller
+ones, makes me feel that my work is appreciated, and allows me to justify continue
+working on it.
+
+* [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=4RL5XLLZYNBF2)
