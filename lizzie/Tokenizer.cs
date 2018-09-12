@@ -16,7 +16,7 @@ namespace lizzie
 {
     /// <summary>
     /// Main tokenizer instance, used as input to the compilation process.
-    /// 
+    ///
     /// If you implement your own tokenizer, you might benefit from taking
     /// advantage of someof the static methods in this class.
     /// </summary>

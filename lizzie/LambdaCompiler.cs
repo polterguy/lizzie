@@ -61,8 +61,8 @@ namespace lizzie
         /// Compiles the specified code, binding to the specified context, and
         /// returns a function allowing you to evaluate the specified code.
         /// 
-        /// Will bind to all the default 'keywords' in Lizzie found in the
-        /// Functions class.
+        /// Will not bind the binder to any functions. If you wish to bind the
+        /// binder to the default functions, you can use 'LambdaCompiler.BindFunctions'.
         /// </summary>
         /// <returns>The compiled lambda function.</returns>
         /// <param name="context">Context to bind the lambda towards.</param>
