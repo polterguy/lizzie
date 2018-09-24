@@ -59,12 +59,16 @@ namespace lizzie
         }
 
         /// <summary>
-        /// Gets or sets the maximum size of the stack. This becomes the maximum
-        /// number of functions you can invoke recursively, and is intended to
-        /// avoid exhausting your CLR stack by entering into a never ending recursive
-        /// function invocation tree. The default value is -1, implying no check.
+        /// Gets or sets the maximum size of the stack.
+        /// 
+        /// This becomes the maximum number of functions you can invoke recursively,
+        /// and is intended to avoid exhausting your CLR stack by entering into a
+        /// never ending recursive function invocation tree.
+        /// 
+        /// The default value is -1, implying no check.
         /// For security reasons you might want to set this to some arbitrary number,
-        /// such as 50 or 100 to avoid malicious code eating up your CLR stack.
+        /// such as 50 or 100 to avoid malicious code eating up your CLR stack and
+        /// causing a stack overflow in your CLR.
         /// </summary>
         /// <value>The maximum size of your stack, or rather your maximum number of
         /// stacks (function invocations).</value>
@@ -75,7 +79,7 @@ namespace lizzie
         /// to either a constant or a Lizzie function, at which point you can
         /// retrieve the object by referencing it symbolically in your Lizzie code.
         /// 
-        /// Will prioritize retrieving or setting the stack before any global values.
+        /// Will prioritize retrieving or setting the stack symbol before any global values.
         /// </summary>
         /// <param name="symbolName">Name or symbol for your value.</param>
         public object this[string symbolName]
@@ -83,30 +87,34 @@ namespace lizzie
             get {
 
                 /*
-                 * Checking if we have a stack level object with the specified symbol.
+                 * Checking if we have a stack level object matching the specified symbol.
+                 *
                  * We do this to allow for locally declared symbols to "hide" global symbols.
+                 * Locally declared symbols are symbols declared inside of functions, or after the
+                 * stack has been "pushed" at least once or more.
                  */
                 if (_stackBinder.Count > 0 && _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName))
                     return _stackBinder[_stackBinder.Count - 1][symbolName];
 
-                // Defaulting to static binder.
+                // Defaulting to looking in "static" binder.
                 if (_staticBinder.ContainsKey(symbolName))
                     return _staticBinder[symbolName];
 
-                // Oops, no such reference!
+                // Oops, no such symbol!
                 throw new LizzieRuntimeException($"The '{symbolName}' symbol has not been declared.");
             }
             set {
 
                 /*
-                 * Checking if we have a stack level object matching symbol.
-                 * We do this to allow for locally declared symbols to "hide" global symbols, and
-                 * changing a symbol's value to only override the "local" (stack) value, and
-                 * not the global value.
+                 * Checking if we should set the static (global) symbol, which we
+                 * do if the stack has not (yet) been pushed at least once, or the
+                 * symbol already exists at the global scope.
                  */
                 if (_stackBinder.Count == 0 || _staticBinder.ContainsKey(symbolName)) {
 
-                    // Symbol found on stack.
+                    /*
+                     * Stack has not (yet) been pushed, or symbol exists in global scope.
+                     */
                     _staticBinder[symbolName] = value;
 
                 } else {
@@ -143,6 +151,8 @@ namespace lizzie
         {
             if (_stackBinder.Count > 0 && _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName))
                 return true;
+            if (_stackBinder.Count == 0 && _staticBinder.ContainsKey(symbolName))
+                return true;
             return false;
         }
 
@@ -165,7 +175,9 @@ namespace lizzie
         /// <param name="symbolName">Symbol name of item to remove.</param>
         public void RemoveKey(string symbolName)
         {
-            _stackBinder[_stackBinder.Count - 1].Remove(symbolName);
+            if (_stackBinder.Count > 0)
+                _stackBinder[_stackBinder.Count - 1].Remove(symbolName);
+            _staticBinder.Remove(symbolName);
         }
 
         /// <summary>
