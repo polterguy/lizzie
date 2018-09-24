@@ -54,5 +54,53 @@ namespace lizzie.tests
             var result = lambda();
             Assert.AreEqual(7, result);
         }
+
+        [Test]
+        public void MaxStackSizeNoThrow()
+        {
+            var nothing = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder.MaxStackSize = 21;
+            LambdaCompiler.BindFunctions(binder);
+            var lambda = LambdaCompiler.Compile(nothing, binder, @"
+var(@recursions, 0)
+var(@my-func, function({
+  set(@recursions,+(recursions,1))
+  if(lt(recursions,20),{
+    my-func()
+  })
+}))
+my-func()
+");
+            // Should NOT throw!
+            lambda();
+        }
+
+        [Test]
+        public void MaxStackSizeThrows()
+        {
+            var nothing = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder.MaxStackSize = 19;
+            LambdaCompiler.BindFunctions(binder);
+            var lambda = LambdaCompiler.Compile(nothing, binder, @"
+var(@recursions, 0)
+var(@my-func, function({
+  set(@recursions,+(recursions,1))
+  if(lt(recursions,20),{
+    my-func()
+  })
+}))
+my-func()
+");
+            // SHOULD throw!
+            var success = false;
+            try {
+                lambda();
+            } catch {
+                success = true;
+            }
+            Assert.AreEqual(true, success);
+        }
     }
 }

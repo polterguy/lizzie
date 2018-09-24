@@ -15,7 +15,12 @@ namespace lizzie
 {
     /// <summary>
     /// Binds your context type such that all methods marked with the BindAttribute
-    /// becomes available for you as functions in your Lizzie code.
+    /// becomes available for you as functions in your Lizzie code, in addition
+    /// to serving as a 'stack' for your Lizzie code. Class has two levels, statically
+    /// bound objects, which once bound cannot be removed in any ways. This includes
+    /// bound methods, and other symbolic delegates. In addition it contains stack
+    /// bound objects, which are removed once the stacked is 'popped', and a new function
+    /// level stack is created once the stack is 'pushed'.
     /// 
     /// NOTICE!
     /// Class is not thread safe, which implies you cannot share instances of it
@@ -28,7 +33,7 @@ namespace lizzie
     /// </summary>
     public class Binder<TContext> : ICloneable
     {
-        // Statically bound functions.
+        // Statically bound variables/functions, and root level variables.
         readonly Dictionary<string, object> _staticBinder = new Dictionary<string, object>();
 
         // Stack of dynamically created variables and functions.
@@ -39,6 +44,7 @@ namespace lizzie
         /// </summary>
         public Binder()
         {
+            MaxStackSize = -1;
             BindTypeMethods();
         }
 
@@ -53,15 +59,33 @@ namespace lizzie
         }
 
         /// <summary>
+        /// Gets or sets the maximum size of the stack. This becomes the maximum
+        /// number of functions you can invoke recursively, and is intended to
+        /// avoid exhausting your CLR stack by entering into a never ending recursive
+        /// function invocation tree. The default value is -1, implying no check.
+        /// For security reasons you might want to set this to some arbitrary number,
+        /// such as 50 or 100 to avoid malicious code eating up your CLR stack.
+        /// </summary>
+        /// <value>The maximum size of your stack, or rather your maximum number of
+        /// stacks (function invocations).</value>
+        public int MaxStackSize { get; set; }
+
+        /// <summary>
         /// Gets or sets the value with the given key. You can set the content
         /// to either a constant or a Lizzie function, at which point you can
         /// retrieve the object by referencing it symbolically in your Lizzie code.
+        /// 
+        /// Will prioritize retrieving or setting the stack before any global values.
         /// </summary>
         /// <param name="symbolName">Name or symbol for your value.</param>
         public object this[string symbolName]
         {
             get {
 
+                /*
+                 * Checking if we have a stack level object with the specified symbol.
+                 * We do this to allow for locally declared symbols to "hide" global symbols.
+                 */
                 if (_stackBinder.Count > 0 && _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName))
                     return _stackBinder[_stackBinder.Count - 1][symbolName];
 
@@ -75,17 +99,19 @@ namespace lizzie
             set {
 
                 /*
-                 * Checking if we have actually started executing the Lizzie code,
-                 * or if we are still in "CLR land".
+                 * Checking if we have a stack level object matching symbol.
+                 * We do this to allow for locally declared symbols to "hide" global symbols, and
+                 * changing a symbol's value to only override the "local" (stack) value, and
+                 * not the global value.
                  */
-                if (_stackBinder.Count == 0) {
+                if (_stackBinder.Count == 0 || _staticBinder.ContainsKey(symbolName)) {
 
-                    // Still in "CLR land".
+                    // Symbol found on stack.
                     _staticBinder[symbolName] = value;
 
                 } else {
 
-                    // Stack has been pushed at least once, and we're in "Lizzie land".
+                    // Symbol not found on stack, hence setting global symbol's value.
                     _stackBinder[_stackBinder.Count - 1][symbolName] = value;
                 }
             }
@@ -99,9 +125,9 @@ namespace lizzie
         /// <param name="symbolName">Symbol name.</param>
         public bool ContainsKey(string symbolName)
         {
-            // Prioritizing the stack, to allow for stack value to "override" global values.
+            // Checking if our stack contains symbol.
             if (_stackBinder.Count > 0 && _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName))
-                return _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName);
+                return true;
 
             // Defaulting to static binder.
             return _staticBinder.ContainsKey(symbolName);
@@ -116,7 +142,7 @@ namespace lizzie
         public bool ContainsDynamicKey(string symbolName)
         {
             if (_stackBinder.Count > 0 && _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName))
-                return _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName);
+                return true;
             return false;
         }
 
@@ -132,7 +158,9 @@ namespace lizzie
         }
 
         /// <summary>
-        /// Removes the specified key from the stack.
+        /// Removes the specified key from the stack. You can only remove
+        /// elements if you have 'pushed' the stack at least once, which by default
+        /// in Lizzie only occurs from within a function.
         /// </summary>
         /// <param name="symbolName">Symbol name of item to remove.</param>
         public void RemoveKey(string symbolName)
@@ -145,6 +173,8 @@ namespace lizzie
         /// </summary>
         public void PushStack()
         {
+            if (_stackBinder.Count == MaxStackSize)
+                throw new LizzieRuntimeException("Your maximum stack size has been exceeded");
             _stackBinder.Add(new Dictionary<string, object>());
         }
 
@@ -250,6 +280,7 @@ namespace lizzie
         public Binder<TContext> Clone()
         {
             var clone = new Binder<TContext>(false);
+            clone.MaxStackSize = MaxStackSize;
             foreach (var ix in _staticBinder.Keys) {
                 clone[ix] = _staticBinder[ix];
             }
