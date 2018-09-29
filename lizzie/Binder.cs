@@ -149,10 +149,8 @@ namespace lizzie
         /// <param name="symbolName">Symbol name.</param>
         public bool ContainsDynamicKey(string symbolName)
         {
-            if (_stackBinder.Count > 0 && _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName))
-                return true;
-            if (_stackBinder.Count == 0 && _staticBinder.ContainsKey(symbolName))
-                return true;
+            if (_stackBinder.Count > 0)
+                return _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName);
             return false;
         }
 

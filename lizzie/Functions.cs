@@ -48,6 +48,8 @@ namespace lizzie
             // Sanity checking to make sure symbol doesn't already exist.
             if (binder.ContainsDynamicKey(symbolName))
                 throw new LizzieRuntimeException($"The symbol '{symbolName}' has already been declared in the scope of where you are trying to declare it using the 'var' keyword.");
+            if (binder.StackCount == 0 && binder.ContainsStaticKey(symbolName))
+                throw new LizzieRuntimeException($"The symbol '{symbolName}' has already been declared in the scope of where you are trying to declare it using the 'var' keyword.");
 
             // More sanity checks.
             if (arguments.Count > 2)
