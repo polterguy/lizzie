@@ -290,13 +290,19 @@ namespace lizzie
             // Checking if this is a floating point value.
             if (en.Current.Contains('.')) {
 
-                // Notice, all integer numbers are treated as long.
-                numericConstant = double.Parse(en.Current, CultureInfo.InvariantCulture);
+                // Notice, all floating point numbers are treated as double.
+                var success = double.TryParse(en.Current, NumberStyles.Any, CultureInfo.InvariantCulture, out double dblResult);
+                if (!success)
+                    throw new LizzieRuntimeException($"Sorry, I tried my best to parse '{en.Current}' as a double, but I failed.");
+                numericConstant = dblResult;
 
             } else {
 
-                // Notice, all floating point numbers are treated as double.
-                numericConstant = long.Parse(en.Current, CultureInfo.InvariantCulture);
+                // Notice, all integer numbers are treated as long.
+                var success = long.TryParse(en.Current, NumberStyles.Any, CultureInfo.InvariantCulture, out long longResult);
+                if (!success)
+                    throw new LizzieRuntimeException($"Sorry, I tried my best to parse '{en.Current}' as a double, but I failed.");
+                numericConstant = longResult;
             }
 
             // Creates a function that evaluates to the actual constant number.
