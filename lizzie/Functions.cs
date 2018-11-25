@@ -785,7 +785,8 @@ namespace lizzie
             var en = arguments.GetEnumerator();
             while (en.MoveNext()) {
                 var key = (string)en.Current;
-                en.MoveNext();
+                if (!en.MoveNext())
+                    throw new LizzieRuntimeException("The 'map' function requires an even number of argumentsas a key/value collection.");
                 var value = en.Current;
                 map.Add(key, value);
             }
