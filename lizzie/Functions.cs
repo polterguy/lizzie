@@ -510,7 +510,7 @@ namespace lizzie
                 if (ix is Function<TContext> function) {
 
                     // Checking if function returns something, and returning predicate value accordingly.
-                    var ixContent = function(ctx, binder, arguments);
+                    var ixContent = function(ctx, binder, new Arguments());
                     if (ixContent == null)
                         return false;
                     return true;

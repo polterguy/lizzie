@@ -370,7 +370,7 @@ namespace lizzie
             return new Tuple<Function<TContext>, bool>(new Function<TContext>((ctx, binder, args) => {
 
                 // Applying arguments.
-                var appliedArguments = new Arguments(arguments.Select(ix => ix(ctx, binder, args)));
+                var appliedArguments = new Arguments(arguments.Select(ix => ix(ctx, binder, new Arguments())));
                 if (appliedArguments.Count == 1 && appliedArguments.Get(0) is Arguments explicitlyApplied) {
                     appliedArguments = explicitlyApplied;
                 }
