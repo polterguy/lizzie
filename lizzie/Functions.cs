@@ -981,6 +981,8 @@ namespace lizzie
             // Sanity checking.
             if (arguments.Count < 2)
                 throw new LizzieRuntimeException("The 'substr' function must be given at least 2 arguments.");
+            if (arguments.Count > 3)
+                throw new LizzieRuntimeException("The 'substr' function cannot be given more than 3 arguments.");
 
             // Retrieving string to manipulate.
             var arg1 = arguments.Get<string>(0);
