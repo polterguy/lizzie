@@ -664,14 +664,15 @@ namespace lizzie
                 en.MoveNext();
 
                 // Adding each value.
+                object lastValue = null;
                 while (en.MoveNext()) {
                     var key = (string)en.Current;
                     if (!en.MoveNext())
                         throw new LizzieRuntimeException("The 'add' function requires an even number of arguments when given a 'map' as its destination.");
-                    var value = en.Current;
-                    map.Add(key, value);
+                    lastValue = en.Current;
+                    map.Add(key, lastValue);
                 }
-                return map.Count;
+                return lastValue;
 
             } else {
 
@@ -704,7 +705,7 @@ namespace lizzie
                 start = arguments.Get<int>(1);
             if (arguments.Count > 2)
                 end = arguments.Get<int>(2);
-            if (end <= start)
+            if (end < start)
                 throw new LizzieRuntimeException("The end index to 'slice' must be larger than the start index.");
             return list.GetRange(start, end - start);
         });

@@ -108,6 +108,18 @@ slice(foo)");
         }
 
         [Test]
+        public void SliceList_04()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+var(@foo, list(57, 67, 77, 87))
+slice(foo, 1, 1)");
+            var result = lambda();
+            Assert.IsTrue(result is List<object>);
+            var list = result as List<object>;
+            Assert.AreEqual(0, list.Count);
+        }
+
+        [Test]
         public void Each_01()
         {
             var lambda = LambdaCompiler.Compile(@"
