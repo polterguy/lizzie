@@ -987,13 +987,13 @@ namespace lizzie
                 throw new LizzieRuntimeException("The 'substr' function cannot be given more than 3 arguments.");
 
             // Retrieving string to manipulate.
-            var arg1 = arguments.Get<string>(0);
+            var source = arguments.Get<string>(0);
 
             // Retrieving start position.
-            var arg2 = arguments.Get<int>(1);
+            var offset = arguments.Get<int>(1);
 
             // More sanity checking.
-            if (arg2 > arg1.Length)
+            if (offset > source.Length)
                 throw new LizzieRuntimeException("The second argument to 'substr' cannot be more than the total length of your string.");
 
             // Checking if we have an end position.
@@ -1003,11 +1003,11 @@ namespace lizzie
                     return "";
                 if (length < 0)
                     throw new LizzieRuntimeException("The third argument to 'substr' must be zero or higher.");
-                if (arg2 + length > arg1.Length)
-                    throw new LizzieRuntimeException("The second argument + the third argument to 'substr' cannot be longer than the string's length.");
-                return arg1.Substring(arg2, length);
+                if (offset + length > source.Length)
+                    throw new LizzieRuntimeException("The second argument + the third argument to 'substr' cannot be longer than the string's total length.");
+                return source.Substring(offset, length);
             }
-            return arg1.Substring(arg2);
+            return source.Substring(offset);
         });
 
         /// <summary>
