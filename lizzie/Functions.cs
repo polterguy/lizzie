@@ -1001,7 +1001,7 @@ namespace lizzie
                 var length = arguments.Get<int>(2);
                 if (length == 0)
                     return "";
-                if (length == -1)
+                if (length < 0)
                     throw new LizzieRuntimeException("The third argument to 'substr' must be zero or higher.");
                 if (arg2 + length > arg1.Length)
                     throw new LizzieRuntimeException("The second argument + the third argument to 'substr' cannot be longer than the string's length.");
