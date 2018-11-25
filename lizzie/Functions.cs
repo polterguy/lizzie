@@ -800,7 +800,7 @@ namespace lizzie
         public static Function<TContext> Json => new Function<TContext>((ctx, binder, arguments) =>
         {
             if (arguments.Count != 1)
-                throw new LizzieRuntimeException("The 'object' function must be given exactly 1 argument.");
+                throw new LizzieRuntimeException("The 'json' function must be given exactly 1 argument.");
             var json = arguments.Get<string>(0);
             var result = JsonConvert.DeserializeObject(json);
             return ConvertJson(result);
