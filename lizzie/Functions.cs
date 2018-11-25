@@ -666,7 +666,8 @@ namespace lizzie
                 // Adding each value.
                 while (en.MoveNext()) {
                     var key = (string)en.Current;
-                    en.MoveNext();
+                    if (!en.MoveNext())
+                        throw new LizzieRuntimeException("The 'add' function requires an even number of arguments when given a 'map' as its destination.");
                     var value = en.Current;
                     map.Add(key, value);
                 }
