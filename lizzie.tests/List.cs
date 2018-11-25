@@ -181,6 +181,24 @@ bar");
         }
 
         [Test]
+        public void Each_04()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+var(@foo, list(57, 67, 77))
+var(@bar, each(@ix, foo, {
+  +(ix, 10)
+}))
+bar");
+            var result = lambda();
+            Assert.IsTrue(result is List<object>);
+            var list = result as List<object>;
+            Assert.AreEqual(3, list.Count);
+            Assert.AreEqual(67, list[0]);
+            Assert.AreEqual(77, list[1]);
+            Assert.AreEqual(87, list[2]);
+        }
+
+        [Test]
         public void ApplyArgumentsToAdd()
         {
             var lambda = LambdaCompiler.Compile(@"

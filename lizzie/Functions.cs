@@ -735,6 +735,7 @@ namespace lizzie
             var lambda = arguments.Get(2) as Function<TContext>;
             if (lambda == null)
                 throw new LizzieRuntimeException("When invoking the 'each' function, the third argument must be a lambda object, e.g. '{ ... some code ... }'.");
+            var retVal = new List<object>();
             if (arguments.Get(1) is List<object> list) {
 
                 // List.
@@ -742,12 +743,12 @@ namespace lizzie
                     foreach (var ix in list) {
                         binder[argName] = ix;
                         var current = lambda(ctx, binder, arguments);
+                        retVal.Add(current);
                     }
                 } finally {
                     if (binder.ContainsDynamicKey(argName))
                         binder.RemoveKey(argName);
                 }
-                return list;
 
             } else if (arguments.Get(1) is Dictionary<string, object> map) {
 
@@ -756,17 +757,19 @@ namespace lizzie
                     foreach (var ix in map.Keys) {
                         binder[argName] = ix;
                         var current = lambda(ctx, binder, arguments);
+                        retVal.Add(current);
                     }
                 } finally {
                     if (binder.ContainsDynamicKey(argName))
                         binder.RemoveKey(argName);
                 }
-                return map;
+
             } else {
 
                 // Oops ...!!
                 throw new LizzieRuntimeException("The 'each' function must be given either a 'map' or a 'list' as its 2nd argument.");
             }
+            return retVal;
         });
 
         /// <summary>
