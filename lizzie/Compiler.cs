@@ -397,6 +397,8 @@ namespace lizzie
          */
         static bool IsNumeric(string symbol)
         {
+            if (symbol[0] == '-' && symbol.Length > 1)
+                symbol = symbol.Substring(1);
             foreach (var ix in symbol) {
                 if ((ix < '0' || ix > '9') && ix != '.')
                     return false;
