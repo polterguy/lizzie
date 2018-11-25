@@ -222,7 +222,12 @@ namespace lizzie
         {
             var hexNumberString = "";
             for (var idxNo = 0; idxNo < 4; idxNo++)
-                hexNumberString += (char)reader.Read();
+            {
+                var tmp = reader.Read();
+                if (tmp == -1)
+                    return ""; // Incomplete hex char ...!!
+                hexNumberString += (char)tmp;
+            }
             var integerNo = Convert.ToInt32(hexNumberString, 16);
             return Encoding.UTF8.GetString(BitConverter.GetBytes(integerNo).Reverse().ToArray());
         }
