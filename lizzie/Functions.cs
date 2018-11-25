@@ -973,7 +973,9 @@ namespace lizzie
         /// This function will return a substring of the specified string. It
         /// expects at least two arguments, the first being a string, the second
         /// an offset of where to start the returned string from. You can also
-        /// optionally supply a third argument
+        /// optionally supply a third argument being the length, or the count of characters
+        /// to return. Obviously, the start position + length must be shorter than or equal
+        /// to the entire length of the original string.
         /// </summary>
         /// <value>The function wrapping the 'substr keyword'.</value>
         public static Function<TContext> Substr => new Function<TContext>((ctx, binder, arguments) =>
@@ -990,9 +992,20 @@ namespace lizzie
             // Retrieving start position.
             var arg2 = arguments.Get<int>(1);
 
+            // More sanity checking.
+            if (arg2 > arg1.Length)
+                throw new LizzieRuntimeException("The second argument to 'substr' cannot be more than the total length of your string.");
+
             // Checking if we have an end position.
             if (arguments.Count > 2) {
-                return arg1.Substring(arg2, arguments.Get<int>(2));
+                var length = arguments.Get<int>(2);
+                if (length == 0)
+                    return "";
+                if (length == -1)
+                    throw new LizzieRuntimeException("The third argument to 'substr' must be zero or higher.");
+                if (arg2 + length > arg1.Length)
+                    throw new LizzieRuntimeException("The second argument + the third argument to 'substr' cannot be longer than the string's length.");
+                return arg1.Substring(arg2, length);
             }
             return arg1.Substring(arg2);
         });
