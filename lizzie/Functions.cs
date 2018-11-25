@@ -292,7 +292,7 @@ namespace lizzie
                 } finally {
 
                     // Popping stack.
-                    binder.PopStack();
+                    binder2.PopStack();
                 }
             });
         });
