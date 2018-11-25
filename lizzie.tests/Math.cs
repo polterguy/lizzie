@@ -40,6 +40,29 @@ namespace lizzie.tests
         }
 
         [Test]
+        public void AddNegativeIntegers()
+        {
+            var code = "+(7, 30, -5, 25)";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            binder["+"] = Functions<LambdaCompiler.Nothing>.Add;
+            var result = function(ctx, binder);
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
+        public void UnaryMinus()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+var(@foo,10)
+-(foo)");
+            var result = lambda();
+            Assert.AreEqual(-10, result);
+        }
+
+        [Test]
         public void AddMultipleFloatingPointValues()
         {
             var code = "+(7.0, 30.0, 5.47, 15.10)";

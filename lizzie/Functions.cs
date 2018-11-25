@@ -135,11 +135,13 @@ namespace lizzie
         public static Function<TContext> Subtract => new Function<TContext>((ctx, binder, arguments) =>
         {
             // Sanity checking code.
-            if (arguments.Count < 2)
-                throw new LizzieRuntimeException("The 'subtract' keyword requires at least 2 arguments, and you tried to invoke it with fewer.");
+            if (arguments.Count < 1)
+                throw new LizzieRuntimeException("The 'subtract' keyword requires at least 1 argument, and you tried to invoke it with fewer.");
 
             // Retrieving the first value, making sure we retrieve it as a "dynamic type".
             dynamic result = arguments.Get(0);
+            if (arguments.Count == 1)
+                return -result;
             foreach (dynamic ix in arguments.Skip(1)) {
                 result -= ix;
             }
