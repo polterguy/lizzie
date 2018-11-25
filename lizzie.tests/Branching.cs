@@ -296,6 +296,25 @@ if(any(@foo1, @foo2, @foo3), {
         }
 
         [Test]
+        public void IfAnyTrueFunction()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+var(@foo1)
+var(@foo2, function({
+  'foo'
+}))
+var(@foo3)
+if(any(@foo1, @foo2(), @foo3), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(57, result);
+        }
+
+        [Test]
         public void IfAnyFalse()
         {
             var lambda = LambdaCompiler.Compile(@"
