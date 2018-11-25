@@ -345,28 +345,20 @@ namespace lizzie
 
             // Retrieving condition, if(true) lambda, and sanity checking invocation.
             var condition = arguments.Get(0);
-            var lambdaIf = arguments.Get(1) as Function<TContext>;
-            if (lambdaIf == null)
-                throw new LizzieRuntimeException("The 'if' keyword requires a lambda argument as its second argument.");
-
-            // Retrieving an sanity checking if(false) lambda, if it exists.
-            var arg3 = arguments.Count > 2 ? arguments.Get(2) : null;
-            Function<TContext> lambdaElse = null;
-            if (arg3 != null) {
-                lambdaElse = arg3 as Function<TContext>;
-                if (lambdaElse == null)
-                    throw new LizzieRuntimeException("The 'if' keyword requires a lambda argument as its third (else) argument if you supply a third argument.");
+            if (condition != null)
+            {
+                var lambdaIf = arguments.Get(1) as Function<TContext>;
+                if (lambdaIf == null)
+                    throw new LizzieRuntimeException("The 'if' keyword requires a lambda argument as its second argument.");
+                return lambdaIf(ctx, binder, arguments);
             }
 
-            // Checking if we should evaluate if(true) lambda.
-            if (condition != null) {
-
-                // If yields true, evaluating if(true) lambda.
-                return lambdaIf(ctx, binder, arguments);
-
-            } else if (lambdaElse != null) {
-
-                // If yields false, and we have an else lambda we should evaluate.
+            // Execute the else-clause, if one is present:
+            if (arguments.Count > 2)
+            {
+                var lambdaElse = arguments.Get(2) as Function<TContext>;
+                if (lambdaElse == null)
+                    throw new LizzieRuntimeException("The 'if' keyword requires a lambda argument as its third (else) argument if you supply a third argument.");
                 return lambdaElse(ctx, binder, arguments);
             }
 
