@@ -301,7 +301,7 @@ namespace lizzie
                 // Notice, all integer numbers are treated as long.
                 var success = long.TryParse(en.Current, NumberStyles.Any, CultureInfo.InvariantCulture, out long longResult);
                 if (!success)
-                    throw new LizzieRuntimeException($"Sorry, I tried my best to parse '{en.Current}' as a double, but I failed.");
+                    throw new LizzieRuntimeException($"Sorry, I tried my best to parse '{en.Current}' as a long, but I failed.");
                 numericConstant = longResult;
             }
 
