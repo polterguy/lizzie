@@ -73,19 +73,6 @@ namespace lizzie.tests
         }
 
         [Test]
-        public void SymbolicallyReferencedConstantNumber()
-        {
-            var code = "foo";
-            var tokenizer = new Tokenizer(new LizzieTokenizer());
-            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
-            var ctx = new LambdaCompiler.Nothing();
-            var binder = new Binder<LambdaCompiler.Nothing>();
-            binder["foo"] = 57;
-            var result = function(ctx, binder);
-            Assert.AreEqual(57, result);
-        }
-
-        [Test]
         public void SymbolicallyReferencedConstantString()
         {
             var code = "foo";
