@@ -22,14 +22,6 @@ namespace lizzie.tests
         }
 
         [Test]
-        public void WithoutType()
-        {
-            var lambda = LambdaCompiler.Compile("57");
-            var result = lambda();
-            Assert.AreEqual(57, result);
-        }
-
-        [Test]
         public void MathTest()
         {
             var lambda = LambdaCompiler.Compile("%(/(+(5, *(5,-(20,15))),3),7)");
