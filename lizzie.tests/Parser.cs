@@ -37,6 +37,30 @@ namespace lizzie.tests
         }
 
         [Test]
+        public void InlineFloatingPointInScientificNotationSymbol()
+        {
+            var code = "57.67e2";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            var result = function(ctx, binder);
+            Assert.AreEqual(5767.0, result);
+        }
+
+        [Test]
+        public void InlineFloatingPointInScientificNotationWithNegativeExponentSymbol()
+        {
+            var code = "5767e-2";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var function = Compiler.Compile<LambdaCompiler.Nothing>(tokenizer, code);
+            var ctx = new LambdaCompiler.Nothing();
+            var binder = new Binder<LambdaCompiler.Nothing>();
+            var result = function(ctx, binder);
+            Assert.AreEqual(57.67, result);
+        }
+
+        [Test]
         public void InlineStringSymbol()
         {
             var code = @"""57""";
