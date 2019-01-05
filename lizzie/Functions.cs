@@ -240,8 +240,8 @@ namespace lizzie
                 throw new LizzieRuntimeException("When declaring a function, the first argument must be a lambda object, e.g. '{ ... some code ... }'.");
 
             // Retrieving argument declarations and sanity checking them.
-            var args = arguments.Skip(1).Select(ix => ix as string).ToList();
-            foreach (var ix in args) {
+            var formallyDeclaredArguments = arguments.Skip(1).Select(ix => ix as string).ToList();
+            foreach (var ix in formallyDeclaredArguments) {
                 if (ix is string ixStr)
                     Compiler.SanityCheckSymbolName(ixStr);
                 else
@@ -254,25 +254,25 @@ namespace lizzie
              * NOTICE!
              * A function always pushes the stack.
              */
-            return new Function<TContext>((ctx2, binder2, arguments2) => {
+            return new Function<TContext>((invocationContext, invocationBinder, invocationArguments) => {
 
                 /*
                  * Sanity checking that caller did not supply more arguments than
                  * the function is declared to at maximum being able to handle.
                  */
-                if (arguments2.Count > args.Count)
+                if (invocationArguments.Count > formallyDeclaredArguments.Count)
                     throw new LizzieRuntimeException("Function was invoked with too many arguments.");
 
                 // Pushing stack, making sure we can correctly pop it once we're done.
-                binder2.PushStack();
+                invocationBinder.PushStack();
                 try {
 
                     /*
                      * Binding all argument declarations for our lambda to whatever
                      * the caller provided as values during invocation.
                      */
-                    for (var ix = 0; ix < arguments2.Count && ix < args.Count; ix++) {
-                        binder2[args[ix]] = arguments2.Get(ix);
+                    for (var ix = 0; ix < invocationArguments.Count; ix++) {
+                        invocationBinder[formallyDeclaredArguments[ix]] = invocationArguments.Get(ix);
                     }
 
                     /*
@@ -284,17 +284,17 @@ namespace lizzie
                      * declares, simply setting the rest of the declared arguments
                      * to "null" values.
                      */
-                    for (var ix = arguments2.Count; ix < args.Count; ix++) {
-                        binder2[args[ix]] = null;
+                    for (var ix = invocationArguments.Count; ix < formallyDeclaredArguments.Count; ix++) {
+                        invocationBinder[formallyDeclaredArguments[ix]] = null;
                     }
 
                     // Evaluating function.
-                    return lambda(ctx2, binder2, arguments2);
+                    return lambda(invocationContext, invocationBinder, invocationArguments);
 
                 } finally {
 
                     // Popping stack.
-                    binder2.PopStack();
+                    invocationBinder.PopStack();
                 }
             });
         });
