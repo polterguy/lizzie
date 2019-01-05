@@ -504,8 +504,10 @@ namespace lizzie
         /// <value>The function wrapping the 'any keyword'.</value>
         public static Function<TContext> Any => new Function<TContext>((ctx, binder, arguments) =>
         {
-            if (arguments.Count < 2)
-                throw new LizzieRuntimeException("The 'any' function must be given at least 2 arguments.");
+            /*
+             * Notice, if there are zero arguments given to "any", it will return null (false), contrary to "all" that will return true
+             * given an empty list of arguments.
+             */
             return arguments.FirstOrDefault(ix => {
 
                 // Making sure we verify that this is a "delayed verification" of condition.
@@ -541,8 +543,6 @@ namespace lizzie
         /// <value>The function wrapping the 'all keyword'.</value>
         public static Function<TContext> All => new Function<TContext>((ctx, binder, arguments) =>
         {
-            if (arguments.Count < 2)
-                throw new LizzieRuntimeException("The 'all' function must be given at least 2 arguments.");
             foreach (var arg in arguments) {
                 if (arg == null) {
 
@@ -573,7 +573,9 @@ namespace lizzie
                     }
                 }
             }
-            return arguments.Last();
+
+            // Notice, if "all" is given no arguments, logically it is true, since there are no "false statements" in it.
+            return arguments.Any() ? arguments.Last() : true;
         });
 
         /// <summary>

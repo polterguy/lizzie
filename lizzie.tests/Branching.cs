@@ -332,6 +332,20 @@ if(any(@foo1, @foo2, @foo3), {
         }
 
         [Test]
+        public void IfAnyEmpty()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+if(any(), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(67, result);
+        }
+
+        [Test]
         public void IfAllTrue()
         {
             var lambda = LambdaCompiler.Compile(@"
@@ -363,6 +377,20 @@ if(all(@foo1, @foo2, @foo3), {
 ");
             var result = lambda();
             Assert.AreEqual(67, result);
+        }
+
+        [Test]
+        public void IfAllEmpty()
+        {
+            var lambda = LambdaCompiler.Compile(@"
+if(all(), {
+  57
+}, {
+  67
+})
+");
+            var result = lambda();
+            Assert.AreEqual(57, result);
         }
     }
 }
