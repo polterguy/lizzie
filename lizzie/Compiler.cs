@@ -405,14 +405,14 @@ namespace lizzie
             string coefficient = SanitizeSign(parts[0]);
 
             // If we have two parts we need to check the exponent.
-            if (parts.Length == 2)
-            {
+            if (parts.Length == 2) {
+
                 var exponent = SanitizeSign(parts[1]);
                 if (exponent.Any(ix => !char.IsDigit(ix)))
                     return false;
-            }
-            else if (parts.Length != 1)
-            {
+
+            } else if (parts.Length != 1) {
+
                 return false;
             }
 
@@ -426,8 +426,7 @@ namespace lizzie
          */
         private static string SanitizeSign(string number)
         {
-            if (number.Length > 1 && (number[0] == '-' || number[0] == '+'))
-            {
+            if (number.Length > 1 && (number[0] == '-' || number[0] == '+')) {
                 number = number.Substring(1);
             }
             return number;
