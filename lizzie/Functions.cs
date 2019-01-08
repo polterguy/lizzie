@@ -17,7 +17,7 @@ using Newtonsoft.Json.Linq;
 namespace lizzie
 {
     /// <summary>
-    /// Contains all the standard 'keyword' functions in Lizzie.
+    /// Contains all the standard 'keywords' functions in Lizzie.
     /// </summary>
     public static class Functions<TContext>
     {
