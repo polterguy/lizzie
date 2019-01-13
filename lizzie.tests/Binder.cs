@@ -133,6 +133,22 @@ namespace lizzie.tests
         }
 
         [Test]
+        public void DeeplyBound()
+        {
+            SimpleValues simple = new SimpleValueDoubleExtended();
+            var binder = new Binder<SimpleValues>(simple);
+            Assert.AreEqual(true, binder.DeeplyBound);
+        }
+
+        [Test]
+        public void ShallowBound()
+        {
+            SimpleValues simple = new SimpleValues();
+            var binder = new Binder<SimpleValues>();
+            Assert.AreEqual(false, binder.DeeplyBound);
+        }
+
+        [Test]
         public void MaxStackSizeNoThrow()
         {
             var nothing = new LambdaCompiler.Nothing();
@@ -152,6 +168,9 @@ my-func()
 ");
             // Should NOT throw!
             lambda();
+
+            // Verifying instance is NOT deeply bound!
+            Assert.AreEqual(false, binder.DeeplyBound);
         }
 
         [Test]

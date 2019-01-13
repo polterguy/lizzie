@@ -236,7 +236,7 @@ namespace lizzie
         /// <returns>The cloned instance.</returns>
         public Binder<TContext> Clone()
         {
-            if (_delegateType != null)
+            if (DeeplyBound)
                 throw new LizzieBindingException("Lizzie cannot clone a binder that has been deeply bound.");
             var clone = new Binder<TContext>(false) {
                 MaxStackSize = MaxStackSize
