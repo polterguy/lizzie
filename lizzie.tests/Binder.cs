@@ -132,19 +132,19 @@ namespace lizzie.tests
             Assert.AreEqual(90, result);
         }
 
-        class BaseClass
+        class BaseClass1
         {
             [Bind(Name = "foo")]
-            protected virtual object Foo(Binder<BaseClass> ctx, Arguments arguments)
+            protected virtual object Foo(Binder<BaseClass1> ctx, Arguments arguments)
             {
                 return 57;
             }
         }
 
-        class SuperClass : BaseClass
+        class SuperClass1 : BaseClass1
         {
             [Bind(Name = "foo")]
-            protected override object Foo(Binder<BaseClass> ctx, Arguments arguments)
+            protected override object Foo(Binder<BaseClass1> ctx, Arguments arguments)
             {
                 return 77;
             }
@@ -153,10 +153,37 @@ namespace lizzie.tests
         [Test]
         public void VirtualInheritedDeeplyBound()
         {
-            BaseClass simple = new SuperClass();
+            BaseClass1 simple = new SuperClass1();
             var lambda = LambdaCompiler.Compile(simple, "foo()", true);
             var result = lambda();
             Assert.AreEqual(77, result);
+        }
+
+        class BaseClass2
+        {
+            [Bind(Name = "foo1")]
+            protected object Foo1(Binder<BaseClass2> ctx, Arguments arguments)
+            {
+                return 50;
+            }
+        }
+
+        class SuperClass2 : BaseClass2
+        {
+            [Bind(Name = "foo2")]
+            object Foo2(Binder<BaseClass2> ctx, Arguments arguments)
+            {
+                return 7;
+            }
+        }
+
+        [Test]
+        public void InvokingFromBothSuperAndBase()
+        {
+            BaseClass2 simple = new SuperClass2();
+            var lambda = LambdaCompiler.Compile(simple, "+(foo1(), foo2())", true);
+            var result = lambda();
+            Assert.AreEqual(57, result);
         }
 
         [Test]

@@ -270,7 +270,11 @@ namespace lizzie
              */
             var contextIsDefault = EqualityComparer<TContext>.Default.Equals(context, default(TContext));
             var type = contextIsDefault ? typeof(TContext) : context.GetType();
-            var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+            var methods = type.GetMethods(BindingFlags.Public | 
+                                          BindingFlags.Instance | 
+                                          BindingFlags.NonPublic | 
+                                          BindingFlags.Static | 
+                                          BindingFlags.FlattenHierarchy);
 
             // Looping through all methods on type, and binding them if they're supposed to be bound.
             foreach (var ix in methods) {
