@@ -79,6 +79,24 @@ namespace lizzie
         public int MaxStackSize { get; set; }
 
         /// <summary>
+        /// Gets the static item keys.
+        /// </summary>
+        /// <value>The static item keys for this instance.</value>
+        public IEnumerable<string> StaticItems => _staticBinder.Keys;
+
+        /// <summary>
+        /// Returns the count of stacks for this instance.
+        /// </summary>
+        /// <value>The stack count.</value>
+        public int StackCount => _stackBinder.Count;
+
+        /// <summary>
+        /// Returns true if the instance has been "deeply bound".
+        /// </summary>
+        /// <value>The stack count.</value>
+        public bool DeeplyBound => _delegateType != null;
+
+        /// <summary>
         /// Gets or sets the value with the given key. You can set the content
         /// to either a constant or a Lizzie function, at which point you can
         /// retrieve the object by referencing it symbolically in your Lizzie code.
@@ -201,18 +219,6 @@ namespace lizzie
         }
 
         /// <summary>
-        /// Gets the static item keys.
-        /// </summary>
-        /// <value>The static item keys for this instance.</value>
-        public IEnumerable<string> StaticItems => _staticBinder.Keys;
-
-        /// <summary>
-        /// Returns the count of stacks for this instance.
-        /// </summary>
-        /// <value>The stack count.</value>
-        public int StackCount => _stackBinder.Count;
-
-        /// <summary>
         /// Clones this instance.
         /// 
         /// Since invoking the default CTOR has some overhead due to reflection,
@@ -222,7 +228,10 @@ namespace lizzie
         /// to clone a "master instance" for each of your threads that needs to
         /// bind to the same type. This method is also useful in case you want
         /// to spawn of new threads, where each thread needs access to a thread
-        /// safe copy of the stack, at the point of creation.
+        /// safe copy of the binder, at the point of creation.
+        /// 
+        /// Notice, due to the internal of "dynamically bound" contexts, you cannot
+        /// clone a deeply bound Binder.
         /// </summary>
         /// <returns>The cloned instance.</returns>
         public Binder<TContext> Clone()
@@ -347,7 +356,13 @@ namespace lizzie
         }
 
         /*
-         * Binds a single method deeply.
+         * Binds a Lizzie function "deeply", implying using Reflection.Emit to
+         * make itpossible to create a Delegate that is able to invoke inherited
+         * methods as Lizzie functions.
+         * 
+         * Useful in for instance IoC (Dependency Injection) and similar scenarios
+         * where you don't have access to the implementing bound type through its
+         * generic argument.
          */
         void BindMethodDeep(MethodInfo method, string functionName, TContext context)
         {
@@ -358,6 +373,7 @@ namespace lizzie
             });
         }
 
+        // IClonable implementation.
         object ICloneable.Clone()
         {
             return Clone();
