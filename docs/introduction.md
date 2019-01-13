@@ -823,6 +823,64 @@ allowing you to convert complex objects consistently to their string representat
 * [Download Lizzie here](https://github.com/polterguy/lizzie/releases)
 * Or add the NuGet _"lizzie"_ package
 
+### Dependency Injection (IoC)
+
+As of version 0.8, Lizzie has support for _"deep binding"_ on your type, which
+will traverse the entire object graph for Lizzie functions. An example of this
+can be found below.
+
+```csharp
+class BaseClass
+{
+    [Bind(Name = "foo1")]
+    protected object Foo1(Binder<BaseClass> ctx, Arguments arguments)
+    {
+        return 50;
+    }
+}
+
+class SuperClass : BaseClass
+{
+    [Bind(Name = "foo2")]
+    object Foo2(Binder<BaseClass> ctx, Arguments arguments)
+    {
+        return 7;
+    }
+}
+
+/*
+ * Somewhere else in your code ...
+ *
+ * NOTICE!
+ * Type inference here will make sure your Binder uses "BaseClass" as
+ * its generic argument, yet still you're able to invoke methods on "SuperClass".
+ */
+BaseClass simple = new SuperClass();
+
+/*
+ * The last "true" argument is important to "bind deeply" to your instance type!
+ * Without the "true", it will bind towards the inferred type, which for this example
+ * becomes "BaseClass".
+ */
+var lambda = LambdaCompiler.Compile(simple, "+(foo1(), foo2())", true);
+var result = lambda();
+
+/*
+ * result is now ==> 57
+ */
+```
+
+This allows you to among other things use Lizzie in scenarios where you only have
+an interface, while still be able to invoke Lizzie functions that are `Bind`ed in
+your derived type(s).
+
+**Notice** - Your Lizzie functions must (somehow) be available for instance methods
+on your most derived type(s), and the `Binder` will be required to be declared
+in your Lizzie methods with its generic type argument being the type inferred
+as the Binder is created. See the `Foo2` method above to understand what this
+implies, and notice how it's taking a `Binder<BaseClass>` instance, even though
+it is declared in the `SuperClass`.
+
 ### Donate
 
 If you feel Lizzie has given you value, I would
