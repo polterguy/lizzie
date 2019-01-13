@@ -132,6 +132,33 @@ namespace lizzie.tests
             Assert.AreEqual(90, result);
         }
 
+        class BaseClass
+        {
+            [Bind(Name = "foo")]
+            protected virtual object Foo(Binder<BaseClass> ctx, Arguments arguments)
+            {
+                return 57;
+            }
+        }
+
+        class SuperClass : BaseClass
+        {
+            [Bind(Name = "foo")]
+            protected override object Foo(Binder<BaseClass> ctx, Arguments arguments)
+            {
+                return 77;
+            }
+        }
+
+        [Test]
+        public void VirtualInheritedDeeplyBound()
+        {
+            BaseClass simple = new SuperClass();
+            var lambda = LambdaCompiler.Compile(simple, "foo()", true);
+            var result = lambda();
+            Assert.AreEqual(77, result);
+        }
+
         [Test]
         public void DeeplyBound()
         {

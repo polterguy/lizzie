@@ -54,16 +54,17 @@ namespace lizzie
              * in the "this pointer" as its first argument.
              */
             var parameters = method.GetParameters();
-            var callingConventions = method.IsStatic ? CallingConventions.Standard : CallingConventions.HasThis;
             var parameterTypes = parameters.Select(p => p.ParameterType).ToList();
             if (!method.IsStatic)
                 parameterTypes.Insert(0, method.DeclaringType);
             var invokeMethod = typeBuilder.DefineMethod("Invoke",
                                                         MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.Public,
-                                                        callingConventions,
+                                                        method.IsStatic ? CallingConventions.Standard : CallingConventions.HasThis,
                                                         method.ReturnType,
                                                         parameterTypes.ToArray());
             invokeMethod.SetImplementationFlags(MethodImplAttributes.CodeTypeMask);
+
+            // Defining arguments to our method.
             for (int i = 0; i < parameters.Length; i++) {
                 var parameter = parameters[i];
                 invokeMethod.DefineParameter(i + 1, ParameterAttributes.None, parameter.Name);
