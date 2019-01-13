@@ -50,17 +50,50 @@ namespace lizzie.tests
         [Test]
         public void StaticFunctions()
         {
-            var lambda = LambdaCompiler.Compile<SimpleValues>(new SimpleValues(), "get-static()");
+            var lambda = LambdaCompiler.Compile(new SimpleValues(), "get-static()");
             var result = lambda();
             Assert.AreEqual(7, result);
+        }
+
+        class SimpleValueExtended : SimpleValues
+        {
+            [Bind(Name = "extended-function")]
+            object ExtendedFunction(Binder<SimpleValues> ctx, Arguments arguments)
+            {
+                return arguments.Get<int>(0) + 57;
+            }
+        }
+
+        [Test]
+        public void ExtendedClassShallowBind()
+        {
+            SimpleValues simple = new SimpleValueExtended();
+            var lambda = LambdaCompiler.Compile(simple, "extended-function(20)");
+            var error = false;
+            try {
+                var result = lambda();
+            } catch {
+                error = true;
+            }
+            Assert.AreEqual(true, error);
+        }
+
+        [Test]
+        public void ExtendedClassDeepBind()
+        {
+            SimpleValues simple = new SimpleValueExtended();
+            var lambda = LambdaCompiler.Compile(simple, "extended-function(20)", true);
+            var result = lambda();
+            Assert.AreEqual(77, result);
         }
 
         [Test]
         public void MaxStackSizeNoThrow()
         {
             var nothing = new LambdaCompiler.Nothing();
-            var binder = new Binder<LambdaCompiler.Nothing>();
-            binder.MaxStackSize = 21;
+            var binder = new Binder<LambdaCompiler.Nothing> {
+                MaxStackSize = 21
+            };
             LambdaCompiler.BindFunctions(binder);
             var lambda = LambdaCompiler.Compile(nothing, binder, @"
 var(@recursions, 0)
@@ -80,8 +113,9 @@ my-func()
         public void MaxStackSizeThrows()
         {
             var nothing = new LambdaCompiler.Nothing();
-            var binder = new Binder<LambdaCompiler.Nothing>();
-            binder.MaxStackSize = 19;
+            var binder = new Binder<LambdaCompiler.Nothing> {
+                MaxStackSize = 19
+            };
             LambdaCompiler.BindFunctions(binder);
             var lambda = LambdaCompiler.Compile(nothing, binder, @"
 var(@recursions, 0)

@@ -45,12 +45,13 @@ namespace lizzie
         /// <returns>The compiled lambda function.</returns>
         /// <param name="context">Context to bind the evaluation towards.</param>
         /// <param name="code">Lizzie code to compile.</param>
+        /// <param name="bindDeep">If true will perform binding on type of instance, and not on TContext.</param>
         /// <typeparam name="TContext">The type of context you want to bind towards.</typeparam>
-        public static Func<object> Compile<TContext>(TContext context, string code)
+        public static Func<object> Compile<TContext>(TContext context, string code, bool bindDeep = false)
         {
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<TContext>(tokenizer, code);
-            var binder = new Binder<TContext>();
+            var binder = new Binder<TContext>(bindDeep ? context : default(TContext));
             BindFunctions(binder);
             return new Func<object>(() => {
                 return function(context, binder);

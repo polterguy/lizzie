@@ -6,6 +6,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Reflection;
 using lizzie.exceptions;
 using System.Collections.Generic;
@@ -30,22 +31,296 @@ namespace lizzie
     /// class implies some reflection, which is a realatively costy process on
     /// the CLR.
     /// </summary>
-    public class Binder<TContext> : BinderBase
+    public class Binder<TContext> : ICloneable
     {
+        // Statically bound variables/functions, and root level variables.
+        readonly Dictionary<string, object> _staticBinder = new Dictionary<string, object>();
+
+        // Stack of dynamically created variables and functions.
+        readonly List<Dictionary<string, object>> _stackBinder = new List<Dictionary<string, object>>();
+
         /// <summary>
         /// Creates a default binder, binding all bound methods in your context type.
         /// </summary>
-        public Binder()
-            : base(typeof(TContext))
-        { }
+        /// <param name="context">If not default then the constructor will perform binding on type of instance, and not on type of TContext.</param>
+        public Binder(TContext context = default(TContext))
+        {
+            MaxStackSize = -1;
+            BindTypeMethods(context);
+        }
 
         /*
          * Private CTOR to allow for cloning instances of class, without having
          * to run through reflection necessary to bind the type.
          */
-        Binder(bool initialize)
-            : base (typeof(TContext), initialize)
-        { }
+        Binder(bool initialize, TContext context = default(TContext))
+        {
+            if (initialize)
+                BindTypeMethods(context);
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum size of the stack.
+        /// 
+        /// This becomes the maximum number of functions you can invoke recursively,
+        /// and is intended to avoid exhausting your CLR stack by entering into a
+        /// never ending recursive function invocation tree.
+        /// 
+        /// The default value is -1, implying no check.
+        /// For security reasons you might want to set this to some arbitrary number,
+        /// such as 50 or 100 to avoid malicious code eating up your CLR stack and
+        /// causing a stack overflow in your CLR.
+        /// </summary>
+        /// <value>The maximum size of your stack, or rather your maximum number of
+        /// stacks (function invocations).</value>
+        public int MaxStackSize { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value with the given key. You can set the content
+        /// to either a constant or a Lizzie function, at which point you can
+        /// retrieve the object by referencing it symbolically in your Lizzie code.
+        /// 
+        /// Will prioritize retrieving or setting the stack symbol before any global values.
+        /// </summary>
+        /// <param name="symbolName">Name or symbol for your value.</param>
+        public object this[string symbolName]
+        {
+            get {
+
+                /*
+                 * Checking if we have a stack level object matching the specified symbol.
+                 *
+                 * We do this to allow for locally declared symbols to "hide" global symbols.
+                 * Locally declared symbols are symbols declared inside of functions, or after the
+                 * stack has been "pushed" at least once or more.
+                 */
+                if (_stackBinder.Count > 0 && _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName))
+                    return _stackBinder[_stackBinder.Count - 1][symbolName];
+
+                // Defaulting to looking in "static" binder.
+                if (_staticBinder.ContainsKey(symbolName))
+                    return _staticBinder[symbolName];
+
+                // Oops, no such symbol!
+                throw new LizzieRuntimeException($"The '{symbolName}' symbol has not been declared.");
+            }
+            set {
+
+                /*
+                 * Checking if we should set the static (global) symbol, which we
+                 * do if the stack has not (yet) been pushed at least once, or the
+                 * symbol already exists at the global scope.
+                 */
+                if (_stackBinder.Count == 0 || _staticBinder.ContainsKey(symbolName)) {
+
+                    /*
+                     * Stack has not (yet) been pushed, or symbol exists in global scope.
+                     */
+                    _staticBinder[symbolName] = value;
+
+                } else {
+
+                    // Symbol not found on stack, hence setting global symbol's value.
+                    _stackBinder[_stackBinder.Count - 1][symbolName] = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns true if the named symbol exists. Notice, the symbol's value might
+        /// still be null, even if the symbol exists.
+        /// </summary>
+        /// <returns><c>true</c>, if symbol exists, <c>false</c> otherwise.</returns>
+        /// <param name="symbolName">Symbol name.</param>
+        public bool ContainsKey(string symbolName)
+        {
+            // Checking if our stack contains symbol.
+            if (_stackBinder.Count > 0 && _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName))
+                return true;
+
+            // Defaulting to static binder.
+            return _staticBinder.ContainsKey(symbolName);
+        }
+
+        /// <summary>
+        /// Returns true if the named symbol exists. Notice, the symbol's value might
+        /// still be null, even if the symbol exists.
+        /// </summary>
+        /// <returns><c>true</c>, if symbol exists, <c>false</c> otherwise.</returns>
+        /// <param name="symbolName">Symbol name.</param>
+        public bool ContainsDynamicKey(string symbolName)
+        {
+            if (_stackBinder.Count > 0)
+                return _stackBinder[_stackBinder.Count - 1].ContainsKey(symbolName);
+            return false;
+        }
+
+        /// <summary>
+        /// Returns true if the named symbol exists. Notice, the symbol's value might
+        /// still be null, even if the symbol exists.
+        /// </summary>
+        /// <returns><c>true</c>, if symbol exists, <c>false</c> otherwise.</returns>
+        /// <param name="symbolName">Symbol name.</param>
+        public bool ContainsStaticKey(string symbolName)
+        {
+            return _staticBinder.ContainsKey(symbolName);
+        }
+
+        /// <summary>
+        /// Removes the specified key from the stack. You can only remove
+        /// elements if you have 'pushed' the stack at least once, which by default
+        /// in Lizzie only occurs from within a function.
+        /// </summary>
+        /// <param name="symbolName">Symbol name of item to remove.</param>
+        public void RemoveKey(string symbolName)
+        {
+            if (_stackBinder.Count > 0)
+                _stackBinder[_stackBinder.Count - 1].Remove(symbolName);
+            _staticBinder.Remove(symbolName);
+        }
+
+        /// <summary>
+        /// Creates a new stack and makes it become the current stack.
+        /// </summary>
+        public void PushStack()
+        {
+            if (_stackBinder.Count == MaxStackSize)
+                throw new LizzieRuntimeException("Your maximum stack size has been exceeded");
+            _stackBinder.Add(new Dictionary<string, object>());
+        }
+
+        /// <summary>
+        /// Pops the top item off the stack, and makes the previous stack the current stack.
+        /// </summary>
+        public void PopStack()
+        {
+            _stackBinder.RemoveAt(_stackBinder.Count - 1);
+        }
+
+        /// <summary>
+        /// Gets the static item keys.
+        /// </summary>
+        /// <value>The static item keys for this instance.</value>
+        public IEnumerable<string> StaticItems => _staticBinder.Keys;
+
+        /// <summary>
+        /// Returns the count of stacks for this instance.
+        /// </summary>
+        /// <value>The stack count.</value>
+        public int StackCount => _stackBinder.Count;
+
+        /*
+         * Binds all methods in your TContext type that is marked with the
+         * BindAttribute, and make these available for you as symbolic functions
+         * in your Lizzie code.
+         */
+        void BindTypeMethods(TContext context = default(TContext))
+        {
+            /*
+             * Figuring out if we're given an instance of a type, at which point we
+             * retrieve all methods on the type of our instance - Otherwise we retrieve
+             * all methods on the type of TContext.
+             * 
+             * This is done to allow for "deep binding", where you for instance have an
+             * interface, and you want to bind towards the type implementing the interface,
+             * instead of the interface itself, which is useful for instance when using
+             * dependency injection.
+             */
+            var contextIsDefault = EqualityComparer<TContext>.Default.Equals(context, default(TContext));
+            var type = contextIsDefault ? typeof(TContext) : context.GetType();
+            var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static);
+
+            // Looping through all methods on type, and binding them if they're supposed to be bound.
+            foreach (var ix in methods) {
+
+                var attribute = ix.GetCustomAttribute<BindAttribute>();
+                if (attribute != null) {
+
+                    if (contextIsDefault)
+                        BindMethod(ix, attribute.Name ?? ix.Name);
+                    else
+                        BindMethodDeep(ix, attribute.Name ?? ix.Name, context);
+                }
+            }
+        }
+
+        /*
+         * Sanity checks method.
+         */
+        void SanityCheckSignature(MethodInfo method, string functionName)
+        {
+            // Sanity checking function name.
+            if (string.IsNullOrEmpty(functionName))
+                throw new LizzieBindingException("Can't bind to functions unless you choose a non-empty function name.");
+
+            // Sanity checking method.
+            var methodArgs = method.GetParameters();
+            if (method.IsStatic) {
+
+                if (methodArgs.Length != 3)
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take the right number of arguments");
+                if (methodArgs[0].ParameterType != typeof(TContext))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take a '{nameof(TContext)}' type of argument as its first argument.");
+                if (methodArgs[1].ParameterType != typeof(Binder<TContext>))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take a '{nameof(Binder<TContext>)}' type of argument as its second argument.");
+                if (methodArgs[2].ParameterType != typeof(Arguments))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take an '{nameof(Arguments)}' type of argument as its third argument.");
+                if (method.ContainsGenericParameters)
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it requires a generic argument.");
+                if (method.ReturnType != typeof(object))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't return '{nameof(Object)}'.");
+
+            } else {
+
+                if (methodArgs.Length != 2)
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take the right number of arguments");
+                if (methodArgs[0].ParameterType != typeof(Binder<TContext>))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take a '{nameof(Binder<TContext>)}' type of argument as its first argument.");
+                if (methodArgs[1].ParameterType != typeof(Arguments))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't take an '{nameof(Arguments)}' type of argument as its second argument.");
+                if (method.ContainsGenericParameters)
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it requires a generic argument.");
+                if (method.ReturnType != typeof(object))
+                    throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't return '{nameof(Object)}'.");
+            }
+        }
+
+        /*
+         * Binds a single method shallow.
+         */
+        void BindMethod(MethodInfo method, string functionName)
+        {
+            SanityCheckSignature(method, functionName);
+            _staticBinder[functionName] = Delegate.CreateDelegate(typeof(Function<TContext>), method);
+        }
+
+        /*
+         * For deep binding, we need to dynamically create our delegate type during
+         * runtime, since type we're binding towards is actually not known before
+         * Lizzie code is bound towards its context.
+         */
+        Type _delegateType;
+        Delegate CreateDeepDelegate(MethodInfo method, TContext context)
+        {
+            if (_delegateType == null) {
+                var factory = new DelegateTypeFactory();
+                _delegateType = factory.CreateDelegateType(method);
+            }
+            return Delegate.CreateDelegate(_delegateType, context, method);
+        }
+
+        /*
+         * Binds a single method deeply.
+         */
+        void BindMethodDeep(MethodInfo method, string functionName, TContext context)
+        {
+            SanityCheckSignature(method, functionName);
+            var deep = CreateDeepDelegate(method, context);
+            _staticBinder[functionName] = new Function<TContext>((ctx, binder, arguments) =>
+            {
+                return deep.DynamicInvoke(binder, arguments);
+            });
+        }
 
         /// <summary>
         /// Clones this instance.
@@ -60,29 +335,26 @@ namespace lizzie
         /// safe copy of the stack, at the point of creation.
         /// </summary>
         /// <returns>The cloned instance.</returns>
-        public override BinderBase Clone()
+        public Binder<TContext> Clone()
         {
             var clone = new Binder<TContext>(false);
-            BinderBase.Clone(this, clone);
+            clone.MaxStackSize = MaxStackSize;
+            foreach (var ix in _staticBinder.Keys) {
+                clone[ix] = _staticBinder[ix];
+            }
+            foreach (var ixStack in _stackBinder) {
+                var dictionary = new Dictionary<string, object>();
+                foreach (var ixKey in ixStack.Keys) {
+                    dictionary[ixKey] = ixStack[ixKey];
+                }
+                clone._stackBinder.Add(dictionary);
+            }
             return clone;
         }
 
-        /// <summary>
-        /// Protected abstract method expected to return type binder is bound towards.
-        /// </summary>
-        /// <returns>The binder type.</returns>
-        protected override Type GetBinderType()
+        object ICloneable.Clone()
         {
-            return typeof(Binder<TContext>);
-        }
-
-        /// <summary>
-        /// Protected abstract method expected to return type of functions instance can handle.
-        /// </summary>
-        /// <returns>The binder function.</returns>
-        protected override Type GetBinderFunction()
-        {
-            return typeof(Function<TContext>);
+            return Clone();
         }
     }
 }
