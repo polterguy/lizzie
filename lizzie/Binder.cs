@@ -229,15 +229,10 @@ namespace lizzie
         /// bind to the same type. This method is also useful in case you want
         /// to spawn of new threads, where each thread needs access to a thread
         /// safe copy of the binder, at the point of creation.
-        /// 
-        /// Notice, due to the internal of "dynamically bound" contexts, you cannot
-        /// clone a deeply bound Binder.
         /// </summary>
         /// <returns>The cloned instance.</returns>
         public Binder<TContext> Clone()
         {
-            if (DeeplyBound)
-                throw new LizzieBindingException("Lizzie cannot clone a binder that has been deeply bound.");
             var clone = new Binder<TContext>(false) {
                 MaxStackSize = MaxStackSize
             };
@@ -352,7 +347,7 @@ namespace lizzie
                 var factory = new DelegateTypeFactory();
                 _delegateType = factory.CreateDelegateType(method);
             }
-            return Delegate.CreateDelegate(_delegateType, context, method);
+            return Delegate.CreateDelegate(_delegateType, method);
         }
 
         /*
@@ -369,7 +364,7 @@ namespace lizzie
             SanityCheckSignature(method, functionName);
             var deep = CreateDeepDelegate(method, context);
             _staticBinder[functionName] = new Function<TContext>((ctx, binder, arguments) => {
-                return deep.DynamicInvoke(binder, arguments);
+                return deep.DynamicInvoke(ctx, binder, arguments);
             });
         }
 

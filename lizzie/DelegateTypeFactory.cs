@@ -38,18 +38,31 @@ namespace lizzie
             string baseName = string.Format("{0}.{1}", method.DeclaringType.Name, method.Name);
             string uniqueTypeName = CreateUniqueTypeName(baseName);
 
-            // Defines our type and constructor.
+            // Defines our type and constructor to our type.
             var typeBuilder = _builder.DefineType(uniqueTypeName, TypeAttributes.Sealed | TypeAttributes.Public, typeof(MulticastDelegate));
             var constructor = typeBuilder.DefineConstructor(
                 MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
                 CallingConventions.Standard, new[] { typeof(object), typeof(IntPtr) });
             constructor.SetImplementationFlags(MethodImplAttributes.CodeTypeMask);
 
-            // Retrieves arguments from method, and make sure our delegate types can handle the same set of arguments.
+            /*
+             * Retrieves arguments from method, and make sure our delegate types can handle the same set of arguments.
+             * 
+             * NOTICE!
+             * To allow for "late binding" delegate towards its this pointer for instance methods,
+             * we need to check if method is static, and if not, we allow for implicitly passing
+             * in the "this pointer" as its first argument.
+             */
             var parameters = method.GetParameters();
-            var invokeMethod = typeBuilder.DefineMethod(
-                "Invoke", MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.Public,
-                method.ReturnType, parameters.Select(p => p.ParameterType).ToArray());
+            var callingConventions = method.IsStatic ? CallingConventions.Standard : CallingConventions.HasThis;
+            var parameterTypes = parameters.Select(p => p.ParameterType).ToList();
+            if (!method.IsStatic)
+                parameterTypes.Insert(0, method.DeclaringType);
+            var invokeMethod = typeBuilder.DefineMethod("Invoke",
+                                                        MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.Public,
+                                                        callingConventions,
+                                                        method.ReturnType,
+                                                        parameterTypes.ToArray());
             invokeMethod.SetImplementationFlags(MethodImplAttributes.CodeTypeMask);
             for (int i = 0; i < parameters.Length; i++) {
                 var parameter = parameters[i];
