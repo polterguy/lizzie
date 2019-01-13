@@ -58,9 +58,18 @@ namespace lizzie.tests
         class SimpleValueExtended : SimpleValues
         {
             [Bind(Name = "extended-function")]
-            object ExtendedFunction(Binder<SimpleValues> ctx, Arguments arguments)
+            protected object ExtendedFunction(Binder<SimpleValues> ctx, Arguments arguments)
             {
                 return arguments.Get<int>(0) + 57;
+            }
+        }
+
+        class SimpleValueDoubleExtended : SimpleValueExtended
+        {
+            [Bind(Name = "extended-function-2")]
+            object ExtendedFunction2(Binder<SimpleValues> ctx, Arguments arguments)
+            {
+                return arguments.Get<int>(0) + 3;
             }
         }
 
@@ -85,6 +94,42 @@ namespace lizzie.tests
             var lambda = LambdaCompiler.Compile(simple, "extended-function(20)", true);
             var result = lambda();
             Assert.AreEqual(77, result);
+        }
+
+        [Test]
+        public void ExtendedClassDeepBindInvokeInheritedPublicMethod()
+        {
+            SimpleValues simple = new SimpleValueExtended();
+            var lambda = LambdaCompiler.Compile(simple, "+(get-constant-integer-2(), extended-function(3))", true);
+            var result = lambda();
+            Assert.AreEqual(117, result);
+        }
+
+        [Test]
+        public void ExtendedClassDeepBindInvokeInheritedProtectedMethod()
+        {
+            SimpleValues simple = new SimpleValueExtended();
+            var lambda = LambdaCompiler.Compile(simple, "+(get-constant-integer(), extended-function(3))", true);
+            var result = lambda();
+            Assert.AreEqual(117, result);
+        }
+
+        [Test]
+        public void ExtendedClassDeepBindInvokeInheritedStaticMethod()
+        {
+            SimpleValues simple = new SimpleValueExtended();
+            var lambda = LambdaCompiler.Compile(simple, "+(get-static(), extended-function(20))", true);
+            var result = lambda();
+            Assert.AreEqual(84, result);
+        }
+
+        [Test]
+        public void DoubleExtendedClassDeepBindInvokeInheritedStaticMethod()
+        {
+            SimpleValues simple = new SimpleValueDoubleExtended();
+            var lambda = LambdaCompiler.Compile(simple, "+(get-static(), extended-function(20), extended-function-2(3))", true);
+            var result = lambda();
+            Assert.AreEqual(90, result);
         }
 
         [Test]

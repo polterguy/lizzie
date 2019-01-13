@@ -28,7 +28,7 @@ namespace lizzie.tests.context_types
         }
 
         [Bind(Name = "get-static")]
-        static object GetStatic(SimpleValues context, Binder<SimpleValues> ctx, Arguments arguments)
+        public static object GetStatic(SimpleValues context, Binder<SimpleValues> ctx, Arguments arguments)
         {
             return 7;
         }
@@ -46,8 +46,14 @@ namespace lizzie.tests.context_types
             return ValueString;
         }
 
+        [Bind(Name = "get-constant-integer-2")]
+        public object GetConstantPublicInteger(Binder<SimpleValues> ctx, Arguments arguments)
+        {
+            return 57;
+        }
+
         [Bind(Name = "get-constant-integer")]
-        object GetConstantInteger(Binder<SimpleValues> ctx, Arguments arguments)
+        protected object GetConstantInteger(Binder<SimpleValues> ctx, Arguments arguments)
         {
             return 57;
         }

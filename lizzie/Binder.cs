@@ -39,6 +39,9 @@ namespace lizzie
         // Stack of dynamically created variables and functions.
         readonly List<Dictionary<string, object>> _stackBinder = new List<Dictionary<string, object>>();
 
+        // Only used during "deep binding", to create a correct delegate type using Reflection.Emit.
+        Type _delegateType;
+
         /// <summary>
         /// Creates a default binder, binding all bound methods in your context type.
         /// </summary>
@@ -209,6 +212,41 @@ namespace lizzie
         /// <value>The stack count.</value>
         public int StackCount => _stackBinder.Count;
 
+        /// <summary>
+        /// Clones this instance.
+        /// 
+        /// Since invoking the default CTOR has some overhead due to reflection,
+        /// caching instances of this class might improve your performance.
+        /// However, since instances of the class is not thread safe and cannot
+        /// be safely shared among multiple threads, you can use this method
+        /// to clone a "master instance" for each of your threads that needs to
+        /// bind to the same type. This method is also useful in case you want
+        /// to spawn of new threads, where each thread needs access to a thread
+        /// safe copy of the stack, at the point of creation.
+        /// </summary>
+        /// <returns>The cloned instance.</returns>
+        public Binder<TContext> Clone()
+        {
+            if (_delegateType != null)
+                throw new LizzieBindingException("Lizzie cannot clone a binder that has been deeply bound.");
+            var clone = new Binder<TContext>(false) {
+                MaxStackSize = MaxStackSize
+            };
+            foreach (var ix in _staticBinder.Keys) {
+                clone[ix] = _staticBinder[ix];
+            }
+            foreach (var ixStack in _stackBinder) {
+                var dictionary = new Dictionary<string, object>();
+                foreach (var ixKey in ixStack.Keys) {
+                    dictionary[ixKey] = ixStack[ixKey];
+                }
+                clone._stackBinder.Add(dictionary);
+            }
+            return clone;
+        }
+
+        #region [ -- Private helper methods -- ]
+
         /*
          * Binds all methods in your TContext type that is marked with the
          * BindAttribute, and make these available for you as symbolic functions
@@ -228,7 +266,7 @@ namespace lizzie
              */
             var contextIsDefault = EqualityComparer<TContext>.Default.Equals(context, default(TContext));
             var type = contextIsDefault ? typeof(TContext) : context.GetType();
-            var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static);
+            var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy);
 
             // Looping through all methods on type, and binding them if they're supposed to be bound.
             foreach (var ix in methods) {
@@ -299,7 +337,6 @@ namespace lizzie
          * runtime, since type we're binding towards is actually not known before
          * Lizzie code is bound towards its context.
          */
-        Type _delegateType;
         Delegate CreateDeepDelegate(MethodInfo method, TContext context)
         {
             if (_delegateType == null) {
@@ -316,45 +353,16 @@ namespace lizzie
         {
             SanityCheckSignature(method, functionName);
             var deep = CreateDeepDelegate(method, context);
-            _staticBinder[functionName] = new Function<TContext>((ctx, binder, arguments) =>
-            {
+            _staticBinder[functionName] = new Function<TContext>((ctx, binder, arguments) => {
                 return deep.DynamicInvoke(binder, arguments);
             });
-        }
-
-        /// <summary>
-        /// Clones this instance.
-        /// 
-        /// Since invoking the default CTOR has some overhead due to reflection,
-        /// caching instances of this class might improve your performance.
-        /// However, since instances of the class is not thread safe and cannot
-        /// be safely shared among multiple threads, you can use this method
-        /// to clone a "master instance" for each of your threads that needs to
-        /// bind to the same type. This method is also useful in case you want
-        /// to spawn of new threads, where each thread needs access to a thread
-        /// safe copy of the stack, at the point of creation.
-        /// </summary>
-        /// <returns>The cloned instance.</returns>
-        public Binder<TContext> Clone()
-        {
-            var clone = new Binder<TContext>(false);
-            clone.MaxStackSize = MaxStackSize;
-            foreach (var ix in _staticBinder.Keys) {
-                clone[ix] = _staticBinder[ix];
-            }
-            foreach (var ixStack in _stackBinder) {
-                var dictionary = new Dictionary<string, object>();
-                foreach (var ixKey in ixStack.Keys) {
-                    dictionary[ixKey] = ixStack[ixKey];
-                }
-                clone._stackBinder.Add(dictionary);
-            }
-            return clone;
         }
 
         object ICloneable.Clone()
         {
             return Clone();
         }
+
+        #endregion
     }
 }
