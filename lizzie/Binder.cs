@@ -191,9 +191,7 @@ namespace lizzie
         }
 
         /// <summary>
-        /// Removes the specified key from the stack. You can only remove
-        /// elements if you have 'pushed' the stack at least once, which by default
-        /// in Lizzie only occurs from within a function.
+        /// Removes the specified key from the stack.
         /// </summary>
         /// <param name="symbolName">Symbol name of item to remove.</param>
         public void RemoveKey(string symbolName)
