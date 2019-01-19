@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using NUnit.Framework;
+using lizzie.exceptions;
 
 namespace lizzie.tests
 {
@@ -79,6 +80,29 @@ jo()";
             var tokenizer = new Tokenizer(new LizzieTokenizer());
             var list = new List<string>(tokenizer.Tokenize(code));
             Assert.AreEqual(14, list.Count);
+        }
+
+        [Test]
+        public void MultiLineCommentThrows()
+        {
+            var code = @"/*/";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var success = false;
+            try {
+                var list = new List<string>(tokenizer.Tokenize(code));
+            } catch (LizzieTokenizerException) {
+                success = true;
+            }
+            Assert.AreEqual(true, success);
+        }
+
+        [Test]
+        public void EmptyMultiLineComment()
+        {
+            var code = @"/**/";
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
+            var list = new List<string>(tokenizer.Tokenize(code));
+            Assert.AreEqual(0, list.Count);
         }
     }
 }

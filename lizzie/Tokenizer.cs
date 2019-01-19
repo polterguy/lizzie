@@ -131,8 +131,10 @@ namespace lizzie
         /// </summary>
         /// <param name="reader">Reader to eat from.</param>
         /// <param name="sequence">Sequence to look for that will end further eating.</param>
-        public static void EatUntil(StreamReader reader, string sequence)
+        /// <param name="throwIfNotFound">If true, will throw an exception if end sequence is not found before end of stream.</param>
+        public static void EatUntil(StreamReader reader, string sequence, bool throwIfNotFound = false)
         {
+            // Sanity checking invocation.
             if (string.IsNullOrEmpty(sequence))
                 throw new LizzieTokenizerException("No stop sequence specified to EatUntil.");
 
@@ -151,6 +153,10 @@ namespace lizzie
                         return; // Done!
                 }
             }
+
+            // Sanity checking that stream is not corrupted, if we're told to do so.
+            if (throwIfNotFound)
+                throw new LizzieTokenizerException($"The '{sequence}' sequence was not found before EOF.");
         }
 
         /// <summary>

@@ -129,8 +129,9 @@ namespace lizzie
 
                         } else if (ch == '*') {
 
-                            // Multiline comment.
-                            Tokenizer.EatUntil(reader, "*/");
+                            // Multiline comment, making sure we discard opening "*" character from stream.
+                            reader.Read();
+                            Tokenizer.EatUntil(reader, "*/", true);
 
                             // There might be some spaces at the front of our stream now ...
                             Tokenizer.EatSpace(reader);
