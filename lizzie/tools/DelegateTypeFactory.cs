@@ -28,7 +28,7 @@ namespace lizzie.tools
 
         // Fields.
         readonly ModuleBuilder _builder;
-        Synchronizer<Dictionary<string, Type>> _delegateTypesSynchronizer = new Synchronizer<Dictionary<string, Type>>(new Dictionary<string, Type>());
+        Synchronizer<Dictionary<string, Type>> _delegateTypeSynchronizer = new Synchronizer<Dictionary<string, Type>>(new Dictionary<string, Type>());
 
         // Private CTOR to avoid instantiations of more than one single instance (Singleton pattern).
         DelegateTypeFactory()
@@ -75,13 +75,13 @@ namespace lizzie.tools
              * Checking if we have already created a delegate type for MethodInfo.
              * Making sure we synchronize access to our shared dictionary.
              */
-            Type delegateType = null;
-            _delegateTypesSynchronizer.Read((dictionary) => {
+            var delegateType = _delegateTypeSynchronizer.Fetch((dictionary) => {
 
                 // Checking if delegate type has already been cached.
                 if (dictionary.ContainsKey(dictionaryKey)) {
-                    delegateType = dictionary[dictionaryKey];
+                    return dictionary[dictionaryKey];
                 }
+                return null;
             });
 
             // Checking if we already have a delegate type wrapping declaring type's methods.
@@ -93,7 +93,7 @@ namespace lizzie.tools
              * dictionary, to avoid creating multiple delegate types for the same MethodInfo.
              * Making sure we synchronize access to our shared dictionary.
              */
-            _delegateTypesSynchronizer.Write((dictionary) => {
+            _delegateTypeSynchronizer.Write((dictionary) => {
 
                 /*
                  * In case a context switch occurs between our Read lambda and our Write lambda

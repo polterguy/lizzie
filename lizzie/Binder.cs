@@ -39,7 +39,10 @@ namespace lizzie
         // Stack of dynamically created variables and functions.
         readonly List<Dictionary<string, object>> _stackBinder = new List<Dictionary<string, object>>();
 
-        // Only used during "deep binding", to create a correct delegate type using Reflection.Emit.
+        /*
+         * Only used during "deep binding", to create a correct delegate type using Reflection.Emit.
+         * This is the type of delegate, needed to create a delegate wrapping a MethodInfo.
+         */
         Type _delegateType;
 
         /// <summary>
@@ -349,8 +352,8 @@ namespace lizzie
         {
             /*
              * To avoid having to evaluate delegate factory's GetDelegateType
-             * method, which has some thread synchronization overhead, we
-             * cache our delegate type internally on an instance basis in our
+             * method unnecessary, which has some thread synchronization overhead,
+             * we cache our delegate type internally on an instance basis in our
              * binder.
              */
             if (_delegateType == null) {
@@ -377,7 +380,11 @@ namespace lizzie
             });
         }
 
-        // IClonable implementation.
+        /*
+         * Explicit IClonable implementation.
+         * This type of implementation, requires you to explicitly cast your
+         * instance to an ICloneable instance in order to clone it.
+         */
         object ICloneable.Clone()
         {
             return Clone();
