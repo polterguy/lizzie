@@ -51,7 +51,6 @@ namespace lizzie
         /// <param name="context">If not default then the constructor will perform binding on type of instance, and not on type of TContext.</param>
         public Binder(TContext context = default(TContext))
         {
-            MaxStackSize = -1;
             BindTypeMethods(context);
         }
 
@@ -79,7 +78,7 @@ namespace lizzie
         /// </summary>
         /// <value>The maximum size of your stack, or rather your maximum number of
         /// stacks (function invocations).</value>
-        public int MaxStackSize { get; set; }
+        public int MaxStackSize { get; set; } = -1;
 
         /// <summary>
         /// Gets the static item keys.

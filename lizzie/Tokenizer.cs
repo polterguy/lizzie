@@ -166,7 +166,8 @@ namespace lizzie
         /// <returns>The string literal.</returns>
         /// <param name="reader">Reader to read from.</param>
         /// <param name="stop">Stop what character that ends the string.</param>
-        public static string ReadString(StreamReader reader, char stop = '"')
+        /// <param name="maxStringSize">The maximum sise of strings the tokenizer accepts before throwing a Lizzie exception.</param>
+        public static string ReadString(StreamReader reader, char stop = '"', int maxStringSize = -1)
         {
             var builder = new StringBuilder();
             for (var c = reader.Read(); c != -1; c = reader.Read()) {
@@ -180,6 +181,8 @@ namespace lizzie
                     default:
                         if (c == stop)
                             return builder.ToString();
+                        if (maxStringSize != -1 && builder.Length >= maxStringSize)
+                            throw new LizzieTokenizerException($"String size exceeded maximum allowed size of '{maxStringSize}' characters.");
                         builder.Append ((char)c);
                         break;
                 }

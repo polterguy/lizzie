@@ -24,6 +24,12 @@ namespace lizzie
          */
         readonly Stack<string> _cachedTokens = new Stack<string>();
 
+        /// <summary>
+        /// Gets or sets the maximum size of strings the tokenizer will allow  before throwing an exception.
+        /// </summary>
+        /// <value>The size of the max string.</value>
+        public int MaxStringSize { get; set; } = -1;
+
         #region [ -- Interface implementation -- ]
 
         /// <summary>
@@ -96,7 +102,7 @@ namespace lizzie
                     case '\'':
 
                         reader.Read(); //  Skipping '"'.
-                        var strLiteral = Tokenizer.ReadString(reader, ch);
+                        var strLiteral = Tokenizer.ReadString(reader, ch, MaxStringSize);
 
                         /*
                          * This time we need to cache our tokens for future invocations.
