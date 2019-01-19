@@ -26,6 +26,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="exceptions\" />
+    <Folder Include="tools\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" version="4.5.0" Version="4.5.0">

@@ -6,10 +6,10 @@
  */
 
 using System;
-using System.Linq;
 using System.Reflection;
-using lizzie.exceptions;
 using System.Collections.Generic;
+using lizzie.tools;
+using lizzie.exceptions;
 
 namespace lizzie
 {
@@ -347,9 +347,14 @@ namespace lizzie
          */
         Delegate CreateDeepDelegate(MethodInfo method, TContext context)
         {
+            /*
+             * To avoid having to evaluate delegate factory's GetDelegateType
+             * method, which has some thread synchronization overhead, we
+             * cache our delegate type internally on an instance basis in our
+             * binder.
+             */
             if (_delegateType == null) {
-                var factory = new DelegateTypeFactory();
-                _delegateType = factory.CreateDelegateType(method);
+                _delegateType = DelegateTypeFactory.Instance.GetDelegateType(method);
             }
             return Delegate.CreateDelegate(_delegateType, method);
         }
