@@ -267,10 +267,9 @@ namespace lizzie
             if (!en.MoveNext())
                 throw new LizzieParsingException($"Unexpected EOF after {quote}.");
 
-            // Retrieving actual string constant, and sanity checking tokenizer.
+            // Retrieving actual string constant, and discarding closing quote character.
             var stringConstant = en.Current;
-            if (!en.MoveNext() || en.Current != quote)
-                throw new LizzieParsingException($"Unexpected EOF after to '{stringConstant}'");
+            en.MoveNext();
 
             // Returning a function that evaluates to the actual string's constant value.
             var function = new Function<TContext>((ctx, binder, arguments) => {
