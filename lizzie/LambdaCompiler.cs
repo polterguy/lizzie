@@ -23,21 +23,11 @@ namespace lizzie
         /// </summary>
         /// <returns>The compiled lambda function.</returns>
         /// <param name="code">Lizzie code to compile.</param>
-        /// <param name="maxStackSize">Maximum number of functions allowed to be circularly invoked.</param>
-        /// <param name="maxStringSize">Maximum size of strings the tokenizer will allow before throwing an exception.</param>
-        public static Func<object> Compile(
-            string code, 
-            int maxStackSize = -1,
-            int maxStringSize = -1)
+        public static Func<object> Compile(string code)
         {
-            var lizzieTokenizer = new LizzieTokenizer();
-            if (maxStringSize != -1)
-                lizzieTokenizer.MaxStringSize = maxStringSize;
-            var tokenizer = new Tokenizer(lizzieTokenizer);
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<Nothing>(tokenizer, code);
             var binder = new Binder<Nothing>();
-            if (maxStackSize != -1)
-                binder.MaxStackSize = maxStackSize;
             BindFunctions(binder);
             var nothing = new Nothing();
             return new Func<object>(() => {
@@ -56,24 +46,12 @@ namespace lizzie
         /// <param name="context">Context to bind the evaluation towards.</param>
         /// <param name="code">Lizzie code to compile.</param>
         /// <param name="bindDeep">If true will perform binding on type of instance, and not on TContext.</param>
-        /// <param name="maxStackSize">Maximum number of functions allowed to be circularly invoked.</param>
-        /// <param name="maxStringSize">Maximum size of strings the tokenizer will allow before throwing an exception.</param>
         /// <typeparam name="TContext">The type of context you want to bind towards.</typeparam>
-        public static Func<object> Compile<TContext>(
-            TContext context,
-            string code,
-            bool bindDeep = false,
-            int maxStackSize = -1,
-            int maxStringSize = -1)
+        public static Func<object> Compile<TContext>(TContext context, string code, bool bindDeep = false)
         {
-            var lizzieTokenizer = new LizzieTokenizer();
-            if (maxStringSize != -1)
-                lizzieTokenizer.MaxStringSize = maxStringSize;
-            var tokenizer = new Tokenizer(lizzieTokenizer);
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<TContext>(tokenizer, code);
             var binder = new Binder<TContext>(bindDeep ? context : default(TContext));
-            if (maxStackSize != -1)
-                binder.MaxStackSize = maxStackSize;
             BindFunctions(binder);
             return new Func<object>(() => {
                 return function(context, binder);
@@ -91,18 +69,10 @@ namespace lizzie
         /// <param name="context">Context to bind the lambda towards.</param>
         /// <param name="binder">Binder to use for your lambda.</param>
         /// <param name="code">Lizzie code to compile.</param>
-        /// <param name="maxStringSize">Maximum size of strings the tokenizer will allow before throwing an exception.</param>
         /// <typeparam name="TContext">The type of context you want to bind towards.</typeparam>
-        public static Func<object> Compile<TContext>(
-            TContext context, 
-            Binder<TContext> binder, 
-            string code,
-            int maxStringSize = -1)
+        public static Func<object> Compile<TContext>(TContext context, Binder<TContext> binder, string code)
         {
-            var lizzieTokenizer = new LizzieTokenizer();
-            if (maxStringSize != -1)
-                lizzieTokenizer.MaxStringSize = maxStringSize;
-            var tokenizer = new Tokenizer(lizzieTokenizer);
+            var tokenizer = new Tokenizer(new LizzieTokenizer());
             var function = Compiler.Compile<TContext>(tokenizer, code);
             return new Func<object>(() => {
                 return function(context, binder);
