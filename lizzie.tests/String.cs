@@ -207,5 +207,41 @@ json(""[0,1,{'foo':57,'bar':77,'hello':'world'}]"")
             Assert.AreEqual(77, map["bar"]);
             Assert.AreEqual("world", map["hello"]);
         }
+
+        [Test]
+        public void NonTerminatedStringThrows()
+        {
+            var success = false;
+            try {
+                var lambda = LambdaCompiler.Compile(@"'foo");
+            } catch {
+                success = true;
+            }
+            Assert.AreEqual(true, success);
+        }
+
+        [Test]
+        public void NewLineInStringThrows_01()
+        {
+            var success = false;
+            try {
+                var lambda = LambdaCompiler.Compile("'foo\n'");
+            } catch {
+                success = true;
+            }
+            Assert.AreEqual(true, success);
+        }
+
+        [Test]
+        public void NewLineInStringThrows_02()
+        {
+            var success = false;
+            try {
+                var lambda = LambdaCompiler.Compile("'foo\r'");
+            } catch {
+                success = true;
+            }
+            Assert.AreEqual(true, success);
+        }
     }
 }
