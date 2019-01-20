@@ -6,12 +6,11 @@
  */
 
 using System;
-using System.Reflection;
-using System.Collections.Generic;
-using lizzie.tools;
-using lizzie.exceptions;
-using System.Linq.Expressions;
 using System.Linq;
+using System.Reflection;
+using System.Linq.Expressions;
+using System.Collections.Generic;
+using lizzie.exceptions;
 
 namespace lizzie
 {
@@ -35,6 +34,14 @@ namespace lizzie
     /// </summary>
     public class Binder<TContext> : ICloneable
     {
+        /*
+         * Deeply bound functions, used when signature of bound method cannot be
+         * determined, due to that the bound type is not of type TContext, but
+         * rather inherited from TContext.
+         */
+        delegate object DeepFunction(object target, object[] arguments);
+        delegate object DeepStaticFunction(object[] arguments);
+
         // Statically bound variables/functions, and root level variables.
         readonly Dictionary<string, object> _staticBinder = new Dictionary<string, object>();
 
@@ -281,10 +288,10 @@ namespace lizzie
                 var attribute = ix.GetCustomAttribute<BindAttribute>();
                 if (attribute != null) {
 
-                    if (_contextIsDefault)
+                    if (_contextIsDefault || typeof(TContext) == ix.DeclaringType)
                         BindMethod(ix, attribute.Name ?? ix.Name);
                     else
-                        BindMethodDeep(ix, attribute.Name ?? ix.Name, context);
+                        BindDeepMethod(ix, attribute.Name ?? ix.Name, context);
                 }
             }
         }
@@ -300,14 +307,14 @@ namespace lizzie
 
         /*
          * Binds a Lizzie function "deeply", to make it possible to create a
-         * delegate that is able to invoke inherited methods in super classes
+         * delegate that is able to invoke methods in super classes
          * as Lizzie functions.
          * 
          * Useful in for instance IoC (Dependency Injection) and similar scenarios
          * where you don't have access to the implementing bound type through its
          * generic argument.
          */
-        void BindMethodDeep(MethodInfo method, string functionName, TContext context)
+        void BindDeepMethod(MethodInfo method, string functionName, TContext context)
         {
             SanityCheckSignature(method, functionName);
 
@@ -332,19 +339,22 @@ namespace lizzie
             }
         }
 
-        LateBoundFunction CreateInstanceFunction(MethodInfo method)
+        /*
+         * Creates an instance wrapper for a deeply bound method.
+         */
+        DeepFunction CreateInstanceFunction(MethodInfo method)
         {
-            ParameterExpression instanceParameter = Expression.Parameter(typeof(object), "target");
-            ParameterExpression argumentsParameter = Expression.Parameter(typeof(object[]), "arguments");
+            var instanceParameter = Expression.Parameter(typeof(object), "target");
+            var argumentsParameter = Expression.Parameter(typeof(object[]), "arguments");
 
-            MethodCallExpression call = Expression.Call(
+            var call = Expression.Call(
               Expression.Convert(instanceParameter, method.DeclaringType),
               method,
               method.GetParameters().Select((parameter, index) =>
                   Expression.Convert(
                     Expression.ArrayIndex(argumentsParameter, Expression.Constant(index)), parameter.ParameterType)).ToArray());
 
-            var lambda = Expression.Lambda<LateBoundFunction>(
+            var lambda = Expression.Lambda<DeepFunction>(
               Expression.Convert(call, typeof(object)),
               instanceParameter,
               argumentsParameter);
@@ -352,17 +362,20 @@ namespace lizzie
             return lambda.Compile();
         }
 
-        LateBoundStaticFunction CreateStaticFunction(MethodInfo method)
+        /*
+         * Creates a static wrapper for a deeply bound method.
+         */
+        DeepStaticFunction CreateStaticFunction(MethodInfo method)
         {
-            ParameterExpression argumentsParameter = Expression.Parameter(typeof(object[]), "arguments");
+            var argumentsParameter = Expression.Parameter(typeof(object[]), "arguments");
 
-            MethodCallExpression call = Expression.Call(
+            var call = Expression.Call(
               method,
               method.GetParameters().Select((parameter, index) =>
                   Expression.Convert(
                     Expression.ArrayIndex(argumentsParameter, Expression.Constant(index)), parameter.ParameterType)).ToArray());
 
-            var lambda = Expression.Lambda<LateBoundStaticFunction>(
+            var lambda = Expression.Lambda<DeepStaticFunction>(
               Expression.Convert(call, typeof(object)),
               argumentsParameter);
 

@@ -13,16 +13,6 @@ namespace lizzie
     public delegate object Function<TContext>(TContext ctx, Binder<TContext> binder, Arguments arguments);
 
     /// <summary>
-    /// Used as delegate type when late binding functions.
-    /// </summary>
-    public delegate object LateBoundFunction(object target, object[] arguments);
-
-    /// <summary>
-    /// Used as delegate type when late binding functions.
-    /// </summary>
-    public delegate object LateBoundStaticFunction(object[] arguments);
-
-    /// <summary>
     /// Delegate for a lambda object created by Lizzie.
     /// </summary>
     public delegate object Lambda<TContext>(TContext ctx, Binder<TContext> binder);

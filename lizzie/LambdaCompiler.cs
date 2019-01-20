@@ -45,7 +45,7 @@ namespace lizzie
         /// <returns>The compiled lambda function.</returns>
         /// <param name="context">Context to bind the evaluation towards.</param>
         /// <param name="code">Lizzie code to compile.</param>
-        /// <param name="bindDeep">If true will perform binding on type of instance, and not on TContext.</param>
+        /// <param name="bindDeep">If true will perform binding on type of instance, and not on type TContext.</param>
         /// <typeparam name="TContext">The type of context you want to bind towards.</typeparam>
         public static Func<object> Compile<TContext>(TContext context, string code, bool bindDeep = false)
         {

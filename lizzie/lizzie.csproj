@@ -35,4 +35,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="tools\DelegateTypeFactory.cs" />
+  </ItemGroup>
 </Project>
