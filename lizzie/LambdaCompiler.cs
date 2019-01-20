@@ -64,6 +64,12 @@ namespace lizzie
         /// 
         /// Will not bind the binder to any functions. If you wish to bind the
         /// binder to the default functions, you can use 'LambdaCompiler.BindFunctions'.
+        /// 
+        /// If you use this overload, and you cache your Binder, you will
+        /// experience significant performance improvements, since the process of creating
+        /// a Binder has some overhead, due to the compilation of lambda expressions,
+        /// and dependencies upon reflection. If you do, you must never use your
+        /// "master" Binder instance, but Clone it every time you want to use it.
         /// </summary>
         /// <returns>The compiled lambda function.</returns>
         /// <param name="context">Context to bind the lambda towards.</param>
