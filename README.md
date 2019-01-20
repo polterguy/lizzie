@@ -62,6 +62,8 @@ This allows you to easily extend Lizzie by simply creating a new delegate, and
 associating it with a _"symbol"_, to such have access to execute CLR methods
 from your Lizzie script code.
 
+[MSDN Article about symbolic delegates written by yours truly](https://msdn.microsoft.com/en-us/magazine/mt830373)
+
 ## Binding Lizzie to your own types
 
 If you want to, you can _"bind"_ your Lizzie code to a CLR type. This
