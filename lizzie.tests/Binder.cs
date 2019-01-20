@@ -186,6 +186,54 @@ namespace lizzie.tests
             Assert.AreEqual(57, result);
         }
 
+        class BaseClass3
+        {
+            [Bind(Name = "foo1")]
+            protected object Foo1(Binder<BaseClass3> ctx, Arguments arguments)
+            {
+                return 50;
+            }
+
+            [Bind(Name = "foo2")]
+            protected static object Foo2(BaseClass3 context, Binder<BaseClass3> ctx, Arguments arguments)
+            {
+                return 5;
+            }
+        }
+
+        class SuperClass3 : BaseClass3
+        {
+            [Bind(Name = "foo3")]
+            protected object Foo3(Binder<BaseClass3> ctx, Arguments arguments)
+            {
+                return 7;
+            }
+
+            [Bind(Name = "foo4")]
+            protected static object Foo4(BaseClass3 context, Binder<BaseClass3> ctx, Arguments arguments)
+            {
+                return 4;
+            }
+        }
+
+        class SuperClass3_2 : SuperClass3
+        {
+            [Bind(Name = "foo5")]
+            object Foo5(Binder<BaseClass3> ctx, Arguments arguments)
+            {
+                return 1;
+            }
+        }
+
+        [Test]
+        public void InvokingFromBothSuperAndBaseInstanceAndStatic()
+        {
+            BaseClass3 simple = new SuperClass3_2();
+            var lambda = LambdaCompiler.Compile(simple, "+(foo1(), foo2(), foo3(), foo4(),foo5())", true);
+            var result = lambda();
+            Assert.AreEqual(67, result);
+        }
+
         [Test]
         public void DeeplyBound()
         {

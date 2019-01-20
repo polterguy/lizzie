@@ -15,25 +15,48 @@ namespace lizzie.tools
 {
     /*
      * Internal class used to create delegate types when binding "deeply", towards
-     * for instance an interface, to allow for binding Lizzie towards an inherited
-     * type.
+     * for instance an interface, to allow for binding Lizzie towards the type
+     * of your context instance, instead of the generic type argument.
      * 
-     * Uses Reflection.Emit to create a delegate type during Lizzie compilation process.
+     * Uses Reflection.Emit to create a delegate type during Lizzie's compilation
+     * process. This class is useful when you don't know the most derived type of
+     * your context, since the type you're dealing with in your own code is for
+     * instance a base class or an interface. Helps with binding Lizzie code in
+     * scenarios such as when your context is for instance an interface, and
+     * you're using Dependency Injection, etc.
+     * 
+     * NOTICE!
+     * Class is intentionally created as "internal", even though it's probably
+     * highly useful as a library helper class, since I want to be able to
+     * move it into its own library later at some point, without breaking
+     * existing use of Lizzie.
      */
     internal sealed class DelegateTypeFactory
     {
         // Singleton implementation fields.
         static DelegateTypeFactory _instance;
+
+        // Required to avoid race conditions during Singleton instantiation.
         static object _locker = new object();
 
-        // Fields.
+        // Module builder that allows us to "Emit" code into our AppDomain.
         readonly ModuleBuilder _builder;
-        Synchronizer<Dictionary<string, Type>> _delegateTypeSynchronizer = new Synchronizer<Dictionary<string, Type>>(new Dictionary<string, Type>());
 
-        // Private CTOR to avoid instantiations of more than one single instance (Singleton pattern).
+        /*
+         * Synchronized dictionary containing all delegate types.
+         * Serves as a "cache", to avoid creating the same delegate type multiple
+         * times.
+         */
+        Synchronizer<Dictionary<string, TypeInfo>> _delegateTypeSynchronizer = 
+            new Synchronizer<Dictionary<string, TypeInfo>>(new Dictionary<string, TypeInfo>());
+
+        // Private CTOR to avoid instantiations of more than one instance (Singleton pattern).
         DelegateTypeFactory()
         {
-            var assembly = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("Lizzie.DelegateFactory"), AssemblyBuilderAccess.RunAndCollect);
+            // Creates our dynamic assembly, where our delegate types will be emitted.
+            var assembly = AssemblyBuilder.DefineDynamicAssembly(
+                new AssemblyName("Lizzie.DelegateFactory"),
+                AssemblyBuilderAccess.RunAndCollect);
             _builder = assembly.DefineDynamicModule("Lizzie.DelegateFactory");
         }
 
@@ -44,6 +67,8 @@ namespace lizzie.tools
         {
             get {
                 if (_instance == null) {
+
+                    // Avoiding race conditions in multithreaded solutions.
                     lock (_locker) {
 
                         // Double check, in case of context switch after checking for null.
@@ -57,22 +82,21 @@ namespace lizzie.tools
         }
 
         /*
-         * Returns a delegate type for the specified method.
+         * Returns a delegate type for the specified MethodInfo.
          */
-        public Type GetDelegateType(MethodInfo method)
+        public TypeInfo GetDelegateType(MethodInfo method)
         {
             /*
-             * Using full name of type as dictionary key.
+             * Using the full name of the declaring type as dictionary/"cache"
+             * key, in addition to whether or not the method is static or not.
              * 
-             * NOTICE!
-             * Since each declaring type needs a unique delegate type, we
-             * use the declaring type's full name as our dictionary lookup, to
-             * avoid creating the same delegate type more than once.
+             * This ensures one delegate type for static and instance methods,
+             * for each declaring type.
              */
-            var dictionaryKey = method.DeclaringType.FullName;
+            var dictionaryKey = method.DeclaringType.FullName + (method.IsStatic ? "_static" : "");
 
             /*
-             * Checking if we have already created a delegate type for MethodInfo.
+             * Checking if we have already created a delegate type for the MethodInfo.
              * Making sure we synchronize access to our shared dictionary.
              */
             var delegateType = _delegateTypeSynchronizer.Fetch((dictionary) => {
@@ -84,13 +108,14 @@ namespace lizzie.tools
                 return null;
             });
 
-            // Checking if we already have a delegate type wrapping declaring type's methods.
+            // Returning previously created delegate type, if one has been created.
             if (delegateType != null)
                 return delegateType;
 
             /*
-             * Creating our delegate type for MethodInfo's declaring type, and stores it in our
-             * dictionary, to avoid creating multiple delegate types for the same MethodInfo.
+             * Creating our delegate type for MethodInfo's declaring type, and
+             * store it in our dictionary, to avoid creating multiple delegate
+             * types for the same MethodInfo.
              * Making sure we synchronize access to our shared dictionary.
              */
             _delegateTypeSynchronizer.Write((dictionary) => {
@@ -103,7 +128,7 @@ namespace lizzie.tools
                 if (!dictionary.ContainsKey(dictionaryKey)) {
 
                     // Creates our delegate type, and caches it in dictionary.
-                    delegateType = CreateDelegateType(method);
+                    delegateType = CreateDelegateType(method, dictionaryKey);
                     dictionary[dictionaryKey] = delegateType;
                 }
             });
@@ -115,16 +140,12 @@ namespace lizzie.tools
         /*
          * Dynamically creates and emits our delegate type into our ModuleBuilder.
          */
-        private Type CreateDelegateType(MethodInfo method)
+        TypeInfo CreateDelegateType(MethodInfo method, string delegateTypeName)
         {
-            // Creates a unique type name to emit.
-            string baseName = string.Format("{0}.{1}", method.DeclaringType.Name, method.Name);
-            string uniqueTypeName = CreateUniqueTypeName(baseName);
-
             // Defines our type and constructor to our type.
             var typeBuilder = _builder.DefineType(
-                uniqueTypeName,
-                TypeAttributes.Sealed | TypeAttributes.Public,
+                delegateTypeName,
+                TypeAttributes.Sealed | TypeAttributes.NotPublic,
                 typeof(MulticastDelegate));
             var constructor = typeBuilder.DefineConstructor(
                 MethodAttributes.RTSpecialName | MethodAttributes.HideBySig | MethodAttributes.Public,
@@ -133,12 +154,14 @@ namespace lizzie.tools
             constructor.SetImplementationFlags(MethodImplAttributes.CodeTypeMask);
 
             /*
-             * Retrieves arguments from method, and make sure our delegate types can handle the same set of arguments.
+             * Retrieves arguments from method, and make sure our delegate type
+             * can handle the same set of arguments.
              * 
              * NOTICE!
-             * To allow for "late binding" delegate towards its this pointer for instance methods,
-             * we need to check if method is static, and if not, we allow for implicitly passing
-             * in the "this pointer" as its first argument.
+             * To allow for "late binding" delegate towards its this pointer for
+             * instance methods, we need to check if method is static, and if not,
+             * we allow for implicitly passing in the "this pointer" as its first
+             * argument.
              */
             var parameters = method.GetParameters();
             var parameterTypes = parameters.Select(p => p.ParameterType).ToList();
@@ -146,7 +169,7 @@ namespace lizzie.tools
                 parameterTypes.Insert(0, method.DeclaringType);
             var invokeMethod = typeBuilder.DefineMethod(
                 "Invoke",
-                MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.Public,
+                MethodAttributes.HideBySig | MethodAttributes.Private,
                 method.IsStatic ? CallingConventions.Standard : CallingConventions.HasThis,
                 method.ReturnType,
                 parameterTypes.ToArray());
@@ -160,18 +183,6 @@ namespace lizzie.tools
 
             // Returns our delegate type to caller.
             return typeBuilder.CreateTypeInfo();
-        }
-
-        /*
-         * Creates a unique type name to use during Reflection.Emit.
-         */
-        private string CreateUniqueTypeName(string nameBase)
-        {
-            int number = 2;
-            string name = nameBase;
-            while (_builder.GetType(name) != null)
-                name = nameBase + number++;
-            return name;
         }
 
         #endregion

@@ -10,6 +10,8 @@ using System.Reflection;
 using System.Collections.Generic;
 using lizzie.tools;
 using lizzie.exceptions;
+using System.Linq.Expressions;
+using System.Linq;
 
 namespace lizzie
 {
@@ -39,11 +41,8 @@ namespace lizzie
         // Stack of dynamically created variables and functions.
         readonly List<Dictionary<string, object>> _stackBinder = new List<Dictionary<string, object>>();
 
-        /*
-         * Only used during "deep binding", to create a correct delegate type using Reflection.Emit.
-         * This is the type of delegate, needed to create a delegate wrapping a MethodInfo.
-         */
-        Type _delegateType;
+        // Tracks if an instance context is provided or not.
+        bool _contextIsDefault;
 
         /// <summary>
         /// Creates a default binder, binding all bound methods in your context type.
@@ -51,6 +50,7 @@ namespace lizzie
         /// <param name="context">If not default then the constructor will perform binding on type of instance, and not on type of TContext.</param>
         public Binder(TContext context = default(TContext))
         {
+            _contextIsDefault = EqualityComparer<TContext>.Default.Equals(context, default(TContext));
             BindTypeMethods(context);
         }
 
@@ -96,7 +96,7 @@ namespace lizzie
         /// Returns true if the instance has been "deeply bound".
         /// </summary>
         /// <value>The stack count.</value>
-        public bool DeeplyBound => _delegateType != null;
+        public bool DeeplyBound => !_contextIsDefault;
 
         /// <summary>
         /// Gets or sets the value with the given key. You can set the content
@@ -256,7 +256,7 @@ namespace lizzie
          * BindAttribute, and make these available for you as symbolic functions
          * in your Lizzie code.
          */
-        void BindTypeMethods(TContext context = default(TContext))
+        void BindTypeMethods(TContext context)
         {
             /*
              * Figuring out if we're given an instance of a type, at which point we
@@ -268,8 +268,7 @@ namespace lizzie
              * instead of the interface itself, which is useful for instance when using
              * dependency injection.
              */
-            var contextIsDefault = EqualityComparer<TContext>.Default.Equals(context, default(TContext));
-            var type = contextIsDefault ? typeof(TContext) : context.GetType();
+            var type = _contextIsDefault ? typeof(TContext) : context.GetType();
             var methods = type.GetMethods(BindingFlags.Public | 
                                           BindingFlags.Instance | 
                                           BindingFlags.NonPublic | 
@@ -282,12 +281,92 @@ namespace lizzie
                 var attribute = ix.GetCustomAttribute<BindAttribute>();
                 if (attribute != null) {
 
-                    if (contextIsDefault)
+                    if (_contextIsDefault)
                         BindMethod(ix, attribute.Name ?? ix.Name);
                     else
                         BindMethodDeep(ix, attribute.Name ?? ix.Name, context);
                 }
             }
+        }
+
+        /*
+         * Binds a single method as a "shallow" delegate.
+         */
+        void BindMethod(MethodInfo method, string functionName)
+        {
+            SanityCheckSignature(method, functionName);
+            _staticBinder[functionName] = Delegate.CreateDelegate(typeof(Function<TContext>), method);
+        }
+
+        /*
+         * Binds a Lizzie function "deeply", to make it possible to create a
+         * delegate that is able to invoke inherited methods in super classes
+         * as Lizzie functions.
+         * 
+         * Useful in for instance IoC (Dependency Injection) and similar scenarios
+         * where you don't have access to the implementing bound type through its
+         * generic argument.
+         */
+        void BindMethodDeep(MethodInfo method, string functionName, TContext context)
+        {
+            SanityCheckSignature(method, functionName);
+
+            /*
+             * Wrapping our "deep" delegate invocation inside a "normal" function invocation.
+             * Excactly how, depends upon whether or not the bound method is static or not.
+             */
+            if (!method.IsStatic) {
+
+                var lateBound = CreateInstanceFunction(method);
+                _staticBinder[functionName] = new Function<TContext>((ctx, binder, arguments) => {
+                    return lateBound(ctx, new object[] { binder, arguments });
+                });
+
+            } else {
+
+                var lateBound = CreateStaticFunction(method);
+                _staticBinder[functionName] = new Function<TContext>((ctx, binder, arguments) => {
+                    return lateBound(new object[] { ctx, binder, arguments });
+                });
+
+            }
+        }
+
+        LateBoundFunction CreateInstanceFunction(MethodInfo method)
+        {
+            ParameterExpression instanceParameter = Expression.Parameter(typeof(object), "target");
+            ParameterExpression argumentsParameter = Expression.Parameter(typeof(object[]), "arguments");
+
+            MethodCallExpression call = Expression.Call(
+              Expression.Convert(instanceParameter, method.DeclaringType),
+              method,
+              method.GetParameters().Select((parameter, index) =>
+                  Expression.Convert(
+                    Expression.ArrayIndex(argumentsParameter, Expression.Constant(index)), parameter.ParameterType)).ToArray());
+
+            var lambda = Expression.Lambda<LateBoundFunction>(
+              Expression.Convert(call, typeof(object)),
+              instanceParameter,
+              argumentsParameter);
+
+            return lambda.Compile();
+        }
+
+        LateBoundStaticFunction CreateStaticFunction(MethodInfo method)
+        {
+            ParameterExpression argumentsParameter = Expression.Parameter(typeof(object[]), "arguments");
+
+            MethodCallExpression call = Expression.Call(
+              method,
+              method.GetParameters().Select((parameter, index) =>
+                  Expression.Convert(
+                    Expression.ArrayIndex(argumentsParameter, Expression.Constant(index)), parameter.ParameterType)).ToArray());
+
+            var lambda = Expression.Lambda<LateBoundStaticFunction>(
+              Expression.Convert(call, typeof(object)),
+              argumentsParameter);
+
+            return lambda.Compile();
         }
 
         /*
@@ -329,52 +408,6 @@ namespace lizzie
                 if (method.ReturnType != typeof(object))
                     throw new LizzieBindingException($"Can't bind to {method.Name} since it doesn't return '{nameof(Object)}'.");
             }
-        }
-
-        /*
-         * Binds a single method shallow.
-         */
-        void BindMethod(MethodInfo method, string functionName)
-        {
-            SanityCheckSignature(method, functionName);
-            _staticBinder[functionName] = Delegate.CreateDelegate(typeof(Function<TContext>), method);
-        }
-
-        /*
-         * For deep binding, we need to dynamically create our delegate type during
-         * runtime, since type we're binding towards is actually not known before
-         * Lizzie code is bound towards its context.
-         */
-        Delegate CreateDeepDelegate(MethodInfo method, TContext context)
-        {
-            /*
-             * To avoid having to evaluate delegate factory's GetDelegateType
-             * method unnecessary, which has some thread synchronization overhead,
-             * we cache our delegate type internally on an instance basis in our
-             * binder.
-             */
-            if (_delegateType == null) {
-                _delegateType = DelegateTypeFactory.Instance.GetDelegateType(method);
-            }
-            return Delegate.CreateDelegate(_delegateType, method);
-        }
-
-        /*
-         * Binds a Lizzie function "deeply", implying using Reflection.Emit to
-         * make itpossible to create a Delegate that is able to invoke inherited
-         * methods as Lizzie functions.
-         * 
-         * Useful in for instance IoC (Dependency Injection) and similar scenarios
-         * where you don't have access to the implementing bound type through its
-         * generic argument.
-         */
-        void BindMethodDeep(MethodInfo method, string functionName, TContext context)
-        {
-            SanityCheckSignature(method, functionName);
-            var deep = CreateDeepDelegate(method, context);
-            _staticBinder[functionName] = new Function<TContext>((ctx, binder, arguments) => {
-                return deep.DynamicInvoke(ctx, binder, arguments);
-            });
         }
 
         /*
