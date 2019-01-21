@@ -120,8 +120,8 @@ upon which class you are binding it towards. So you can completely change what
 your code does, by simply choosing to bind it to something else, which of
 course is extremely powerful once you realize its advantages. This trait also
 makes Lizzie very easy to learn. In fact, the entire reference documentation
-for the language, which is this page, is not more than roughly 11 pages if
-you choose to print it. These 11 pages is _everything_ you need to learn
+for the language, which is this page, is not more than roughly 12 pages if
+you choose to print it. These 12 pages is _everything_ you need to learn
 in order to master Lizzie.
 
 **Notice** - Instances of the `Binder` class are _not_ thread safe. Creating an
