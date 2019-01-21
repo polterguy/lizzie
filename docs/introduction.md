@@ -853,12 +853,12 @@ class SuperClass : BaseClass
  *
  * NOTICE!
  * Type inference here will make sure your Binder uses "BaseClass" as
- * its generic argument, yet still you're able to invoke methods on "SuperClass".
+ * its generic argument, yet still you're able to invoke functions on "SuperClass".
  */
 BaseClass simple = new SuperClass();
 
 /*
- * The last "true" argument is important to "bind deeply" to your instance type!
+ * The last "true" argument is important to "bind deeply" to your instance type.
  * Without the "true", it will bind towards the inferred type, which for this example
  * becomes "BaseClass".
  */
@@ -888,14 +888,24 @@ code to your context instance, Lizzie will use reflection, and also compile lamb
 expressions. This process is relatively expensive in terms of CPU usage. However,
 if you know that you will bind to the same type frequently, you can internally
 cache your binder, for then to `Clone` your _"master"_ binder each time you want to
-evaluate a piece of Lizzie code bound towards the same `Binder` type. For a web
-application, frequently compiling a new piece of Lizzie snippet, this would probably
-increase the performance of the compilation process by several orders of magnitudes.
+evaluate a piece of Lizzie code bound towards the same `Binder` type. If you want
+to take this approach, you'll have to explicitly supply your `Binder` to the compilation
+process as you compile your Lizzie code. This can be achieved by e.g. using the
+overloaded method to `LambdaCompiler.Compile` that expects an explicit binder.
+
+For a web application, frequently compiling a new piece of Lizzie snippet, this
+approach would probably increase the performance of the compilation process by
+several orders of magnitudes.
+
+#### Caching your Lizzie lambda object
 
 If you know that you will evaluate the same snippet of Lizzie code multiple
 times, you can also cache the lambda returned by the compilation process itself.
-Which would further increase your performance. However, Lizzie will never be as
-fast as compiled C# code, due to its dynamic nature.
+Which would further increase your performance.
+
+Notice! Lizzie will regardless of how much you optimize it, never be as fast as
+a compiled piece of C# code. However, by intelligently caching your code, and/or
+binders, you can dramatically improve its performance.
 
 ### Donate
 
