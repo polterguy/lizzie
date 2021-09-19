@@ -124,6 +124,7 @@ namespace lizzie
             binder["get"] = Functions<TContext>.Get;
             binder["count"] = Functions<TContext>.Count;
             binder["add"] = Functions<TContext>.AddValue;
+            binder["update"] = Functions<TContext>.UpdateValue;
             binder["each"] = Functions<TContext>.Each;
 
             // Conversion functions.
