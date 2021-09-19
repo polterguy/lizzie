@@ -684,6 +684,45 @@ namespace lizzie
                 throw new LizzieRuntimeException("The 'add' function must be given either a 'list' or a 'map' as its first argument.");
             }
         });
+        
+        /// <summary>
+        /// Updates And Returns the specified item of a list previously created by a new value.
+        ///
+        /// This function will update the object at the specified index from a previously
+        /// created list or map. Pass in the index of the item to retrieve and the new value  as the only two
+        /// argument you supply to this function.
+        /// </summary>
+        /// <value>The function wrapping the 'update keyword'.</value>
+        public static Function<TContext> UpdateValue => new Function<TContext>((ctx, binder, arguments) =>
+        {
+            if (arguments.Count != 3)
+                throw new LizzieRuntimeException("The 'update' function must be given exactly 3 arguments. The first argument must be a list or a map, and the second argument a numeric value or a key, and the last argument is the new value.");
+
+            var value = arguments.Get(2);
+
+            if (arguments.Get(1) is string key)
+            {
+
+                // Map de-referencing operation.
+                var map = arguments.Get(0) as Dictionary<string, object>;
+                if (map == null)
+                    throw new LizzieRuntimeException("The 'update' function must be given a list or a map as its first argument.");
+                map[arguments.Get<string>(1)] = value;
+                return map[arguments.Get<string>(1)];
+
+            }
+            else
+            {
+
+                // List de-referencing operation.
+                var list = arguments.Get(0) as List<object>;
+                if (list == null)
+                    throw new LizzieRuntimeException("The 'update' function must be given a list or a map as its first argument.");
+                var index = arguments.Get<int>(1);
+                list[index] = value;
+                return list[index];
+            }
+        });
 
         /// <summary>
         /// Returns a slice from the specified list without modifying the original list.
